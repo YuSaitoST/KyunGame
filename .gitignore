@@ -1,0 +1,23 @@
+*.sln
+Hert for we/.vs/
+*.config
+Hert for we/DirectX12 MainProject/TemplateScene.cpp
+Hert for we/DirectX12 MainProject/TemplateScene.h
+Hert for we/DirectX12 MainProject/TemplateSceneDX9.cpp
+Hert for we/DirectX12 MainProject/TemplateSceneDX9.h
+Hert for we/DirectX12 MainProject/Base/DXTKHelpers.h
+Hert for we/DirectX12 MainProject/Base/DirectMLX.h
+Hert for we/DirectX12 MainProject/Base/dxtk.h
+Hert for we/DirectX12 MainProject/Base/d3dx12.h
+Hert for we/DirectX12 MainProject/Base/GameBase.cpp
+Hert for we/DirectX12 MainProject/Base/pch.cpp
+Hert for we/DirectX12 MainProject/Base/pch.h
+Hert for we/DirectX12 MainProject/Base/StepTimer.h
+Hert for we/DirectX12 MainProject/cppcoro/
+Hert for we/DirectX12 MainProject/Resource/
+Hert for we/DirectX12 MainProject/x64/Debug/
+Hert for we/DirectX12AffinityLayer/
+Hert for we/DirectXTK12/
+Hert for we/DirectXTK9/
+Hert for we/packages/
+Hert for we/x64/
