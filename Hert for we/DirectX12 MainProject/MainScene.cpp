@@ -89,9 +89,8 @@ void MainScene::Render()
 
 	DX9::SpriteBatch->Begin();  // スプライトの描画を開始
 
-
-
-	Re_NomalDraw();
+	Re_Draw_PlayerA();
+	Re_Draw_PlayerB();
 
 	DX9::SpriteBatch->End();  // スプライトの描画を終了
 	DXTK->Direct3D9->EndScene();  // シーンの終了を宣言
@@ -100,16 +99,30 @@ void MainScene::Render()
 }
 
 void MainScene::LA_Load() {
-	bg_1 = DX9::Sprite::CreateFromFile(DXTK->Device9, L"sp1.png");
-	bg_2 = DX9::Sprite::CreateFromFile(DXTK->Device9, L"sp2.png");
+	bg				= DX9::Sprite::CreateFromFile(DXTK->Device9, L"bg.png");
+	field				= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map.png");
+	heart_red	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"love.png");
+	heart_blue	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"trap.png");
 }
 
-void MainScene::Re_NomalDraw() {
+void MainScene::Re_Draw_PlayerA() {
 	DX9::SpriteBatch->DrawSimple(
-		bg_1.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
+		bg.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		bg_2.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
+		field.Get(), SimpleMath::Vector3(630.0f, 165.0f, 0.0f)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		heart_red.Get(), SimpleMath::Vector3(277.5f, 277.5f, 0.0f)
+	);
+}
+
+void MainScene::Re_Draw_PlayerB() {
+	DX9::SpriteBatch->DrawSimple(
+		bg.Get(), SimpleMath::Vector3(pos_Bx, 0.0f, 0.0f)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		field.Get(), SimpleMath::Vector3(pos_Bx + 630.0f, 165.0f, 0.0f)
 	);
 }
 

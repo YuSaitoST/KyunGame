@@ -41,10 +41,17 @@ private:
 
 	DX9::SPRITEFONT font;
 
-	DX9::SPRITE bg_1;
-	DX9::SPRITE bg_2;
+	DX9::SPRITE bg;
+	DX9::SPRITE field;
+	DX9::SPRITE heart_red;
+	DX9::SPRITE heart_blue;
+
+	SimpleMath::Vector2 pos_heartR;
+
+	const int pos_Bx = 1920;
 
 	void LA_Load();
-	void Re_NomalDraw();
+	void Re_Draw_PlayerA();
+	void Re_Draw_PlayerB();
 	void Re_DirectTwelve();
 };
