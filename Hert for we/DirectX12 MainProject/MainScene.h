@@ -48,17 +48,48 @@ private:
 	DX9::SPRITE heart_blue;
 	DX9::SPRITE boy;
 	DX9::SPRITE girl;
+	DX9::SPRITE com_cursor;
 
+	SimpleMath::Vector2 pos_cursor;
+	SimpleMath::Vector2 pos_pointer;
 	SimpleMath::Vector2 pos_heartR[2];
 	SimpleMath::Vector2 pos_heartB[2];
-	SimpleMath::Vector2 pos_pointer;
+
+	enum POSI_Z {
+		TURN_TEXT,
+		TURN_IMAGE,
+		SMOKE,
+		POINTER,
+		HEART,
+		MAP,
+		COMMAND,
+		PLAYER,
+		BACK_GROUND
+	};
+
+	enum Phase {
+		PUT_HEART,
+		SELECT,
+		ATTACK,
+		MOVE,
+		CHECK,
+		FINE
+	};
+
+	Phase phase;
 
 	const int pos_Bx = 1920;
 	const float move_pointer = 179.5f;
 
-	int field[5][5];
+	int num_turn;
+	int num_player;  // ターンプレイヤーを表す
+	int num_color[2];
+
+	bool seem_pointer;
 
 	void LA_Load();
+	void Up_Put();  // 後に赤と青どちらかを渡して動かしたい
+	void Up_Select();
 	void Up_Move_Pointer();
 	void Re_Draw_PlayerA();
 	void Re_Draw_PlayerB();
