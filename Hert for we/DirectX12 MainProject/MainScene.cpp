@@ -16,6 +16,10 @@ MainScene::MainScene()
 void MainScene::Initialize()
 {
 	font = DX9::SpriteFont::CreateFromFontName(DXTK->Device9, L"FixedSys •W€", 20);
+	pos_pointer = SimpleMath::Vector2(360.0f + 520.0f, 415.0f);
+	//std::fill(pos_heartR[0], pos_heartR[1], SimpleMath::Vector2(0.0f, 0.0f));
+	//std::fill(pos_heartB[0], pos_heartB[1], SimpleMath::Vector2(0.0f, 0.0f));
+	//std::fill(field[0], field[5], 0);
 }
 
 // Allocate all memory the Direct3D and Direct2D resources.
@@ -73,7 +77,7 @@ NextScene MainScene::Update(const float deltaTime)
 
 	// TODO: Add your game logic here.
 
-
+	Up_Move_Pointer();
 
 	return NextScene::Continue;
 }
@@ -99,10 +103,24 @@ void MainScene::Render()
 }
 
 void MainScene::LA_Load() {
-	bg				= DX9::Sprite::CreateFromFile(DXTK->Device9, L"bg.png");
-	field				= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map.png");
-	heart_red	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"love.png");
-	heart_blue	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"trap.png");
+	bg					= DX9::Sprite::CreateFromFile(DXTK->Device9, L"bg.png");
+	map					= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map.png");
+	area_attack		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"attack_area.png");
+	heart_red		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"love.png");
+	heart_blue		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"trap.png");
+	boy					= DX9::Sprite::CreateFromFile(DXTK->Device9, L"boy.png");
+	girl					= DX9::Sprite::CreateFromFile(DXTK->Device9, L"girl.png");
+}
+
+void MainScene::Up_Move_Pointer() {
+	if (DXTK->KeyEvent->pressed.Up)			pos_pointer.y -= move_pointer;
+	if (DXTK->KeyEvent->pressed.Down)		pos_pointer.y += move_pointer;
+	if (DXTK->KeyEvent->pressed.Left)		pos_pointer.x -= move_pointer;
+	if (DXTK->KeyEvent->pressed.Right)		pos_pointer.x += move_pointer;
+	pos_pointer = SimpleMath::Vector2(
+		std::clamp(pos_pointer.x, 510.0f, 510.0f + 718.0f),
+		std::clamp(pos_pointer.y, 45.0f, 945.0f - 179.5f)
+	);
 }
 
 void MainScene::Re_Draw_PlayerA() {
@@ -110,10 +128,16 @@ void MainScene::Re_Draw_PlayerA() {
 		bg.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		field.Get(), SimpleMath::Vector3(630.0f, 165.0f, 0.0f)
+		map.Get(), SimpleMath::Vector3(510.0f, 45.0f, 0.0f)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		heart_red.Get(), SimpleMath::Vector3(277.5f, 277.5f, 0.0f)
+		boy.Get(), SimpleMath::Vector3(pos_Bx - 402.0f, 990.0f - 590.0f, 0.0f)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		girl.Get(), SimpleMath::Vector3(0.0f, 990.0f - 476.0f, 0.0f)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		area_attack.Get(), SimpleMath::Vector3(pos_pointer.x, pos_pointer.y, 0.0f)
 	);
 }
 
@@ -122,7 +146,16 @@ void MainScene::Re_Draw_PlayerB() {
 		bg.Get(), SimpleMath::Vector3(pos_Bx, 0.0f, 0.0f)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		field.Get(), SimpleMath::Vector3(pos_Bx + 630.0f, 165.0f, 0.0f)
+		map.Get(), SimpleMath::Vector3(pos_Bx + 510.0f, 45.0f, 0.0f)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		boy.Get(), SimpleMath::Vector3(pos_Bx, 990.0f - 590.0f, 0.0f)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		girl.Get(), SimpleMath::Vector3(2 * pos_Bx - 438.0f, 990.0f - 476.0f, 0.0f)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		area_attack.Get(), SimpleMath::Vector3(pos_pointer.x + pos_Bx, pos_pointer.y, 0.0f)
 	);
 }
 

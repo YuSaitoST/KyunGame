@@ -42,15 +42,24 @@ private:
 	DX9::SPRITEFONT font;
 
 	DX9::SPRITE bg;
-	DX9::SPRITE field;
+	DX9::SPRITE map;
+	DX9::SPRITE area_attack;
 	DX9::SPRITE heart_red;
 	DX9::SPRITE heart_blue;
+	DX9::SPRITE boy;
+	DX9::SPRITE girl;
 
-	SimpleMath::Vector2 pos_heartR;
+	SimpleMath::Vector2 pos_heartR[2];
+	SimpleMath::Vector2 pos_heartB[2];
+	SimpleMath::Vector2 pos_pointer;
 
 	const int pos_Bx = 1920;
+	const float move_pointer = 179.5f;
+
+	int field[5][5];
 
 	void LA_Load();
+	void Up_Move_Pointer();
 	void Re_Draw_PlayerA();
 	void Re_Draw_PlayerB();
 	void Re_DirectTwelve();
