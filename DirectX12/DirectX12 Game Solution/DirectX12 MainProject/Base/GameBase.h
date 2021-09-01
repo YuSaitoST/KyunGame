@@ -9,7 +9,7 @@
 #define DXTK_FULLSCREEN 0   // 1...fullscreen mode
 #define DXTK_KEYBOARD   1   // 1...use Keyboard
 #define DXTK_MOUSE      0   // 1...use Mouse
-#define DXTK_GAMEPAD    1   // 1-8.use GamePad
+#define DXTK_GAMEPAD    2   // 1-8.use GamePad
 
 #define DXTK_MULTIGPU   0   // 1...use Heterogeneous Multiadapter
 //#define DXTK_AMP      0   // 1...use AMP
