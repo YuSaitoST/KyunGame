@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Scene.h"
+#include <random>
 
 using Microsoft::WRL::ComPtr;
 using std::unique_ptr;
@@ -43,6 +44,7 @@ private:
 
 	DX9::SPRITE bg;
 	DX9::SPRITE map;
+	DX9::SPRITE pointer;
 	DX9::SPRITE area_attack;
 	DX9::SPRITE heart_red;
 	DX9::SPRITE heart_blue;
@@ -54,6 +56,9 @@ private:
 	SimpleMath::Vector2 pos_pointer;
 	SimpleMath::Vector2 pos_heartR[2];
 	SimpleMath::Vector2 pos_heartB[2];
+
+	std::mt19937 random_engine;
+	std::uniform_int_distribution<> random_dist;
 
 	enum POSI_Z {
 		TURN_TEXT,
@@ -81,15 +86,21 @@ private:
 	const int pos_Bx = 1920;
 	const float move_pointer = 179.5f;
 
-	int num_turn;
-	int num_player;  // ターンプレイヤーを表す
-	int num_color[2];
+	//int index_pad;  // いるかはまだ不明
+	int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
+	int num_turn;  // ターン数
+	int num_ready;  // 開始時のハート設置のカウント
+	int num_color[2];  // 画像の色
 
 	bool seem_pointer;
+
+	wchar_t turn_player[2];
 
 	void LA_Load();
 	void Up_Put();  // 後に赤と青どちらかを渡して動かしたい
 	void Up_Select();
+	void Up_Attack();
+	void Up_Move();  // 未実装
 	void Up_Move_Pointer();
 	void Re_Draw_PlayerA();
 	void Re_Draw_PlayerB();
