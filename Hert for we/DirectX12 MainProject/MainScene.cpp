@@ -19,12 +19,11 @@ void MainScene::Initialize()
 	font						= DX9::SpriteFont::CreateFromFontName(DXTK->Device9, L"FixedSys 標準", 20);
 	pos_cursor			= SimpleMath::Vector2(100.0f, 100.0f);
 	pos_pointer		= SimpleMath::Vector2(360.0f + 520.0f, 415.0f);
+	pos_attack			= SimpleMath::Vector2(-200.0f, -200.0f);
 	pos_heartR[0]	= SimpleMath::Vector2(-200.0f, -200.0f);
 	pos_heartR[1]	= SimpleMath::Vector2(-200.0f, -200.0f);
 	pos_heartB[0]	= SimpleMath::Vector2(-200.0f, -200.0f);
 	pos_heartB[1]	= SimpleMath::Vector2(-200.0f, -200.0f);
-	//std::fill(pos_heartR[0], pos_heartR[1], SimpleMath::Vector2(-200.0f, -200.0f));
-	//std::fill(pos_heartB[0], pos_heartB[1], SimpleMath::Vector2(-200.0f, -200.0f));
 	phase					= Phase::PUT_HEART;
 
 	std::random_device seed;
@@ -36,6 +35,8 @@ void MainScene::Initialize()
 	num_color[0]		= 255;
 	num_color[1]		= 120;
 	seem_pointer		= false;
+	fin_game			= false;
+	win_player			= 0;
 
 
 	// エラる
@@ -105,9 +106,9 @@ NextScene MainScene::Update(const float deltaTime)
 		case Phase::PUT_HEART:	seem_pointer = true;	Up_Put();			break;
 			// ここで先攻後攻決めるべきかな
 		case Phase::SELECT:													Up_Select();	break;
-		case Phase::ATTACK:			seem_pointer = true;	break;
-		case Phase::MOVE:			seem_pointer = true;	break;
-		case Phase::CHECK:			break;
+		case Phase::ATTACK:			seem_pointer = true;	Up_Attack();	break;
+		case Phase::MOVE:			break;
+		case Phase::CHECK:													Up_Check();	break;
 		case Phase::FINE:				break;
 	}
 
@@ -193,7 +194,9 @@ void MainScene::Up_Select() {
 void MainScene::Up_Attack() {
 	Up_Move_Pointer();
 	if (DXTK->KeyEvent->pressed.Enter) {
-
+		pos_attack			= pos_pointer;
+		seem_pointer		= false;
+		phase = Phase::CHECK;
 	}
 }
 
@@ -210,6 +213,13 @@ void MainScene::Up_Move_Pointer() {
 		std::clamp(pos_pointer.x, 510.0f, 510.0f + 718.0f),
 		std::clamp(pos_pointer.y, 45.0f, 945.0f - 179.5f)
 	);
+}
+
+void MainScene::Up_Check() {
+	if (pos_heartR[num_player] == pos_pointer) {
+		fin_game = true;
+		phase = Phase::FINE;
+	}
 }
 
 // 基本こちらで実装テストを行う。
@@ -271,12 +281,35 @@ void MainScene::Re_Draw_PlayerA() {
 			L"MOVE"
 		);
 	}
+	if (phase == Phase::ATTACK) {
+		DX9::SpriteBatch->DrawSimple(
+			area_attack.Get(),
+			SimpleMath::Vector3(pos_attack.x, pos_attack.y, POSI_Z::POINTER)
+		);
+	}
 	if (seem_pointer) {
 		DX9::SpriteBatch->DrawSimple(
 			pointer.Get(),
 			SimpleMath::Vector3(pos_pointer.x, pos_pointer.y, POSI_Z::POINTER)
 		);
 	}
+
+	// 表示されない
+	if (fin_game) {
+		DX9::SpriteBatch->DrawString(
+			font.Get(),
+			SimpleMath::Vector2(200.0f, 100.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255),
+			L"勝者 : プレイヤー%i" + win_player
+		);
+	}
+
+	DX9::SpriteBatch->DrawString(
+		font.Get(),
+		SimpleMath::Vector2(200.0f, 500.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255),
+		L"Phase : %i", (int)phase
+	);
 }
 
 void MainScene::Re_Draw_PlayerB() {

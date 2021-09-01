@@ -54,6 +54,7 @@ private:
 
 	SimpleMath::Vector2 pos_cursor;
 	SimpleMath::Vector2 pos_pointer;
+	SimpleMath::Vector2 pos_attack;
 	SimpleMath::Vector2 pos_heartR[2];
 	SimpleMath::Vector2 pos_heartB[2];
 
@@ -64,8 +65,8 @@ private:
 		TURN_TEXT,
 		TURN_IMAGE,
 		SMOKE,
-		POINTER,
 		HEART,
+		POINTER,
 		MAP,
 		COMMAND,
 		PLAYER,
@@ -83,16 +84,17 @@ private:
 
 	Phase phase;
 
-	const int pos_Bx = 1920;
+	const int pos_Bx					= 1920;
 	const float move_pointer = 179.5f;
 
-	//int index_pad;  // いるかはまだ不明
 	int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
 	int num_turn;  // ターン数
 	int num_ready;  // 開始時のハート設置のカウント
 	int num_color[2];  // 画像の色
 
 	bool seem_pointer;
+	bool fin_game;  // デバック用
+	int win_player;  // デバック用
 
 	wchar_t turn_player[2];
 
@@ -102,6 +104,7 @@ private:
 	void Up_Attack();
 	void Up_Move();  // 未実装
 	void Up_Move_Pointer();
+	void Up_Check();
 	void Re_Draw_PlayerA();
 	void Re_Draw_PlayerB();
 	void Re_DirectTwelve();
