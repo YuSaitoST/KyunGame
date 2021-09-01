@@ -17,13 +17,13 @@ void MainScene::Initialize()
 {
 	// コントローラーの識別を入れる
 	font						= DX9::SpriteFont::CreateFromFontName(DXTK->Device9, L"FixedSys 標準", 20);
+	pos_pointer		= pos_pointer_df;
 	pos_cursor			= SimpleMath::Vector2(100.0f, 100.0f);
-	pos_pointer		= SimpleMath::Vector2(360.0f + 520.0f, 415.0f);
-	pos_attack			= SimpleMath::Vector2(-200.0f, -200.0f);
-	pos_heartR[0]	= SimpleMath::Vector2(-200.0f, -200.0f);
-	pos_heartR[1]	= SimpleMath::Vector2(-200.0f, -200.0f);
-	pos_heartB[0]	= SimpleMath::Vector2(-200.0f, -200.0f);
-	pos_heartB[1]	= SimpleMath::Vector2(-200.0f, -200.0f);
+	pos_attack			= SimpleMath::Vector2(pos_outArea, pos_outArea);
+	pos_heartR[0]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
+	pos_heartR[1]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
+	pos_heartB[0]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
+	pos_heartB[1]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
 	phase					= Phase::PUT_HEART;
 
 	std::random_device seed;
@@ -35,13 +35,15 @@ void MainScene::Initialize()
 	num_color[0]		= 255;
 	num_color[1]		= 120;
 	seem_pointer		= false;
+
+
+	// デバック用
 	fin_game			= false;
 	win_player			= 0;
 
 
-	// エラる
-	//turn_player[0] = num_player % 2 == 0 ? "じぶんのターン" : "あいてのターン";
-	//turn_player[1] = num_player % 2 == 1 ? "あいてのターン" : "じぶんのターン";
+	//turn_player[0] = num_player % 2 == 0 ? L"じぶんのターン" : L"あいてのターン";
+	//turn_player[1] = num_player % 2 == 1 ? L"あいてのターン" : L"じぶんのターン";
 
 
 	num_turn = 0;
@@ -109,7 +111,7 @@ NextScene MainScene::Update(const float deltaTime)
 		case Phase::ATTACK:			seem_pointer = true;	Up_Attack();	break;
 		case Phase::MOVE:			break;
 		case Phase::CHECK:													Up_Check();	break;
-		case Phase::FINE:				break;
+		case Phase::FINE:														Up_Fine();		break;
 	}
 
 	// パッドの使い方
@@ -220,6 +222,13 @@ void MainScene::Up_Check() {
 		fin_game = true;
 		phase = Phase::FINE;
 	}
+	else phase = Phase::FINE;
+}
+
+void MainScene::Up_Fine() {
+	num_turn += 1;
+	num_player = num_player == 0 ? 1 : 0;  // ターン切り替え
+	phase = Phase::SELECT;
 }
 
 // 基本こちらで実装テストを行う。
@@ -250,19 +259,14 @@ void MainScene::Re_Draw_PlayerA() {
 	);
 
 
-	// エラる
-	//DX9::SpriteBatch->DrawString(
-	//	font.Get(), 
-	//	SimpleMath::Vector2(200.0f, 100.0f),
-	//	DX9::Colors::RGBA(255, 255, 255, 255),
-	//	turn_player[0]
-	//);
-	//DX9::SpriteBatch->DrawString(
-	//	font.Get(),
-	//	SimpleMath::Vector2(200.0f, 100.0f),
-	//	DX9::Colors::RGBA(255, 255, 255, 255),
-	//	L"あいてのターン"
-	//);
+	DX9::SpriteBatch->DrawString(
+		font.Get(), 
+		SimpleMath::Vector2(200.0f, 20.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255),
+		turn_player[0].c_str()  // c言語のstringに変換して渡す
+	);
+
+	if (num_player != 0) return;
 
 	if (phase == Phase::SELECT) {
 		DX9::SpriteBatch->DrawSimple(
@@ -300,10 +304,11 @@ void MainScene::Re_Draw_PlayerA() {
 			font.Get(),
 			SimpleMath::Vector2(200.0f, 100.0f),
 			DX9::Colors::RGBA(255, 255, 255, 255),
-			L"勝者 : プレイヤー%i" + win_player
+			L"勝者 : プレイヤー %i" + win_player
 		);
 	}
 
+	// デバック用
 	DX9::SpriteBatch->DrawString(
 		font.Get(),
 		SimpleMath::Vector2(200.0f, 500.0f),
@@ -320,6 +325,12 @@ void MainScene::Re_Draw_PlayerB() {
 		map.Get(), SimpleMath::Vector3(pos_Bx + 510.0f, 45.0f, POSI_Z::MAP)
 	);
 	DX9::SpriteBatch->DrawSimple(
+		heart_red.Get(), SimpleMath::Vector3(pos_Bx + pos_heartR[1].x, pos_heartR[1].y, POSI_Z::HEART)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		heart_blue.Get(), SimpleMath::Vector3(pos_Bx + pos_heartB[1].x, pos_heartB[1].y, POSI_Z::HEART)
+	);
+	DX9::SpriteBatch->DrawSimple(
 		boy.Get(), 
 		SimpleMath::Vector3(pos_Bx, 990.0f - 590.0f, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, 402.0f, 590.0f),
@@ -332,9 +343,62 @@ void MainScene::Re_Draw_PlayerB() {
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], 255)
 	);
 
-	// 仮のため、後に画像変数を変更
-	DX9::SpriteBatch->DrawSimple(
-		area_attack.Get(), SimpleMath::Vector3(pos_pointer.x + pos_Bx, pos_pointer.y, POSI_Z::POINTER)
+
+	DX9::SpriteBatch->DrawString(
+		font.Get(),
+		SimpleMath::Vector2(pos_Bx + 200.0f, 20.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255),
+		turn_player[1].c_str()  // c言語のstringに変換して渡す
+	);
+
+	if (num_player != 1) return;
+
+	if (phase == Phase::SELECT) {
+		DX9::SpriteBatch->DrawSimple(
+			com_cursor.Get(), SimpleMath::Vector3(pos_Bx + pos_cursor.x, pos_cursor.y, POSI_Z::COMMAND)
+		);
+		DX9::SpriteBatch->DrawString(
+			font.Get(),
+			SimpleMath::Vector2(pos_Bx + 200.0f, 100.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255),
+			L"ATTACK"
+		);
+		DX9::SpriteBatch->DrawString(
+			font.Get(),
+			SimpleMath::Vector2(pos_Bx + 200.0f, 200.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255),
+			L"MOVE"
+		);
+	}
+	if (phase == Phase::ATTACK) {
+		DX9::SpriteBatch->DrawSimple(
+			area_attack.Get(),
+			SimpleMath::Vector3(pos_Bx + pos_attack.x, pos_attack.y, POSI_Z::POINTER)
+		);
+	}
+	if (seem_pointer) {
+		DX9::SpriteBatch->DrawSimple(
+			pointer.Get(),
+			SimpleMath::Vector3(pos_Bx + pos_pointer.x, pos_pointer.y, POSI_Z::POINTER)
+		);
+	}
+
+	// 表示されない
+	if (fin_game) {
+		DX9::SpriteBatch->DrawString(
+			font.Get(),
+			SimpleMath::Vector2(pos_Bx + 200.0f, 100.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255),
+			L"勝者 : プレイヤー %i" + win_player
+		);
+	}
+
+	// デバック用
+	DX9::SpriteBatch->DrawString(
+		font.Get(),
+		SimpleMath::Vector2(pos_Bx + 200.0f, 500.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255),
+		L"Phase : %i", (int)phase
 	);
 }
 

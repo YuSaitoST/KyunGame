@@ -52,8 +52,8 @@ private:
 	DX9::SPRITE girl;
 	DX9::SPRITE com_cursor;
 
-	SimpleMath::Vector2 pos_cursor;
 	SimpleMath::Vector2 pos_pointer;
+	SimpleMath::Vector2 pos_cursor;
 	SimpleMath::Vector2 pos_attack;
 	SimpleMath::Vector2 pos_heartR[2];
 	SimpleMath::Vector2 pos_heartB[2];
@@ -84,8 +84,10 @@ private:
 
 	Phase phase;
 
-	const int pos_Bx					= 1920;
-	const float move_pointer = 179.5f;
+	const SimpleMath::Vector2  pos_pointer_df	= SimpleMath::Vector2(360.0f + 520.0f, 415.0f);
+	const int									pos_Bx				= 1920;
+	const int									pos_outArea		= -200;
+	const float								move_pointer	= 179.5f;
 
 	int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
 	int num_turn;  // ターン数
@@ -96,7 +98,7 @@ private:
 	bool fin_game;  // デバック用
 	int win_player;  // デバック用
 
-	wchar_t turn_player[2];
+	std::basic_string<wchar_t> turn_player[2];
 
 	void LA_Load();
 	void Up_Put();  // 後に赤と青どちらかを渡して動かしたい
@@ -105,6 +107,7 @@ private:
 	void Up_Move();  // 未実装
 	void Up_Move_Pointer();
 	void Up_Check();
+	void Up_Fine();
 	void Re_Draw_PlayerA();
 	void Re_Draw_PlayerB();
 	void Re_DirectTwelve();
