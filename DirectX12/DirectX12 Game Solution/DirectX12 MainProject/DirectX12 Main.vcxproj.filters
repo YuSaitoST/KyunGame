@@ -10,6 +10,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{d7d56ad3-60f4-40ad-b499-8133f5f75990}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes">
+      <UniqueIdentifier>{5101e016-88a8-492a-81ea-5e6561a51a8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\d3dx12.h">
@@ -42,6 +45,12 @@
     <ClInclude Include="DontDestroyOnLoad.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Attack.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Move.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
     <ClInclude Include="TitleScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -58,6 +67,12 @@
     </ClCompile>
     <ClCompile Include="MainScene.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Attack.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Move.cpp">
+      <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="TitleScene.cpp">
       <Filter>Scene</Filter>

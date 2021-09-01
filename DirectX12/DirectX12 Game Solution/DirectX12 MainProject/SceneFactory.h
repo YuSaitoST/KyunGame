@@ -12,7 +12,6 @@ public:
 		std::unique_ptr<Scene> scene;
 		switch (nextScene) {
 		case NextScene::TitleScene:	scene = std::make_unique<TitleScene>();	break;
-
 		case NextScene::MainScene:	scene = std::make_unique<MainScene>();	break;
 		}
 		return scene;
