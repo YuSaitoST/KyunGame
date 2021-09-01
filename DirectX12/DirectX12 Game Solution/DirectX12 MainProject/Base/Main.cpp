@@ -67,7 +67,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         const long kWndWidth  = rc.right  - rc.left;
         const long kWndHeight = rc.bottom - rc.top;
 
-        const int  kWndPosX = -10;// (kScreenWidth - kWndWidth) / 2;
+        const int  kWndPosX = -10;// (kScreenWidth  - kWndWidth) / 2;
         const int  kWndPosY = 0;// (kScreenHeight - kWndHeight) / 2;
 
         HWND hwnd = CreateWindowExW(0, L"DirectX12_WindowClass", L"",

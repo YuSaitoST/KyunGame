@@ -1,6 +1,6 @@
 *.sln
-Hert for we/.vs/
 *.config
+Hert for we/.vs/
 Hert for we/DirectX12 MainProject/TemplateScene.cpp
 Hert for we/DirectX12 MainProject/TemplateScene.h
 Hert for we/DirectX12 MainProject/TemplateSceneDX9.cpp
@@ -21,3 +21,27 @@ Hert for we/DirectXTK12/
 Hert for we/DirectXTK9/
 Hert for we/packages/
 Hert for we/x64/
+DirectX12/DirectX12 Game Solution/.vs/
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/TemplateScene.cpp
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/TemplateScene.h
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/TemplateSceneDX9.cpp
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/TemplateSceneDX9.h
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Base/d3dx12.h
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Base/DirectMLX.h
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Base/dxtk.h
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Base/DXTKHelpers.h
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Base/GameBase.cpp
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Base/pch.cpp
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Base/pch.h
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Base/StepTimer.h
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/cppcoro/
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/Resource/
+DirectX12/DirectX12 Game Solution/DirectX12 MainProject/x64/
+DirectX12/DirectX12 Game Solution/DirectX12AffinityLayer/
+DirectX12/DirectX12 Game Solution/DirectXTK12/
+DirectX12/DirectX12 Game Solution/DirectXTK9/
+DirectX12/DirectX12 Game Solution/packages/
+DirectX12/DirectX12 Game Solution/x64/
+DirectX12/Link/
+DirectX12/Tools/
+DirectX12/資料/
