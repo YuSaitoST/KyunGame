@@ -41,8 +41,19 @@ private:
 
     // •Ï”‚ÌéŒ¾
 
+    int page_state;
+
     DX9::SPRITE title;
     SimpleMath::Vector3 pos_title;
+
+    DX9::SPRITE comment;
+    SimpleMath::Vector3 pos_com;
+
+    enum Page {
+        TITLE,
+        COMMENT,
+        CHANGE
+    };
 
     void LA_Load();
     NextScene Up_Scene_Change(const float deltaTime);

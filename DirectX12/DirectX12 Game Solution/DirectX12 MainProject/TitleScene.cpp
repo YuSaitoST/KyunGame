@@ -15,7 +15,7 @@ TitleScene::TitleScene() : dx9GpuDescriptor{}
 // Initialize a variable and audio resources.
 void TitleScene::Initialize()
 {
-
+    page_state = TITLE;
 }
 
 // Allocate all memory the Direct3D and Direct2D resources.
@@ -103,26 +103,42 @@ void TitleScene::Render()
 }
 
 void TitleScene::LA_Load() {
-    title = DX9::Sprite::CreateFromFile(DXTK->Device9, L"title.png");
+    title   = DX9::Sprite::CreateFromFile(DXTK->Device9, L"title.png"  );
+    comment = DX9::Sprite::CreateFromFile(DXTK->Device9, L"comment.png");
 }
 
 
 NextScene TitleScene::Up_Scene_Change(const float deltaTime) {
     if (DXTK->KeyEvent->pressed.Enter ||
-        DXTK->GamePadEvent[0].start == GamePad::ButtonStateTracker::PRESSED)
-        return NextScene::MainScene;
+        DXTK->GamePadEvent[0].start == GamePad::ButtonStateTracker::PRESSED) {
+        page_state++;
+        if (page_state == CHANGE)
+            return NextScene::MainScene;
+    }
 
     return NextScene::Continue;
 }
 
 
 void TitleScene::Re_Draw_Title() {
-    DX9::SpriteBatch->DrawSimple(
-        title.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
-    );
-    DX9::SpriteBatch->DrawSimple(
-        title.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
-    );
+    if (page_state == TITLE) {
+        DX9::SpriteBatch->DrawSimple(
+            title.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
+        );
+        DX9::SpriteBatch->DrawSimple(
+            title.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
+        );
+    }
+
+    if (page_state == COMMENT) {
+        DX9::SpriteBatch->DrawSimple(
+            comment.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
+        );
+        DX9::SpriteBatch->DrawSimple(
+            comment.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
+        );
+    }
+
 }
 
 
