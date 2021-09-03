@@ -6,6 +6,8 @@
 #include "Base/dxtk.h"
 #include "SceneFactory.h"
 
+MainScene::Phase MainScene::phase;
+
 // Initialize member variables.
 MainScene::MainScene()
 {
@@ -15,7 +17,6 @@ MainScene::MainScene()
 // Initialize a variable and audio resources.
 void MainScene::Initialize()
 {
-	// コントローラーの識別を入れる
 	font						= DX9::SpriteFont::CreateFromFontName(DXTK->Device9, L"FixedSys 標準", 20);
 	pos_pointer		= pos_pointer_df;
 	pos_cursor			= SimpleMath::Vector2(100.0f, 100.0f);
@@ -24,29 +25,37 @@ void MainScene::Initialize()
 	pos_heartR[1]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
 	pos_heartB[0]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
 	pos_heartB[1]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
-	phase					= Phase::PUT_HEART;
+	std::fill(std::begin(pos_move),			std::end(pos_move),			SimpleMath::Vector2(pos_outArea, pos_outArea));
+	std::fill(std::begin(pos_cross_hR),		std::end(pos_cross_hR),	SimpleMath::Vector2(pos_outArea, pos_outArea));
+	std::fill(std::begin(pos_cross_hB),		std::end(pos_cross_hB),		SimpleMath::Vector2(pos_outArea, pos_outArea));
+	std::fill(std::begin(pos_cross_pt),		std::end(pos_cross_pt),		SimpleMath::Vector2(pos_outArea, pos_outArea));
+
+	anim.Initialize();
 
 	std::random_device seed;
 	random_engine = std::mt19937(seed());
 	random_dist		= std::uniform_int_distribution<>(0, 1);
 
+	phase					= Phase::PUT_HEART;
+
 	num_player		= 0;// random_dist(random_engine);
 	num_ready			= 0;
+	num_ready_all	= 0;
+	num_turn			= 0;
 	num_color[0]		= 255;
 	num_color[1]		= 120;
 	seem_pointer		= false;
 
 
+
+
 	// デバック用
 	fin_game			= false;
 	win_player			= 0;
-
+	hit_heart = 'none';
 
 	//turn_player[0] = num_player % 2 == 0 ? L"じぶんのターン" : L"あいてのターン";
 	//turn_player[1] = num_player % 2 == 1 ? L"あいてのターン" : L"じぶんのターン";
-
-
-	num_turn = 0;
 }
 
 // Allocate all memory the Direct3D and Direct2D resources.
@@ -107,20 +116,14 @@ NextScene MainScene::Update(const float deltaTime)
 	switch (phase) {
 		case Phase::PUT_HEART:	seem_pointer = true;	Up_Put();			break;
 			// ここで先攻後攻決めるべきかな
+		case Phase::START: phase = Phase::SELECT; break;
 		case Phase::SELECT:													Up_Select();	break;
 		case Phase::ATTACK:			seem_pointer = true;	Up_Attack();	break;
-		case Phase::MOVE:			break;
-		case Phase::CHECK:													Up_Check();	break;
+		case Phase::MOVE:			seem_pointer = true;	Up_Move();		break;
 		case Phase::FINE:														Up_Fine();		break;
 	}
 
-	// パッドの使い方
-	//const float squareX = DXTK->GamePadState[gamePad_index].thumbSticks.leftX;
-	//const float squareY = DXTK->GamePadState[gamePad_index].thumbSticks.leftY;
-
-
-
-	//Up_Move_Pointer();
+	anim.Update(deltaTime);
 
 	return NextScene::Continue;
 }
@@ -136,6 +139,7 @@ void MainScene::Render()
 
 	DX9::SpriteBatch->Begin();  // スプライトの描画を開始
 
+	anim.Render();
 	Re_Draw_PlayerA();
 	Re_Draw_PlayerB();
 
@@ -150,17 +154,23 @@ void MainScene::LA_Load() {
 	map					= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map.png");
 	pointer			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"pointer.png");
 	area_attack		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"attack_area.png");
+	area_move		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"move_area.png");
 	heart_red		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"love.png");
 	heart_blue		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"trap.png");
 	boy					= DX9::Sprite::CreateFromFile(DXTK->Device9, L"boy.png");
 	girl					= DX9::Sprite::CreateFromFile(DXTK->Device9, L"girl.png");
 	com_cursor	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"カーソル.png");
+
+	anim.LoadAssets();
 }
 
 void MainScene::Up_Put() {
 	Up_Move_Pointer();
 	NEXT_PUT:
-	if (DXTK->KeyEvent->pressed.Enter) {
+
+	const bool input_a = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
+
+	if (input_a) {
 		if (num_ready == 0) {
 			pos_heartR[num_player] = pos_pointer;
 			num_ready = 1;
@@ -171,22 +181,27 @@ void MainScene::Up_Put() {
 			pos_heartB[num_player] = pos_pointer;
 			num_ready = 0;
 			seem_pointer = false;
-			phase = Phase::SELECT;
+			num_ready_all += 1;
 		}
 	}
+	if (num_ready_all == 2) phase = Phase::SELECT;
 }
 
 void MainScene::Up_Select() {
-	if (DXTK->KeyEvent->pressed.Up) {
+	const bool cross_up			= DXTK->GamePadEvent[num_player].dpadUp		== GamePad::ButtonStateTracker::PRESSED;
+	const bool cross_down		= DXTK->GamePadEvent[num_player].dpadDown	== GamePad::ButtonStateTracker::PRESSED;
+	const bool input_a				= DXTK->GamePadEvent[num_player].a					== GamePad::ButtonStateTracker::PRESSED;
+
+	if (cross_up) {
 		pos_cursor.y -= 100.0f;
 		if (pos_cursor.y < 100.0f) pos_cursor.y = 200.0f;
 	}
-	if (DXTK->KeyEvent->pressed.Down) {
+	if (cross_down) {
 		pos_cursor.y += 100.0f;
 		if (pos_cursor.y > 200.0f) pos_cursor.y = 100.0f;
 	}
 
-	if (DXTK->KeyEvent->pressed.Enter) {
+	if (input_a) {
 		seem_pointer = false;
 		if (pos_cursor.y == 100.0f) phase = Phase::ATTACK;
 		if (pos_cursor.y == 200.0f) phase = Phase::MOVE;
@@ -195,40 +210,99 @@ void MainScene::Up_Select() {
 
 void MainScene::Up_Attack() {
 	Up_Move_Pointer();
-	if (DXTK->KeyEvent->pressed.Enter) {
+	const bool input_a = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
+	if (input_a) {
 		pos_attack			= pos_pointer;
 		seem_pointer		= false;
-		phase = Phase::CHECK;
+		Up_At_Check();
 	}
 }
 
+// 未確認
+void MainScene::Up_At_Check() {
+	int partner = num_player == 0 ? 1 : 0;
+
+	pos_cross_hR[0] = SimpleMath::Vector2(pos_heartR[partner].x, pos_heartR[partner].y - move_pointer);
+	pos_cross_hR[1] = SimpleMath::Vector2(pos_heartR[partner].x + move_pointer, pos_heartR[partner].y);
+	pos_cross_hR[2] = SimpleMath::Vector2(pos_heartR[partner].x, pos_heartR[partner].y + move_pointer);
+	pos_cross_hR[3] = SimpleMath::Vector2(pos_heartR[partner].x - move_pointer, pos_heartR[partner].y);
+
+	pos_cross_hB[0] = SimpleMath::Vector2(pos_heartB[partner].x, pos_heartB[partner].y - move_pointer);
+	pos_cross_hB[1] = SimpleMath::Vector2(pos_heartB[partner].x + move_pointer, pos_heartB[partner].y);
+	pos_cross_hB[2] = SimpleMath::Vector2(pos_heartB[partner].x, pos_heartB[partner].y + move_pointer);
+	pos_cross_hB[3] = SimpleMath::Vector2(pos_heartB[partner].x - move_pointer, pos_heartB[partner].y);
+
+	pos_cross_pt[0] = SimpleMath::Vector2(pos_attack.x, pos_attack.y - move_pointer);
+	pos_cross_pt[1] = SimpleMath::Vector2(pos_attack.x + move_pointer, pos_attack.y);
+	pos_cross_pt[2] = SimpleMath::Vector2(pos_attack.x, pos_attack.y + move_pointer);
+	pos_cross_pt[3] = SimpleMath::Vector2(pos_attack.x - move_pointer, pos_attack.y);
+
+	// エリア外をハートの座標と重ねるループ
+	for (int i = 0; i < 4; i++) {
+		pos_cross_hR[i]= SimpleMath::Vector2(
+			std::clamp(pos_pointer.x, 510.0f, 510.0f + 718.0f),
+			std::clamp(pos_pointer.y, 45.0f, 945.0f - 179.5f)
+		);
+		pos_cross_hB[i] = SimpleMath::Vector2(
+			std::clamp(pos_pointer.x, 510.0f, 510.0f + 718.0f),
+			std::clamp(pos_pointer.y, 45.0f, 945.0f - 179.5f)
+		);
+		pos_cross_pt[i] = SimpleMath::Vector2(
+			std::clamp(pos_pointer.x, 510.0f, 510.0f + 718.0f),
+			std::clamp(pos_pointer.y, 45.0f, 945.0f - 179.5f)
+		);
+	}
+
+	for (int j = 0; j < 4; j++) {
+		for (int r = 0; r < 4; r++) if (pos_cross_pt[j] == pos_cross_hR[r]) { hit_heart = 'red'; }  // 赤ハートの近く
+		for (int b = 0; b < 4; b++) if (pos_cross_pt[j] == pos_cross_hB[b]) { hit_heart = 'blue'; }  // 青ハートの近く
+	}
+
+	const bool win = pos_heartR[num_player] == pos_pointer;
+	const bool down = pos_heartB[num_player] == pos_pointer;
+
+	if (win) {
+
+	}
+
+	if (down) {
+
+	}
+
+	phase = Phase::FINE;
+}
+
+// 未実装
 void MainScene::Up_Move() {
+	//Up_Move_Pointer();
+	Up_Mo_Check();
+}
+
+void MainScene::Up_Mo_Check() {
 
 }
 
 void MainScene::Up_Move_Pointer() {
-	if (DXTK->KeyEvent->pressed.Up)			pos_pointer.y -= move_pointer;
-	if (DXTK->KeyEvent->pressed.Down)		pos_pointer.y += move_pointer;
-	if (DXTK->KeyEvent->pressed.Left)		pos_pointer.x -= move_pointer;
-	if (DXTK->KeyEvent->pressed.Right)		pos_pointer.x += move_pointer;
+	const bool cross_up			= DXTK->GamePadEvent[num_player].dpadUp		== GamePad::ButtonStateTracker::PRESSED;
+	const bool cross_down		= DXTK->GamePadEvent[num_player].dpadDown	== GamePad::ButtonStateTracker::PRESSED;
+	const bool cross_left			= DXTK->GamePadEvent[num_player].dpadLeft		== GamePad::ButtonStateTracker::PRESSED;
+	const bool cross_right		= DXTK->GamePadEvent[num_player].dpadRight	== GamePad::ButtonStateTracker::PRESSED;
+
+	if (cross_up)		pos_pointer.y	-= move_pointer;
+	if (cross_down)	pos_pointer.y += move_pointer;
+	if (cross_left)		pos_pointer.x -= move_pointer;
+	if (cross_right)	pos_pointer.x += move_pointer;
+
 	pos_pointer = SimpleMath::Vector2(
 		std::clamp(pos_pointer.x, 510.0f, 510.0f + 718.0f),
 		std::clamp(pos_pointer.y, 45.0f, 945.0f - 179.5f)
 	);
 }
 
-void MainScene::Up_Check() {
-	if (pos_heartR[num_player] == pos_pointer) {
-		fin_game = true;
-		phase = Phase::FINE;
-	}
-	else phase = Phase::FINE;
-}
-
 void MainScene::Up_Fine() {
 	num_turn += 1;
 	num_player = num_player == 0 ? 1 : 0;  // ターン切り替え
-	phase = Phase::SELECT;
+	phase = Phase::START;
 }
 
 // 基本こちらで実装テストを行う。
@@ -266,6 +340,14 @@ void MainScene::Re_Draw_PlayerA() {
 		turn_player[0].c_str()  // c言語のstringに変換して渡す
 	);
 
+
+	DX9::SpriteBatch->DrawString(
+		font.Get(),
+		SimpleMath::Vector2(200.0f, 800.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255),
+		hit_heart.c_str()
+	);
+
 	if (num_player != 0) return;
 
 	if (phase == Phase::SELECT) {
@@ -291,6 +373,9 @@ void MainScene::Re_Draw_PlayerA() {
 			SimpleMath::Vector3(pos_attack.x, pos_attack.y, POSI_Z::POINTER)
 		);
 	}
+	if (phase == Phase::MOVE) {
+
+	}
 	if (seem_pointer) {
 		DX9::SpriteBatch->DrawSimple(
 			pointer.Get(),
@@ -298,15 +383,6 @@ void MainScene::Re_Draw_PlayerA() {
 		);
 	}
 
-	// 表示されない
-	if (fin_game) {
-		DX9::SpriteBatch->DrawString(
-			font.Get(),
-			SimpleMath::Vector2(200.0f, 100.0f),
-			DX9::Colors::RGBA(255, 255, 255, 255),
-			L"勝者 : プレイヤー %i" + win_player
-		);
-	}
 
 	// デバック用
 	DX9::SpriteBatch->DrawString(
@@ -351,6 +427,13 @@ void MainScene::Re_Draw_PlayerB() {
 		turn_player[1].c_str()  // c言語のstringに変換して渡す
 	);
 
+	DX9::SpriteBatch->DrawString(
+		font.Get(),
+		SimpleMath::Vector2(200.0f, 800.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255),
+		hit_heart.c_str()
+	);
+
 	if (num_player != 1) return;
 
 	if (phase == Phase::SELECT) {
@@ -375,6 +458,9 @@ void MainScene::Re_Draw_PlayerB() {
 			area_attack.Get(),
 			SimpleMath::Vector3(pos_Bx + pos_attack.x, pos_attack.y, POSI_Z::POINTER)
 		);
+	}
+	if (phase == Phase::MOVE) {
+
 	}
 	if (seem_pointer) {
 		DX9::SpriteBatch->DrawSimple(
