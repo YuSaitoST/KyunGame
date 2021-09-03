@@ -1,5 +1,6 @@
 #include "Classes/Animation.h"
 #include <iostream>
+#include<Classes/Animation.h>
 #include <MainScene.h>
 
 void Animation::Initialize() {
@@ -34,26 +35,26 @@ void Animation::Render() {
 cppcoro::generator<int>Animation::Change() {
 	co_yield 0;
 
-	if (MainScene::phase != MainScene::Phase::START) co_return;
+	if (MainScene::phase == MainScene::Phase::START) {
+		while (alpha_white < 120)
+		{
+			alpha_white = alpha_white + num_speed * time_delta;
+			co_yield 1;
+		}
+		alpha_white = 120;
 
-	while (alpha_white < 120)
-	{
-		alpha_white = alpha_white + num_speed * time_delta;
-		co_yield 1;
-	}
-	alpha_white = 120;
+		while (time_stop < 0.0f) {
+			time_stop = time_stop + num_speed * time_delta;
+			co_yield 2;
+		}
 
-	while (time_stop < 0.0f) {
-		time_stop = time_stop  +  num_speed * time_delta;
-		co_yield 2;
+		while (alpha_white > 120)
+		{
+			alpha_white = alpha_white + num_speed * time_delta;
+			co_yield 3;
+		}
+		alpha_white = 0;
 	}
-
-	while (alpha_white > 120)
-	{
-		alpha_white = alpha_white + num_speed * time_delta;
-		co_yield 3;
-	}
-	alpha_white = 0;
 
 	co_return;
 }
