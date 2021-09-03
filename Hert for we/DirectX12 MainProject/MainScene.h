@@ -49,20 +49,20 @@ private:
 	DX9::SPRITE area_attack;
 	DX9::SPRITE area_move;
 	DX9::SPRITE heart_red;
-	DX9::SPRITE heart_blue;
+//	DX9::SPRITE heart_blue;
 	DX9::SPRITE boy;
 	DX9::SPRITE girl;
 	DX9::SPRITE com_cursor;
 
-	SimpleMath::Vector2 pos_pointer;
+	SimpleMath::Vector2 pos_pointer[2];
 	SimpleMath::Vector2 pos_cursor;
 	SimpleMath::Vector2 pos_attack;
 	SimpleMath::Vector2 pos_move[4];
 	SimpleMath::Vector2 pos_cross_hR[4];  // ハート赤の十字座標
-	SimpleMath::Vector2 pos_cross_hB[4];  // ハート青の十字座標
+//	SimpleMath::Vector2 pos_cross_hB[4];  // ハート青の十字座標
 	SimpleMath::Vector2 pos_cross_pt[4];  // ポインターの十字座標
 	SimpleMath::Vector2 pos_heartR[2];
-	SimpleMath::Vector2 pos_heartB[2];
+//	SimpleMath::Vector2 pos_heartB[2];
 
 	std::mt19937 random_engine;
 	std::uniform_int_distribution<> random_dist;
@@ -84,10 +84,6 @@ private:
 		BACK_GROUND
 	};
 
-//
-
-//
-
 	const SimpleMath::Vector2  pos_pointer_df	= SimpleMath::Vector2(360.0f + 520.0f, 415.0f);
 	const float								pos_Bx				= 1920;
 	const float								pos_outArea		= -200;
@@ -98,18 +94,20 @@ private:
 	int num_ready;  // 開始時のハート設置のカウント
 	int num_ready_all;  // 互いの準備完了状態
 	int num_color[2];  // 画像の色
+	int num_ready_R[2];  // 最終的に準備時の変数はこっちになる
 
 	bool seem_pointer;
 	bool fin_game;  // デバック用
 	int win_player;  // デバック用
 
 	void LA_Load();
-	void Up_Put();  // 後に赤と青どちらかを渡して動かしたい
+	void Up_Put(int index);  // 後に赤と青どちらかを渡して動かしたい
+	void Up_Start();
 	void Up_Select();
 	void Up_Attack();
 	void Up_At_Check();
 	void Up_Move();  // 未実装
-	void Up_Move_Pointer();
+	void Up_Move_Pointer(int index);
 	void Up_Mo_Check();
 	void Up_Fine();
 	void Re_Draw_PlayerA();

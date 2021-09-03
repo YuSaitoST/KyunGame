@@ -1,6 +1,5 @@
 #include "Classes/Animation.h"
 #include <iostream>
-#include<Classes/Animation.h>
 #include <MainScene.h>
 
 void Animation::Initialize() {
