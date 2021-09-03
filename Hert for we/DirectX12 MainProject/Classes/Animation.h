@@ -13,7 +13,7 @@ class Animation {
 public:
 	void Initialize();
 	void LoadAssets();
-	void Update(const float deltaTime);
+	bool Up_Change(const float deltaTime);
 	void Render();
 	
 	DX9::SPRITE white;
@@ -30,4 +30,5 @@ public:
 	cppcoro::detail::generator_iterator<int> co_change_it;
 
 private:
+	int count_change;  // コルーチンの呼び出し回数を制限するための変数
 };

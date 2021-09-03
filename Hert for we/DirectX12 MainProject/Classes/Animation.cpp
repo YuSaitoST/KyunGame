@@ -4,23 +4,26 @@
 
 void Animation::Initialize() {
 
-	alpha_white = 0;
-	time_delta = 0.0f;
-	time_stop = 2.0f;
-
-	co_change = Change();             //コルーチンの生成
-	co_change_it = co_change.begin(); //コルーチンの実行開始
+	alpha_white		= 0;
+	time_delta			= 0.0f;
+	time_stop			= 2.0f;
+	count_change	= 0;
 }
 
 void Animation::LoadAssets() {
-	white = DX9::Sprite::CreateFromFile(DXTK->Device9, L"white.png");
+	white = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png");
 }
 
-void Animation::Update(const float deltaTime) {
-	time_delta = deltaTime;
-	if (co_change_it != co_change.end()) {
-		co_change_it++;
+bool Animation::Up_Change(const float deltaTime) {
+	if (count_change == 0) {
+		count_change += 1;
+		co_change			= Change();             //コルーチンの生成
+		co_change_it		= co_change.begin(); //コルーチンの実行開始
 	}
+	time_delta = deltaTime;
+	if (co_change_it == co_change.end()) return true;
+	if (co_change_it != co_change.end()) co_change_it++;
+	return false;
 }
 
 void Animation::Render() {
@@ -34,26 +37,24 @@ void Animation::Render() {
 cppcoro::generator<int>Animation::Change() {
 	co_yield 0;
 
-	if (MainScene::phase == MainScene::Phase::START) {
-		while (alpha_white < 120)
-		{
-			alpha_white = alpha_white + num_speed * time_delta;
-			co_yield 1;
-		}
-		alpha_white = 120;
-
-		while (time_stop < 0.0f) {
-			time_stop = time_stop + num_speed * time_delta;
-			co_yield 2;
-		}
-
-		while (alpha_white > 120)
-		{
-			alpha_white = alpha_white + num_speed * time_delta;
-			co_yield 3;
-		}
-		alpha_white = 0;
+	while (alpha_white < 120)
+	{
+		alpha_white = alpha_white + num_speed * time_delta;
+		co_yield 1;
 	}
+	alpha_white = 120;
+
+	while (time_stop < 0.0f) {
+		time_stop = time_stop + num_speed * time_delta;
+		co_yield 2;
+	}
+
+	while (alpha_white > 120)
+	{
+		alpha_white = alpha_white + num_speed * time_delta;
+		co_yield 3;
+	}
+	alpha_white = 0;
 
 	co_return;
 }

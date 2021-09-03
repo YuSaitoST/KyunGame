@@ -49,7 +49,6 @@ private:
 	DX9::SPRITE area_attack;
 	DX9::SPRITE area_move;
 	DX9::SPRITE heart_red;
-//	DX9::SPRITE heart_blue;
 	DX9::SPRITE boy;
 	DX9::SPRITE girl;
 	DX9::SPRITE com_cursor;
@@ -59,16 +58,13 @@ private:
 	SimpleMath::Vector2 pos_attack;
 	SimpleMath::Vector2 pos_move[4];
 	SimpleMath::Vector2 pos_cross_hR[4];  // ハート赤の十字座標
-//	SimpleMath::Vector2 pos_cross_hB[4];  // ハート青の十字座標
 	SimpleMath::Vector2 pos_cross_pt[4];  // ポインターの十字座標
 	SimpleMath::Vector2 pos_heartR[2];
-//	SimpleMath::Vector2 pos_heartB[2];
 
 	std::mt19937 random_engine;
 	std::uniform_int_distribution<> random_dist;
 
 	std::basic_string<wchar_t> turn_player[2];
-	std::basic_string<wchar_t> hit_heart;  // デバック用
 
 	Animation anim;
 
@@ -102,7 +98,7 @@ private:
 
 	void LA_Load();
 	void Up_Put(int index);  // 後に赤と青どちらかを渡して動かしたい
-	void Up_Start();
+	void Up_Start(float deltaTime);
 	void Up_Select();
 	void Up_Attack();
 	void Up_At_Check();
@@ -110,6 +106,7 @@ private:
 	void Up_Move_Pointer(int index);
 	void Up_Mo_Check();
 	void Up_Fine();
+	void Re_Draw_Standard(float pos_x, int index);
 	void Re_Draw_PlayerA();
 	void Re_Draw_PlayerB();
 	void Re_DirectTwelve();
