@@ -80,17 +80,19 @@ private:
 		BACK_GROUND
 	};
 
-	const SimpleMath::Vector2  pos_pointer_df	= SimpleMath::Vector2(360.0f + 520.0f, 415.0f);
-	const float								pos_Bx				= 1920;
-	const float								pos_outArea		= -200;
-	const float								move_pointer	= 179.5f;
+	const SimpleMath::Vector2	POS_FIELD				= SimpleMath::Vector2(505.0f,	40.0f);
+	const SimpleMath::Vector2	POS_CENTER			= SimpleMath::Vector2(878.0f,	413.0f);
+	const SimpleMath::Vector2	POS_END_UL			= SimpleMath::Vector2(520.0f,	55.0f);
+	const SimpleMath::Vector2	POS_END_DR		= SimpleMath::Vector2(1236.0f,	771.0f);
+	const float								POS_X2					= 1920.0f;
+	const float								POS_OUTAREA		= -200.0f;
+	const float								MOVE_POINTER	= 179.0f;
 
 	int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
 	int num_turn;  // ターン数
-	int num_ready;  // 開始時のハート設置のカウント
-	int num_ready_all;  // 互いの準備完了状態
+	int num_ready;  // 互いの準備完了状態
+	int num_ready_all[2];  // 両者が準備完了かどうか
 	int num_color[2];  // 画像の色
-	int num_ready_R[2];  // 最終的に準備時の変数はこっちになる
 
 	bool seem_pointer;
 	bool fin_game;  // デバック用

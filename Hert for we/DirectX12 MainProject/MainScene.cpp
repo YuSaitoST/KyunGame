@@ -17,34 +17,33 @@ MainScene::MainScene()
 // Initialize a variable and audio resources.
 void MainScene::Initialize()
 {
-	font						= DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/azuki.ttf", L"あずきフォント", 20);
-	pos_pointer[0]	= pos_pointer_df;
-	pos_pointer[1]	= pos_pointer_df + SimpleMath::Vector2(pos_Bx, 0.0f);
-	pos_cursor			= SimpleMath::Vector2(100.0f, 100.0f);
-	pos_attack			= SimpleMath::Vector2(pos_outArea, pos_outArea);
-	pos_heartR[0]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
-	pos_heartR[1]	= SimpleMath::Vector2(pos_outArea, pos_outArea);
-	std::fill(std::begin(pos_move),			std::end(pos_move),			SimpleMath::Vector2(pos_outArea, pos_outArea));
-	std::fill(std::begin(pos_cross_hR),		std::end(pos_cross_hR),	SimpleMath::Vector2(pos_outArea, pos_outArea));
-	std::fill(std::begin(pos_cross_pt),		std::end(pos_cross_pt),		SimpleMath::Vector2(pos_outArea, pos_outArea));
+	font							= DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/azuki.ttf", L"あずきフォント", 20);
+	pos_pointer[0]		= POS_CENTER;
+	pos_pointer[1]		= POS_CENTER + SimpleMath::Vector2(POS_X2, 0.0f);
+	pos_cursor				= SimpleMath::Vector2(100.0f, 100.0f);
+	pos_attack				= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
+	pos_heartR[0]		= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
+	pos_heartR[1]		= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
+	std::fill(std::begin(pos_move),			std::end(pos_move),			SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
+	std::fill(std::begin(pos_cross_hR),		std::end(pos_cross_hR),	SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
+	std::fill(std::begin(pos_cross_pt),		std::end(pos_cross_pt),		SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 
 	anim.Initialize();
 
 	std::random_device seed;
-	random_engine = std::mt19937(seed());
-	random_dist		= std::uniform_int_distribution<>(0, 1);
+	random_engine		= std::mt19937(seed());
+	random_dist			= std::uniform_int_distribution<>(0, 1);
 
-	phase					= Phase::PUT_HEART;
+	phase						= Phase::PUT_HEART;
 
-	num_player		= 0;// random_dist(random_engine);
-	num_ready			= 0;
-	num_ready_all	= 0;
-	num_ready_R[0] = 0;
-	num_ready_R[1] = 0;
-	num_turn			= 0;
-	num_color[0]		= 120;
-	num_color[1]		= 255;
-	seem_pointer		= false;
+	num_player			= 0;// random_dist(random_engine);
+	num_ready				= 0;
+	num_ready_all[0]	= 0;
+	num_ready_all[1]	= 0;
+	num_turn				= 0;
+	num_color[0]			= 120;
+	num_color[1]			= 255;
+	seem_pointer			= false;
 
 
 
@@ -162,12 +161,12 @@ void MainScene::Up_Put(int index) {
 	const bool input_a_ = DXTK->GamePadEvent[index].a == GamePad::ButtonStateTracker::PRESSED;
 
 	if (input_a_) {
-		if(num_ready_R[index] == 0)
+		if(num_ready_all[index] == 0)
 			pos_heartR[index]			= pos_pointer[index];
-			num_ready_R[index]		= 1;
-			num_ready_all				+= 1;
+			num_ready_all[index]		= 1;
+			num_ready				+= 1;
 	}
-	if (num_ready_all != 2) return;
+	if (num_ready != 2) return;
 	phase = Phase::SELECT;
 }
 
@@ -210,33 +209,34 @@ void MainScene::Up_Attack() {
 }
 
 void MainScene::Up_At_Check() {
-	int partner_ = num_player == 0 ? 1 : 0;
+	int partner_ = num_player == 0 ? 1 : 0;  // 相手プレイヤーを指定
 
-	pos_cross_hR[0] = SimpleMath::Vector2(pos_heartR[partner_].x, pos_heartR[partner_].y - move_pointer);
-	pos_cross_hR[1] = SimpleMath::Vector2(pos_heartR[partner_].x + move_pointer, pos_heartR[partner_].y);
-	pos_cross_hR[2] = SimpleMath::Vector2(pos_heartR[partner_].x, pos_heartR[partner_].y + move_pointer);
-	pos_cross_hR[3] = SimpleMath::Vector2(pos_heartR[partner_].x - move_pointer, pos_heartR[partner_].y);
+	pos_cross_hR[0] = SimpleMath::Vector2(pos_heartR[partner_].x,								pos_heartR[partner_].y - MOVE_POINTER	);
+	pos_cross_hR[1] = SimpleMath::Vector2(pos_heartR[partner_].x + MOVE_POINTER,	pos_heartR[partner_].y								);
+	pos_cross_hR[2] = SimpleMath::Vector2(pos_heartR[partner_].x,								pos_heartR[partner_].y + MOVE_POINTER);
+	pos_cross_hR[3] = SimpleMath::Vector2(pos_heartR[partner_].x - MOVE_POINTER,	pos_heartR[partner_].y								);
 
-	pos_cross_pt[0] = SimpleMath::Vector2(pos_attack.x, pos_attack.y - move_pointer);
-	pos_cross_pt[1] = SimpleMath::Vector2(pos_attack.x + move_pointer, pos_attack.y);
-	pos_cross_pt[2] = SimpleMath::Vector2(pos_attack.x, pos_attack.y + move_pointer);
-	pos_cross_pt[3] = SimpleMath::Vector2(pos_attack.x - move_pointer, pos_attack.y);
+	pos_cross_pt[0] = SimpleMath::Vector2(pos_attack.x,								pos_attack.y - MOVE_POINTER	);
+	pos_cross_pt[1] = SimpleMath::Vector2(pos_attack.x + MOVE_POINTER, pos_attack.y								);
+	pos_cross_pt[2] = SimpleMath::Vector2(pos_attack.x,								pos_attack.y + MOVE_POINTER	);
+	pos_cross_pt[3] = SimpleMath::Vector2(pos_attack.x - MOVE_POINTER,	pos_attack.y								);
 
-	// エリア外をハートの座標と重ねるループ
+	// エリア外を自身の座標と重ねるループ
 	for (int i = 0; i < 4; i++) {
 		pos_cross_hR[i]= SimpleMath::Vector2(
-			std::clamp(pos_pointer[num_player].x, 510.0f, 510.0f + 718.0f),
-			std::clamp(pos_pointer[num_player].y, 45.0f, 945.0f - 179.5f)
+			std::clamp(pos_pointer[num_player].x, POS_END_UL.x, POS_END_DR.x),
+			std::clamp(pos_pointer[num_player].y, POS_END_UL.y, POS_END_DR.y)
 		);
 		pos_cross_pt[i] = SimpleMath::Vector2(
-			std::clamp(pos_pointer[num_player].x, 510.0f, 510.0f + 718.0f),
-			std::clamp(pos_pointer[num_player].y, 45.0f, 945.0f - 179.5f)
+			std::clamp(pos_pointer[num_player].x, POS_END_UL.x, POS_END_DR.x),
+			std::clamp(pos_pointer[num_player].y, POS_END_UL.y, POS_END_DR.y)
 		);
 	}
 
 	// ポインターとハート、それぞれの十字が重なっているか
 	for (int j = 0; j < 4; j++) {
-		for (int r = 0; r < 4; r++) if (pos_cross_pt[j] == pos_cross_hR[r]) { ; }  // 赤ハートの近く
+		for (int r = 0; r < 4; r++) 
+			if (pos_cross_pt[j] == pos_cross_hR[r]) { ; }  // 赤ハートの近く
 	}
 
 	const bool win_ = pos_heartR[num_player] == pos_pointer[num_player];
@@ -273,14 +273,17 @@ void MainScene::Up_Move_Pointer(int index) {
 	const bool cross_left_			= DXTK->GamePadEvent[num_player].dpadLeft		== GamePad::ButtonStateTracker::PRESSED;
 	const bool cross_right_			= DXTK->GamePadEvent[num_player].dpadRight	== GamePad::ButtonStateTracker::PRESSED;
 
-	if (cross_up_)			pos_pointer[num_player].y	-=	move_pointer;
-	if (cross_down_)	pos_pointer[num_player].y	+=	move_pointer;
-	if (cross_left_)			pos_pointer[num_player].x	-=	move_pointer;
-	if (cross_right_)		pos_pointer[num_player].x	+=	move_pointer;
+	if (cross_up_)			pos_pointer[num_player].y	-=	MOVE_POINTER;
+	if (cross_down_)	pos_pointer[num_player].y	+=	MOVE_POINTER;
+	if (cross_left_)			pos_pointer[num_player].x	-=	MOVE_POINTER;
+	if (cross_right_)		pos_pointer[num_player].x	+=	MOVE_POINTER;
 
+
+	float pos_bx_ = 0;
+	if (index == 1) pos_bx_ = -358.0f;
 	pos_pointer[num_player] = SimpleMath::Vector2(
-		std::clamp(pos_pointer[num_player].x,	510.0f,		510.0f + 718.0f	),
-		std::clamp(pos_pointer[num_player].y,	45.0f,		945.0f - 179.5f	)
+		std::clamp(pos_pointer[num_player].x, POS_END_UL.x + pos_bx_, POS_END_DR.x + pos_bx_),
+		std::clamp(pos_pointer[num_player].y, POS_END_UL.y,	POS_END_DR.y)
 	);
 }
 
@@ -295,11 +298,40 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 		bg.Get(), SimpleMath::Vector3(pos_x + 0.0f, 0.0f, POSI_Z::BACK_GROUND)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		map.Get(), SimpleMath::Vector3(pos_x + 510.0f, 45.0f, POSI_Z::MAP)
+		map.Get(), SimpleMath::Vector3(pos_x + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		heart_red.Get(), SimpleMath::Vector3(pos_x + pos_heartR[index].x, pos_heartR[index].y, POSI_Z::HEART)
 	);
+	if (phase == Phase::SELECT) {
+		DX9::SpriteBatch->DrawSimple(
+			com_cursor.Get(), SimpleMath::Vector3(pos_x + pos_cursor.x, pos_cursor.y, POSI_Z::COMMAND)
+		);
+		DX9::SpriteBatch->DrawString(
+			font.Get(),
+			SimpleMath::Vector2(pos_x + 200.0f, 100.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255),
+			L"ATTACK"
+		);
+		DX9::SpriteBatch->DrawString(
+			font.Get(),
+			SimpleMath::Vector2(pos_x + 200.0f, 200.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255),
+			L"MOVE"
+		);
+	}
+	if (phase == Phase::ATTACK) {
+		DX9::SpriteBatch->DrawSimple(
+			area_attack.Get(),
+			SimpleMath::Vector3(pos_x + pos_attack.x, pos_attack.y, POSI_Z::POINTER)
+		);
+	}
+	if (phase == Phase::ATTACK || phase == Phase::PUT_HEART) {
+		DX9::SpriteBatch->DrawSimple(
+			pointer.Get(),
+			SimpleMath::Vector3(pos_x + pos_pointer[index].x, pos_pointer[index].y, POSI_Z::POINTER)
+		);
+	}
 }
 
 void MainScene::Re_Draw_PlayerA() {
@@ -307,7 +339,7 @@ void MainScene::Re_Draw_PlayerA() {
 
 	DX9::SpriteBatch->DrawSimple(
 		boy.Get(), 
-		SimpleMath::Vector3(pos_Bx - 402.0f, 990.0f - 590.0f, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_X2 - 402.0f, 990.0f - 590.0f, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, 402.0f, 590.0f), 
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
 	);
@@ -325,36 +357,6 @@ void MainScene::Re_Draw_PlayerA() {
 		turn_player[0].c_str()  // c言語のstringに変換して渡す
 	);
 
-	if (phase == Phase::SELECT) {
-		DX9::SpriteBatch->DrawSimple(
-			com_cursor.Get(), SimpleMath::Vector3(pos_cursor.x, pos_cursor.y, POSI_Z::COMMAND)
-		);
-		DX9::SpriteBatch->DrawString(
-			font.Get(),
-			SimpleMath::Vector2(200.0f, 100.0f),
-			DX9::Colors::RGBA(255, 255, 255, 255),
-			L"ATTACK"
-		);
-		DX9::SpriteBatch->DrawString(
-			font.Get(),
-			SimpleMath::Vector2(200.0f, 200.0f),
-			DX9::Colors::RGBA(255, 255, 255, 255),
-			L"MOVE"
-		);
-	}
-	if (phase == Phase::ATTACK) {
-		DX9::SpriteBatch->DrawSimple(
-			area_attack.Get(),
-			SimpleMath::Vector3(pos_attack.x, pos_attack.y, POSI_Z::POINTER)
-		);
-	}
-	if (phase == Phase::ATTACK || phase == Phase::PUT_HEART) {
-		DX9::SpriteBatch->DrawSimple(
-			pointer.Get(),
-			SimpleMath::Vector3(pos_pointer[0].x, pos_pointer[0].y, POSI_Z::POINTER)
-		);
-	}
-
 	
 	// デバック用
 	DX9::SpriteBatch->DrawString(
@@ -366,63 +368,33 @@ void MainScene::Re_Draw_PlayerA() {
 }
 
 void MainScene::Re_Draw_PlayerB() {
-	Re_Draw_Standard(pos_Bx, 1);
+	Re_Draw_Standard(POS_X2, 1);
 
 	DX9::SpriteBatch->DrawSimple(
 		boy.Get(), 
-		SimpleMath::Vector3(pos_Bx, 990.0f - 590.0f, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_X2, 990.0f - 590.0f, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, 402.0f, 590.0f),
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl.Get(), 
-		SimpleMath::Vector3(2 * pos_Bx - 438.0f, 990.0f - 476.0f, POSI_Z::PLAYER),
+		SimpleMath::Vector3(2 * POS_X2 - 438.0f, 990.0f - 476.0f, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, 438.0f, 476.0f),
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], 255)
 	);
 
 	DX9::SpriteBatch->DrawString(
 		font.Get(),
-		SimpleMath::Vector2(pos_Bx + 200.0f, 20.0f),
+		SimpleMath::Vector2(POS_X2 + 200.0f, 20.0f),
 		DX9::Colors::RGBA(255, 255, 255, 255),
 		turn_player[1].c_str()  // c言語のstringに変換して渡す
 	);
-
-	if (phase == Phase::SELECT) {
-		DX9::SpriteBatch->DrawSimple(
-			com_cursor.Get(), SimpleMath::Vector3(pos_Bx + pos_cursor.x, pos_cursor.y, POSI_Z::COMMAND)
-		);
-		DX9::SpriteBatch->DrawString(
-			font.Get(),
-			SimpleMath::Vector2(pos_Bx + 200.0f, 100.0f),
-			DX9::Colors::RGBA(255, 255, 255, 255),
-			L"ATTACK"
-		);
-		DX9::SpriteBatch->DrawString(
-			font.Get(),
-			SimpleMath::Vector2(pos_Bx + 200.0f, 200.0f),
-			DX9::Colors::RGBA(255, 255, 255, 255),
-			L"MOVE"
-		);
-	}
-	if (phase == Phase::ATTACK) {
-		DX9::SpriteBatch->DrawSimple(
-			area_attack.Get(),
-			SimpleMath::Vector3(pos_Bx + pos_attack.x, pos_attack.y, POSI_Z::POINTER)
-		);
-	}
-	if (phase == Phase::PUT_HEART || phase == Phase::ATTACK) {
-		DX9::SpriteBatch->DrawSimple(
-			pointer.Get(),
-			SimpleMath::Vector3(pos_Bx + pos_pointer[1].x - 359.0f, pos_pointer[1].y, POSI_Z::POINTER)
-		);
-	}
 
 
 	// デバック用
 	DX9::SpriteBatch->DrawString(
 		font.Get(),
-		SimpleMath::Vector2(pos_Bx + 200.0f, 500.0f),
+		SimpleMath::Vector2(POS_X2 + 200.0f, 500.0f),
 		DX9::Colors::RGBA(255, 255, 255, 255),
 		L"Phase : %i", (int)phase
 	);
