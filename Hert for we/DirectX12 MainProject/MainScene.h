@@ -49,8 +49,8 @@ private:
 	DX9::SPRITE area_attack;
 	DX9::SPRITE area_move;
 	DX9::SPRITE heart_red;
-	DX9::SPRITE boy;
-	DX9::SPRITE girl;
+	DX9::SPRITE boy[5];
+	DX9::SPRITE girl[5];
 	DX9::SPRITE com_cursor;
 
 	SimpleMath::Vector2 pos_pointer[2];
@@ -59,7 +59,7 @@ private:
 	SimpleMath::Vector2 pos_move[4];
 	SimpleMath::Vector2 pos_cross_hR[4];  // ハート赤の十字座標
 	SimpleMath::Vector2 pos_cross_pt[4];  // ポインターの十字座標
-	SimpleMath::Vector2 pos_heartR[2];
+	SimpleMath::Vector2 pos_heart[2];
 
 	std::mt19937 random_engine;
 	std::uniform_int_distribution<> random_dist;
@@ -67,6 +67,11 @@ private:
 	std::basic_string<wchar_t> turn_player[2];
 
 	Animation anim;
+
+	enum PLAYER {
+		A,
+		B
+	};
 
 	enum POSI_Z {
 		TURN_TEXT,
@@ -79,6 +84,16 @@ private:
 		PLAYER,
 		BACK_GROUND
 	};
+
+	enum EMOTION {
+		GENERALLY,  // 通常
+		PROPOSAL,  // 攻撃
+		NERVOUS,  // 焦り
+		VICTORY,
+		DEFEAT  // 敗北
+	};
+
+	EMOTION emotion[2];  //これを用いてキャラクターの状態を表す
 
 	const SimpleMath::Vector2	POS_FIELD				= SimpleMath::Vector2(505.0f,	40.0f);
 	const SimpleMath::Vector2	POS_CENTER			= SimpleMath::Vector2(878.0f,	413.0f);
@@ -94,7 +109,7 @@ private:
 	int num_ready_all[2];  // 両者が準備完了かどうか
 	int num_color[2];  // 画像の色
 
-	bool seem_pointer;
+	bool flag_debug;  // デバッグ時のみtrueにする
 	bool fin_game;  // デバック用
 	int win_player;  // デバック用
 
