@@ -43,7 +43,7 @@ private:
 
 	DX9::SPRITEFONT font;
 
-	DX9::SPRITE bg;
+	DX9::SPRITE bg[2];
 	DX9::SPRITE map;
 	DX9::SPRITE pointer;
 	DX9::SPRITE area_attack;
@@ -52,12 +52,15 @@ private:
 	DX9::SPRITE boy[5];
 	DX9::SPRITE girl[5];
 	DX9::SPRITE com_cursor;
+	DX9::SPRITE ui_turn_my;
+	DX9::SPRITE ui_turn_partner;
+	DX9::SPRITE ui_move;
 
 	SimpleMath::Vector2 pos_pointer[2];
 	SimpleMath::Vector2 pos_cursor;
 	SimpleMath::Vector2 pos_attack;
 	SimpleMath::Vector2 pos_move[4];
-	SimpleMath::Vector2 pos_cross_hR[4];  // ハート赤の十字座標
+	SimpleMath::Vector2 pos_cross_hR[5];  // ハート赤の十字座標(中心も含める)
 	SimpleMath::Vector2 pos_cross_pt[4];  // ポインターの十字座標
 	SimpleMath::Vector2 pos_heart[2];
 
@@ -120,8 +123,8 @@ private:
 	void Up_Attack();
 	void Up_At_Check();
 	void Up_Move();  // 未実装
-	void Up_Move_Pointer(int index);
 	void Up_Mo_Check();
+	void Up_Move_Pointer(int index);
 	void Up_Fine();
 	void Re_Draw_Standard(float pos_x, int index);
 	void Re_Draw_PlayerA();
