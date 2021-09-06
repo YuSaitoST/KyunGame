@@ -53,6 +53,7 @@ private:
 	DX9::SPRITE boy[5];
 	DX9::SPRITE girl[5];
 	DX9::SPRITE com_cursor;
+	DX9::SPRITE speech;
 
 	SimpleMath::Vector2 pos_pointer;
 	SimpleMath::Vector2 pos_pointer_ready[2];
@@ -106,7 +107,6 @@ private:
 	const float								POS_OUTAREA		= -200.0f;
 	const float								MOVE_POINTER	= 179.0f;
 
-	int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
 	int num_turn;  // ターン数
 	int num_ready;  // 互いの準備完了状態
 	int num_ready_all[2];  // 両者が準備完了かどうか
@@ -141,4 +141,5 @@ public:
 		FINE
 	};
 	static Phase phase;
+	static int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
 };
