@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Scene.h"
-#include "Classes/Animation.h"
+#include "Classes/Smoke.h"
 #include <random>
 
 using Microsoft::WRL::ComPtr;
@@ -52,9 +52,6 @@ private:
 	DX9::SPRITE boy[5];
 	DX9::SPRITE girl[5];
 	DX9::SPRITE com_cursor;
-	DX9::SPRITE ui_turn_my;
-	DX9::SPRITE ui_turn_partner;
-	DX9::SPRITE ui_move;
 
 	SimpleMath::Vector2 pos_pointer[2];
 	SimpleMath::Vector2 pos_cursor;
@@ -69,7 +66,7 @@ private:
 
 	std::basic_string<wchar_t> turn_player[2];
 
-	Animation anim;
+	Smoke anim;
 
 	enum PLAYER {
 		A,

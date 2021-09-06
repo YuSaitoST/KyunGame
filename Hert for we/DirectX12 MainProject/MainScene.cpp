@@ -156,9 +156,6 @@ void MainScene::LA_Load() {
 	area_attack									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/attack_area.png");
 	area_move									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_area.png");
 	com_cursor								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/カーソル.png");
-	//ui_turn_my									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/turn_ui.png");
-	//ui_turn_partner							= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/partner_turn_ui.png");
-	//ui_move										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_ui.png");
 	boy[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
 	boy[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
 	boy[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_near.png");
@@ -185,7 +182,7 @@ void MainScene::Up_Put(int index) {
 			num_ready += 1;
 		}
 	}
-	if (num_ready != 1) return;  // ゲームパッドが1台しかない場合、ここの値を1にすると1ターン分だけデバッグできる
+	if (num_ready != 2) return;  // ゲームパッドが1台しかない場合、ここの値を1にすると1ターン分だけデバッグできる
 	
 
 	phase	= Phase::START;
@@ -293,7 +290,7 @@ void MainScene::Up_Move() {
 	float lumberjack_right_	= std::min(POS_END_DR.x, pos_cross_hR[1].x);
 
 	float pos_bx_ = 0;
-	if (num_player == 1) pos_bx_ = -358.0f;  // プレイヤー2の画面座標に合わせる
+	if (num_player == 1) pos_bx_ = + 358.0f;  // プレイヤー2の画面座標に合わせる
 
 	pos_pointer[num_player] = SimpleMath::Vector2(
 		std::clamp(pos_pointer[num_player].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
@@ -398,11 +395,11 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 		);
 		DX9::SpriteBatch->DrawString(
 			font.Get(), SimpleMath::Vector2(pos_x + 200.0f, 100.0f),
-			DX9::Colors::RGBA(255, 255, 255, 255), L"ATTACK"
+			DX9::Colors::RGBA(0, 0, 0, 255), L"ATTACK"
 		);
 		DX9::SpriteBatch->DrawString(
 			font.Get(), SimpleMath::Vector2(pos_x + 200.0f, 200.0f),
-			DX9::Colors::RGBA(255, 255, 255, 255), L"MOVE"
+			DX9::Colors::RGBA(0, 0, 0, 255), L"MOVE"
 		);
 	}
 	if (phase == Phase::ATTACK) {
