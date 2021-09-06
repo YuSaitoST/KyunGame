@@ -19,17 +19,18 @@ void MainScene::Initialize()
 {
 	font							= DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/azuki.ttf", L"あずきフォント", 20);
 	pos_pointer[0]		= POS_CENTER;
-	pos_pointer[1]		= POS_CENTER + SimpleMath::Vector2(POS_X2, 0.0f);
+	pos_pointer[1]		= POS_CENTER;// +SimpleMath::Vector2(POS_X2, 0.0f);
 	pos_cursor				= SimpleMath::Vector2(100.0f, 100.0f);
 	pos_attack				= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
-	pos_heart[0]		= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
-	pos_heart[1]		= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
+	pos_heart[0]			= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
+	pos_heart[1]			= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
 	std::fill(std::begin(pos_move),			std::end(pos_move),			SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(pos_cross_hR),		std::end(pos_cross_hR),	SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(pos_cross_pt),		std::end(pos_cross_pt),		SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(emotion),				std::end(emotion),				EMOTION::GENERALLY);
 
-	anim.Initialize();
+	smoke.Initialize();
+	baner.Initialize();
 
 	std::random_device seed;
 	random_engine		= std::mt19937(seed());
@@ -44,9 +45,7 @@ void MainScene::Initialize()
 	num_ready_all[0]	= 0;
 	num_ready_all[1]	= 0;
 	num_turn				= 0;
-
-	// 先攻後攻決める処理実装後同じ値を代入
-	num_color[0]			= 120;
+	num_color[0]			= 255;
 	num_color[1]			= 255;
 
 	/* ↓↓↓↓↓↓↓↓↓↓↓↓ */
@@ -137,7 +136,8 @@ void MainScene::Render()
 
 	DX9::SpriteBatch->Begin();  // スプライトの描画を開始
 
-	anim.Render();
+	smoke.Render();
+	baner.Render();
 	Re_Draw_PlayerA();
 	Re_Draw_PlayerB();
 
@@ -167,7 +167,8 @@ void MainScene::LA_Load() {
 	girl[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_victory.png");
 	girl[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_defeat.png");
 
-	anim.LoadAssets();
+	smoke.LoadAssets();
+	baner.LoadAsset();
 }
 
 void MainScene::Up_Put(int index) {
@@ -190,10 +191,12 @@ void MainScene::Up_Put(int index) {
 
 void MainScene::Up_Start(float deltaTime) {
 	std::fill(std::begin(num_ready_all), std::end(num_ready_all), 0);
-	num_color[0] = num_color[0] == 120 ? 255 : 120;  // 色指定の式は先攻後攻処理完成後に再調整
-	num_color[1] = num_color[1] == 255 ? 120 : 255;
-	bool fin_change_ = anim.Up_Change(deltaTime);
-	if(fin_change_) phase = Phase::SELECT;
+	//パチンコ演出したいなら↓
+	//num_color[0] = num_color[0] == 120 ? 255 : 120;  // 色指定の式は先攻後攻処理完成後に再調整
+	//num_color[1] = num_color[1] == 255 ? 120 : 255;
+	bool fin_change_	= smoke.Up_Change(deltaTime);
+	bool fin_baner_		= baner.Up_Bar(deltaTime);
+	if(fin_change_ && fin_baner_) phase = Phase::SELECT;
 }
 
 void MainScene::Up_Select() {
@@ -216,7 +219,6 @@ void MainScene::Up_Select() {
 		pos_cross_hR[1] = SimpleMath::Vector2(pos_heart[num_player].x + MOVE_POINTER, pos_heart[num_player].y);
 		pos_cross_hR[2] = SimpleMath::Vector2(pos_heart[num_player].x, pos_heart[num_player].y + MOVE_POINTER);
 		pos_cross_hR[3] = SimpleMath::Vector2(pos_heart[num_player].x - MOVE_POINTER, pos_heart[num_player].y);
-
 	}
 }
 
@@ -265,8 +267,8 @@ void MainScene::Up_At_Check() {
 	const bool win_ = pos_heart[partner_] == pos_pointer[num_player];  // ドンピシャで当たったか
 
 	if (win_) {
-		emotion[num_player] = EMOTION::VICTORY;
-		emotion[partner_] = EMOTION::DEFEAT;
+		emotion[num_player] = EMOTION::VICTORY;  // 動きが未確定
+		emotion[partner_] = EMOTION::NERVOUS;
 		// この中でリザルトに移行する処理を書くべき、んで早期リターンしてPhase::FINEの処理させない
 	}
 
@@ -303,7 +305,7 @@ void MainScene::Up_Move() {
 void MainScene::Up_Mo_Check() {
 	const bool input_a_ = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 
-//	pos_heart[num_player] = pos_pointer[num_player];
+	pos_heart[num_player] = pos_pointer[num_player];
 
 	if (!input_a_) return;  // 早期return
 
@@ -333,7 +335,7 @@ void MainScene::Up_Move_Pointer(int index) {
 
 
 	float pos_bx_ = 0;
-	if (index == 1) pos_bx_ = -358.0f;
+//	if (index == 1) pos_bx_ = 358.0f;
 
 	pos_pointer[index] = SimpleMath::Vector2(
 		std::clamp(pos_pointer[index].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
@@ -380,7 +382,7 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 			);
 		}
 	}
-	if (phase == Phase::ATTACK || phase == Phase::PUT_HEART) {
+	if (phase == Phase::PUT_HEART) {
 		if (num_ready_all[index] == 1) return;
 		DX9::SpriteBatch->DrawSimple(
 			pointer.Get(),
@@ -404,8 +406,8 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 	}
 	if (phase == Phase::ATTACK) {
 		DX9::SpriteBatch->DrawSimple(
-			area_attack.Get(),
-			SimpleMath::Vector3(pos_x + pos_attack.x, pos_attack.y, POSI_Z::POINTER)
+			pointer.Get(),
+			SimpleMath::Vector3(pos_x + pos_pointer[index].x, pos_pointer[index].y, POSI_Z::POINTER)
 		);
 	}
 }

@@ -44,14 +44,14 @@ cppcoro::generator<int>Smoke::Change() {
 	}
 	alpha_white = 120;
 
-	while (time_stop < 0.0f) {
-		time_stop = time_stop + num_speed * time_delta;
+	while (time_stop < 10.0f) {
+		time_stop = time_stop + time_delta;
 		co_yield 2;
 	}
 
-	while (alpha_white > 120)
+	while (alpha_white > 0)
 	{
-		alpha_white = alpha_white + num_speed * time_delta;
+		alpha_white = alpha_white - num_speed * time_delta;
 		co_yield 3;
 	}
 	alpha_white = 0;

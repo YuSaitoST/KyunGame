@@ -51,6 +51,15 @@
     <ClInclude Include="Classes\Move.h">
       <Filter>Classes</Filter>
     </ClInclude>
+    <ClInclude Include="TitleScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Smoke.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BarUI.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Base\Main.cpp">
@@ -69,6 +78,15 @@
       <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Move.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Smoke.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\BarUI.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
   </ItemGroup>

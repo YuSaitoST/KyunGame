@@ -22,7 +22,7 @@ public:
 	float alpha_white;
 	float time_delta;
 	float time_stop;
-	const float num_speed = 25.0f;
+	const float num_speed = 50.0f;
 
 	//ƒRƒ‹[ƒ`ƒ“
 	cppcoro::generator<int> Change();

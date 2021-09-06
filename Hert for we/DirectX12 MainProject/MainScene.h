@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Classes/Smoke.h"
 #include <random>
+#include <Classes/BarUI.h>
 
 using Microsoft::WRL::ComPtr;
 using std::unique_ptr;
@@ -66,7 +67,8 @@ private:
 
 	std::basic_string<wchar_t> turn_player[2];
 
-	Smoke anim;
+	Smoke smoke;
+	BarUI baner;
 
 	enum PLAYER {
 		A,

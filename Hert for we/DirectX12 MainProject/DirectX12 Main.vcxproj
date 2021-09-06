@@ -188,11 +188,14 @@
     <ClInclude Include="Base\pch.h" />
     <ClInclude Include="Base\StepTimer.h" />
     <ClInclude Include="Classes\Attack.h" />
+    <ClInclude Include="Classes\BarUI.h" />
     <ClInclude Include="Classes\Move.h" />
+    <ClInclude Include="Classes\Smoke.h" />
     <ClInclude Include="DontDestroyOnLoad.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneFactory.h" />
+    <ClInclude Include="TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Base\GameBase.cpp">
@@ -208,11 +211,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Classes\Attack.cpp" />
+    <ClCompile Include="Classes\BarUI.cpp" />
     <ClCompile Include="Classes\Move.cpp" />
+    <ClCompile Include="Classes\Smoke.cpp" />
     <ClCompile Include="MainScene.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource\resource.rc" />

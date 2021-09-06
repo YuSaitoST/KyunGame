@@ -1,4 +1,4 @@
-#pragma once
+#pragma onse
 
 #include"Base/pch.h"
 #include"Base/dxtk.h"
@@ -13,22 +13,19 @@ class Animation {
 public:
 	void Initialize();
 	void LoadAssets();
-	bool Up_Change(const float deltaTime);
+	void Update(const float deltaTime);
 	void Render();
 	
 	DX9::SPRITE white;
 	SimpleMath::Vector3 pos_white;
-	float alpha_white;
+	int alpha_white;
 	float time_delta;
 	float time_stop;
-
-	const float num_speed = 20.0f;
 
 	//コルーチン
 	cppcoro::generator<int> Change();
 	cppcoro::generator<int> co_change;
-	cppcoro::detail::generator_iterator<int> co_change_it;
+	cppcoro::detail::generator_iterator<int> co_cahnge_it;
 
 private:
-	int count_change;  // コルーチンの呼び出し回数を制限するための変数
 };
