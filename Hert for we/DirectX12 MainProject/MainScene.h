@@ -54,7 +54,8 @@ private:
 	DX9::SPRITE girl[5];
 	DX9::SPRITE com_cursor;
 
-	SimpleMath::Vector2 pos_pointer[2];
+	SimpleMath::Vector2 pos_pointer;
+	SimpleMath::Vector2 pos_pointer_ready[2];
 	SimpleMath::Vector2 pos_cursor;
 	SimpleMath::Vector2 pos_attack;
 	SimpleMath::Vector2 pos_move[4];

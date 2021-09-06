@@ -22,7 +22,17 @@ public:
 	float alpha_white;
 	float time_delta;
 	float time_stop;
-	const float num_speed = 50.0f;
+	const float num_alpha = 170.0f;
+	const float num_speed = 2500.0f;
+
+	DX9::SPRITE ui_turn_my;
+	DX9::SPRITE ui_turn_partner;
+	DX9::SPRITE ui_move;
+	float width_ui;
+	float width_pos;
+
+	SimpleMath::Vector3 pos_ui_turn_my;
+
 
 	//ÉRÉãÅ[É`Éì
 	cppcoro::generator<int> Change();
