@@ -138,7 +138,8 @@ public:
 		SELECT,
 		ATTACK,
 		MOVE,
-		FINE
+		FINE,
+		SUCCEED
 	};
 	static Phase phase;
 	static int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用

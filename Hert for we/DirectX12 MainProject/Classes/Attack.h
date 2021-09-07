@@ -10,11 +10,6 @@ using namespace DirectX;
 
 class Attack {
 public:
-	void Initialize();
-	void LoadAssets();
-	void Update();
-	void Render();
-	bool Up_Select();
 
 private:
 };

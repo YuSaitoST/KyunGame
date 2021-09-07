@@ -235,7 +235,12 @@ void MainScene::Up_Select() {
 
 void MainScene::Up_Attack() {
 	Up_Move_Pointer(num_player);
-	const bool input_a_ = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
+	const bool input_b_		= DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
+	const bool input_a_		= DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
+	if (input_b_) {
+		phase = Phase::SELECT;
+		return;
+	}
 	if (input_a_) {
 		pos_attack = pos_pointer_ready[num_player];
 		Up_At_Check();
@@ -251,10 +256,10 @@ void MainScene::Up_At_Check() {
 	pos_cross_hR[3] = SimpleMath::Vector2(pos_heart[partner_].x - MOVE_POINTER,		pos_heart[partner_].y									);
 	pos_cross_hR[4] = SimpleMath::Vector2(pos_heart[partner_].x,										pos_heart[partner_].y									);
 
-	pos_cross_pt[0] = SimpleMath::Vector2(pos_attack.x,								pos_attack.y - MOVE_POINTER	);
-	pos_cross_pt[1]	= SimpleMath::Vector2(pos_attack.x + MOVE_POINTER, pos_attack.y								);
-	pos_cross_pt[2] = SimpleMath::Vector2(pos_attack.x,								pos_attack.y + MOVE_POINTER	);
-	pos_cross_pt[3] = SimpleMath::Vector2(pos_attack.x - MOVE_POINTER,	pos_attack.y								);
+	pos_cross_pt[0] = SimpleMath::Vector2(pos_attack.x,										pos_attack.y - MOVE_POINTER	);
+	pos_cross_pt[1]	= SimpleMath::Vector2(pos_attack.x + MOVE_POINTER,		pos_attack.y								);
+	pos_cross_pt[2] = SimpleMath::Vector2(pos_attack.x,										pos_attack.y + MOVE_POINTER	);
+	pos_cross_pt[3] = SimpleMath::Vector2(pos_attack.x - MOVE_POINTER,		pos_attack.y								);
 
 	// エリア外を自身の座標と重ねるループ
 	for (int i = 0; i < 4; i++) {
@@ -269,18 +274,20 @@ void MainScene::Up_At_Check() {
 	}
 
 	// ポインターとハート、それぞれの十字が重なっているか
-	for (int j = 0; j < 4; j++) {
-		for (int r = 0; r < 4; r++) {
-			if (pos_cross_pt[j] == pos_cross_hR[r]) emotion[partner_] = EMOTION::NERVOUS;
-		}
-	}
+	//for (int j = 0; j < 4; j++) {
+	//	for (int r = 0; r < 4; r++) {
+	//		if (pos_cross_pt[j] == pos_cross_hR[r]) emotion[partner_] = EMOTION::NERVOUS;
+	//	}
+	//}
 
 	const bool win_ = pos_heart[partner_] == pos_pointer_ready[num_player];  // ドンピシャで当たったか
 
 	if (win_) {
 		emotion[num_player] = EMOTION::VICTORY;  // 動きが未確定
 		emotion[partner_] = EMOTION::NERVOUS;
-		// この中でリザルトに移行する処理を書くべき、んで早期リターンしてPhase::FINEの処理させない
+
+		phase = Phase::SUCCEED;
+		return;
 	}
 
 	phase = Phase::FINE;
@@ -294,8 +301,7 @@ void MainScene::Up_Move() {
 
 	if (cross_up_)			pos_pointer_ready[num_player] = pos_cross_hR[0];
 	if (cross_down_)	pos_pointer_ready[num_player] = pos_cross_hR[2];
-	if (cross_left_)			
-		pos_pointer_ready[num_player] = pos_cross_hR[3];
+	if (cross_left_)			pos_pointer_ready[num_player] = pos_cross_hR[3];
 	if (cross_right_)		pos_pointer_ready[num_player] = pos_cross_hR[1];
 
 	float lumberjack_up_		= std::max(POS_END_UL.y, pos_cross_hR[0].y);
@@ -304,12 +310,13 @@ void MainScene::Up_Move() {
 	float lumberjack_right_	= std::min(POS_END_DR.x, pos_cross_hR[1].x);
 
 	float pos_bx_ = 0;
-	if (num_player == 1) pos_bx_ = + 358.0f;  // プレイヤー2の画面座標に合わせる
+	//if (num_player == 1) pos_bx_ = 358.0f;  // プレイヤー2の画面座標に合わせる
 
-	//pos_pointer_ready[num_player] = SimpleMath::Vector2(
-	//	std::clamp(pos_pointer_ready[num_player].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
-	//	std::clamp(pos_pointer_ready[num_player].y, lumberjack_up_, lumberjack_down_)
-	//);
+	pos_pointer_ready[num_player] = SimpleMath::Vector2(
+		std::clamp(pos_pointer_ready[num_player].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
+		std::clamp(pos_pointer_ready[num_player].y, lumberjack_up_, lumberjack_down_)
+	);
+
 
 	pos_heart[num_player] = pos_pointer_ready[num_player];
 
@@ -317,9 +324,15 @@ void MainScene::Up_Move() {
 }
 
 void MainScene::Up_Mo_Check() {
+	const bool input_b_ = DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
 	const bool input_a_ = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 
 	pos_heart[num_player] = pos_pointer_ready[num_player];
+
+	if (input_b_) {
+		phase = Phase::SELECT;
+		return;
+	}
 
 	if (!input_a_) return;  // 早期return
 
@@ -349,7 +362,6 @@ void MainScene::Up_Move_Pointer(int index) {
 
 
 	float pos_bx_ = 0;
-//	if (index == 1) pos_bx_ = 358.0f;
 
 	pos_pointer_ready[index] = SimpleMath::Vector2(
 		std::clamp(pos_pointer_ready[index].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
