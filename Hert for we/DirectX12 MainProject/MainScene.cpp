@@ -7,6 +7,7 @@
 #include "SceneFactory.h"
 
 MainScene::Phase MainScene::phase;
+int num_player;
 
 // Initialize member variables.
 MainScene::MainScene()
@@ -157,6 +158,7 @@ void MainScene::LA_Load() {
 	area_attack									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/attack_area.png");
 	area_move									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_area.png");
 	com_cursor								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/ƒJ[ƒ\ƒ‹.png");
+	speech										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png");
 	boy[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
 	boy[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
 	boy[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_near.png");
@@ -236,7 +238,7 @@ void MainScene::Up_Attack() {
 	Up_Move_Pointer(num_player);
 	const bool input_a_ = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 	if (input_a_) {
-		pos_attack			= pos_pointer_ready[num_player];
+		pos_attack = pos_pointer_ready[num_player];
 		Up_At_Check();
 	}
 }
