@@ -19,6 +19,7 @@ public:
 	// スモーク
 	DX9::SPRITE white;
 	SimpleMath::Vector3 pos_white;
+	int count_chnage; // コルーチンの呼び出し回数を制限するための変数
 	float alpha_white;
 	float time_delta;
 	float time_stop;
@@ -32,7 +33,7 @@ public:
 	float width_pos;
 
 	SimpleMath::Vector3 pos_ui_turn_my;
-
+	SimpleMath::Vector3 pos_UI_turn_partner;
 
 	//コルーチン
 	cppcoro::generator<int> Change();
@@ -40,5 +41,4 @@ public:
 	cppcoro::detail::generator_iterator<int> co_change_it;
 
 private:
-	int count_change;  // コルーチンの呼び出し回数を制限するための変数
 };

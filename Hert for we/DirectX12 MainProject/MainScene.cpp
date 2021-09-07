@@ -7,7 +7,7 @@
 #include "SceneFactory.h"
 
 MainScene::Phase MainScene::phase;
-int num_player;
+int MainScene::num_player;
 
 // Initialize member variables.
 MainScene::MainScene()
@@ -198,8 +198,7 @@ void MainScene::Up_Start(float deltaTime) {
 	//num_color[0] = num_color[0] == 120 ? 255 : 120;  // 色指定の式は先攻後攻処理完成後に再調整
 	//num_color[1] = num_color[1] == 255 ? 120 : 255;
 	bool fin_change_	= smoke.Up_Change(deltaTime);
-	bool fin_baner_		= baner.Up_Bar(deltaTime);
-	if(fin_change_ || fin_baner_) phase = Phase::SELECT;
+	if(fin_change_) phase = Phase::SELECT;
 }
 
 void MainScene::Up_Select() {
@@ -295,7 +294,8 @@ void MainScene::Up_Move() {
 
 	if (cross_up_)			pos_pointer_ready[num_player] = pos_cross_hR[0];
 	if (cross_down_)	pos_pointer_ready[num_player] = pos_cross_hR[2];
-	if (cross_left_)			pos_pointer_ready[num_player] = pos_cross_hR[3];
+	if (cross_left_)			
+		pos_pointer_ready[num_player] = pos_cross_hR[3];
 	if (cross_right_)		pos_pointer_ready[num_player] = pos_cross_hR[1];
 
 	float lumberjack_up_		= std::max(POS_END_UL.y, pos_cross_hR[0].y);
@@ -306,10 +306,10 @@ void MainScene::Up_Move() {
 	float pos_bx_ = 0;
 	if (num_player == 1) pos_bx_ = + 358.0f;  // プレイヤー2の画面座標に合わせる
 
-	pos_pointer_ready[num_player] = SimpleMath::Vector2(
-		std::clamp(pos_pointer_ready[num_player].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
-		std::clamp(pos_pointer_ready[num_player].y, lumberjack_up_, lumberjack_down_)
-	);
+	//pos_pointer_ready[num_player] = SimpleMath::Vector2(
+	//	std::clamp(pos_pointer_ready[num_player].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
+	//	std::clamp(pos_pointer_ready[num_player].y, lumberjack_up_, lumberjack_down_)
+	//);
 
 	pos_heart[num_player] = pos_pointer_ready[num_player];
 
@@ -450,7 +450,7 @@ void MainScene::Re_Draw_PlayerA() {
 	Re_Draw_Standard(0.0f, PLAYER::A);
 
 	DX9::SpriteBatch->DrawSimple(
-		boy[emotion[PLAYER::A]].Get(), 
+		boy[emotion[PLAYER::B]].Get(), 
 		SimpleMath::Vector3(POS_X2 - 402.0f, 990.0f - 590.0f, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, 402.0f, 590.0f), 
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
@@ -473,7 +473,7 @@ void MainScene::Re_Draw_PlayerB() {
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		girl[emotion[PLAYER::B]].Get(),
+		girl[emotion[PLAYER::A]].Get(),
 		SimpleMath::Vector3(2 * POS_X2 - 438.0f, 990.0f - 476.0f, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, 438.0f, 476.0f),
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], 255)
