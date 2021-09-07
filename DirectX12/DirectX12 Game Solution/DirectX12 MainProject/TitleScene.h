@@ -44,10 +44,8 @@ private:
     int page_state;
 
     DX9::SPRITE title;
-    SimpleMath::Vector3 pos_title;
-
     DX9::SPRITE comment;
-    SimpleMath::Vector3 pos_com;
+    DX9::SPRITE ui_start;
 
     enum Page {
         TITLE,

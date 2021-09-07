@@ -103,14 +103,15 @@ void TitleScene::Render()
 }
 
 void TitleScene::LA_Load() {
-    title   = DX9::Sprite::CreateFromFile(DXTK->Device9, L"title.png"  );
-    comment = DX9::Sprite::CreateFromFile(DXTK->Device9, L"comment.png");
+    title    = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/title.png"  );
+    comment  = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/comment.png");
+    ui_start = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/start.png"  );
 }
-
 
 NextScene TitleScene::Up_Scene_Change(const float deltaTime) {
     if (DXTK->KeyEvent->pressed.Enter ||
-        DXTK->GamePadEvent[0].start == GamePad::ButtonStateTracker::PRESSED) {
+        DXTK->GamePadEvent[0].b == GamePad::ButtonStateTracker::PRESSED ||
+        DXTK->GamePadEvent[1].b == GamePad::ButtonStateTracker::PRESSED) {
         page_state++;
         if (page_state == CHANGE)
             return NextScene::MainScene;
@@ -118,7 +119,6 @@ NextScene TitleScene::Up_Scene_Change(const float deltaTime) {
 
     return NextScene::Continue;
 }
-
 
 void TitleScene::Re_Draw_Title() {
     if (page_state == TITLE) {
@@ -138,6 +138,15 @@ void TitleScene::Re_Draw_Title() {
             comment.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
         );
     }
+
+
+    DX9::SpriteBatch->DrawSimple(
+        ui_start.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
+    );
+
+    DX9::SpriteBatch->DrawSimple(
+        ui_start.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
+    );
 
 }
 
