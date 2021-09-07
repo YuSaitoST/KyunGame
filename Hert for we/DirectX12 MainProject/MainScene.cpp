@@ -230,7 +230,7 @@ void MainScene::Up_Select() {
 	pos_move[1] = pos_cross_hR[1];
 	pos_move[2] = pos_cross_hR[2];
 	pos_move[3] = pos_cross_hR[3];
-	pos_move[4] = pos_cross_hR[4];
+	/*pos_move[4] = pos_cross_hR[4];*/
 }
 
 void MainScene::Up_Attack(float deltaTime) {
@@ -256,10 +256,10 @@ void MainScene::Up_At_Check(float deltaTime) {
 	pos_cross_hR[3] = SimpleMath::Vector2(pos_heart[partner_].x - MOVE_POINTER,		pos_heart[partner_].y									);
 	pos_cross_hR[4] = SimpleMath::Vector2(pos_heart[partner_].x,										pos_heart[partner_].y									);
 
-	pos_cross_pt[0] = SimpleMath::Vector2(pos_attack.x,										pos_attack.y - MOVE_POINTER	);
-	pos_cross_pt[1]	= SimpleMath::Vector2(pos_attack.x + MOVE_POINTER,		pos_attack.y								);
-	pos_cross_pt[2] = SimpleMath::Vector2(pos_attack.x,										pos_attack.y + MOVE_POINTER	);
-	pos_cross_pt[3] = SimpleMath::Vector2(pos_attack.x - MOVE_POINTER,		pos_attack.y								);
+	//pos_cross_pt[0] = SimpleMath::Vector2(pos_attack.x,										pos_attack.y - MOVE_POINTER	);
+	//pos_cross_pt[1]	= SimpleMath::Vector2(pos_attack.x + MOVE_POINTER,		pos_attack.y								);
+	//pos_cross_pt[2] = SimpleMath::Vector2(pos_attack.x,										pos_attack.y + MOVE_POINTER	);
+	//pos_cross_pt[3] = SimpleMath::Vector2(pos_attack.x - MOVE_POINTER,		pos_attack.y								);
 
 	// エリア外を自身の座標と重ねるループ
 	for (int i = 0; i < 4; i++) {
@@ -274,21 +274,28 @@ void MainScene::Up_At_Check(float deltaTime) {
 	}
 
 	// ポインターとハート、それぞれの十字が重なっているか
-	//for (int j = 0; j < 4; j++) {
-	//	for (int r = 0; r < 4; r++) {
-	//		if (pos_cross_pt[j] == pos_cross_hR[r]) emotion[partner_] = EMOTION::NERVOUS;
-	//	}
-	//}
+	for (int j = 0; j < 4; j++) {
+		for (int r = 0; r < 4; r++) {
+			if (pos_move[j] == pos_cross_hR[r]) emotion[partner_] = EMOTION::NERVOUS;
+		}
+	}
 
-	const bool win_ = pos_heart[partner_] == pos_pointer_ready[num_player];  // ドンピシャで当たったか
+	const bool win_		= pos_heart[partner_]	== pos_pointer_ready[num_player];  // ドンピシャで当たったか
+	const bool graze_	= emotion[partner_]		== EMOTION::NERVOUS;
+
 
 	if (win_) {
 		emotion[num_player] = EMOTION::VICTORY;  // 動きが未確定
 		emotion[partner_] = EMOTION::NERVOUS;
 
 		bool fin_attack = attack.Up_Attack(deltaTime);
-
+		if (!fin_attack) return;
 		phase = Phase::SUCCEED;  // リザルトへ
+		return;
+	}
+
+	if (graze_) {
+		bool fin_attack = attack.Up_Attack(deltaTime);
 		return;
 	}
 
@@ -302,9 +309,10 @@ void MainScene::Up_Move() {
 	const bool cross_right_		= DXTK->GamePadEvent[num_player].dpadRight	== GamePad::ButtonStateTracker::PRESSED;
 
 	if (cross_up_) {
-		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) pos_pointer_ready[num_player] = pos_cross_hR[0];
-		if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[0];
-		if (pos_pointer_ready[num_player] == pos_cross_hR[2]) pos_pointer_ready[num_player] = pos_cross_hR[4];
+//		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) 
+			pos_pointer_ready[num_player] = pos_cross_hR[0];
+		//if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[0];
+		//if (pos_pointer_ready[num_player] == pos_cross_hR[2]) pos_pointer_ready[num_player] = pos_cross_hR[4];
 	}
 	if (cross_down_) {
 		//if (pos_pointer_ready[num_player] == pos_cross_hR[0]) pos_pointer_ready[num_player] = pos_cross_hR[4];
@@ -319,9 +327,10 @@ void MainScene::Up_Move() {
 			pos_pointer_ready[num_player] = pos_cross_hR[3];
 	}
 	if (cross_right_) {
-		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) pos_pointer_ready[num_player] = pos_cross_hR[1];
-		if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[1];
-		if (pos_pointer_ready[num_player] == pos_cross_hR[3]) pos_pointer_ready[num_player] = pos_cross_hR[4];
+//		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) 
+			pos_pointer_ready[num_player] = pos_cross_hR[1];
+		//if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[1];
+		//if (pos_pointer_ready[num_player] == pos_cross_hR[3]) pos_pointer_ready[num_player] = pos_cross_hR[4];
 	}
 
 
@@ -430,6 +439,12 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 				DX9::Colors::RGBA(0, 0, 0, 255), L"ハートの近くをあてられた"
 			);
 		}
+		if (emotion[index] == EMOTION::DEFEAT) {
+			DX9::SpriteBatch->DrawString(
+				font.Get(), SimpleMath::Vector2(pos_x + 1500.0f, 200.0f),
+				DX9::Colors::RGBA(0, 0, 0, 255), L"ハートを当てた"
+			);
+		}
 	}
 	if (phase == Phase::PUT_HEART) {
 		if (num_ready_all[index] == 1) return;
@@ -476,9 +491,9 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 		DX9::SpriteBatch->DrawSimple(
 			area_move.Get(), SimpleMath::Vector3(pos_x + pos_move[3].x, pos_move[3].y, POSI_Z::POINTER)
 		);
-		DX9::SpriteBatch->DrawSimple(
-			area_move.Get(), SimpleMath::Vector3(pos_x + pos_move[4].x, pos_move[4].y, POSI_Z::POINTER)
-		);
+		//DX9::SpriteBatch->DrawSimple(
+		//	area_move.Get(), SimpleMath::Vector3(pos_x + pos_move[4].x, pos_move[4].y, POSI_Z::POINTER)
+		//);
 	}
 }
 
