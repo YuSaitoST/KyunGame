@@ -19,7 +19,7 @@ public:
 	// スモーク
 	DX9::SPRITE white;
 	SimpleMath::Vector3 pos_white;
-	int count_chnage; // コルーチンの呼び出し回数を制限するための変数
+	int count_chnage = 0; // コルーチンの呼び出し回数を制限するための変数
 	float alpha_white;
 	float time_delta;
 	float time_stop;

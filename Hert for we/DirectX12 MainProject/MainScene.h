@@ -6,6 +6,7 @@
 
 #include "Scene.h"
 #include "Classes/Smoke.h"
+#include"Classes/Attack.h"
 #include <random>
 #include <Classes/BarUI.h>
 
@@ -59,7 +60,7 @@ private:
 	SimpleMath::Vector2 pos_pointer_ready[2];
 	SimpleMath::Vector2 pos_cursor;
 	SimpleMath::Vector2 pos_attack;
-	SimpleMath::Vector2 pos_move[4];
+	SimpleMath::Vector2 pos_move[5];
 	SimpleMath::Vector2 pos_cross_hR[5];  // ハート赤の十字座標(中心も含める)
 	SimpleMath::Vector2 pos_cross_pt[4];  // ポインターの十字座標
 	SimpleMath::Vector2 pos_heart[2];
@@ -70,7 +71,7 @@ private:
 	std::basic_string<wchar_t> turn_player[2];
 
 	Smoke smoke;
-	BarUI baner;
+	Attack attack;
 
 	enum PLAYER {
 		A,
@@ -88,16 +89,6 @@ private:
 		PLAYER,
 		BACK_GROUND
 	};
-
-	enum EMOTION {
-		GENERALLY,  // 通常
-		PROPOSAL,  // 攻撃
-		NERVOUS,  // 焦り
-		VICTORY,
-		DEFEAT  // 敗北
-	};
-
-	EMOTION emotion[2];  //これを用いてキャラクターの状態を表す
 
 	const SimpleMath::Vector2	POS_FIELD				= SimpleMath::Vector2(505.0f,	40.0f);
 	const SimpleMath::Vector2	POS_CENTER			= SimpleMath::Vector2(878.0f,	413.0f);
@@ -120,8 +111,8 @@ private:
 	void Up_Put(int index);  // 後に赤と青どちらかを渡して動かしたい
 	void Up_Start(float deltaTime);
 	void Up_Select();
-	void Up_Attack();
-	void Up_At_Check();
+	void Up_Attack(float deltaTime);
+	void Up_At_Check(float deltaTime);
 	void Up_Move();  // 未実装
 	void Up_Mo_Check();
 	void Up_Move_Pointer(int index);
@@ -142,5 +133,16 @@ public:
 		SUCCEED
 	};
 	static Phase phase;
+
+	enum EMOTION {
+		GENERALLY,  // 通常
+		PROPOSAL,  // 攻撃
+		NERVOUS,  // 焦り
+		VICTORY,
+		DEFEAT  // 敗北
+	};
+
+	static EMOTION emotion[2];  //これを用いてキャラクターの状態を表す
+
 	static int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
 };
