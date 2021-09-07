@@ -7,11 +7,14 @@ void Smoke::Initialize() {
 	alpha_white		= 0;
 	time_delta			= 0.0f;
 	time_stop			= 2.0f;
-	count_change	= 0;
 
 	pos_ui_turn_my.x = 0.0f;
-	pos_ui_turn_my.y = 405.0f;
+	pos_ui_turn_my.y = 385.0f;
 	pos_ui_turn_my.z = 0.0f;
+
+	pos_UI_turn_partner.x = 1920.0f;
+	pos_UI_turn_partner.y = 385.0f;
+	pos_UI_turn_partner.z = 0.0f;
 
 	time_stop = 0.0f;
 
@@ -28,8 +31,9 @@ void Smoke::LoadAssets() {
 }
 
 bool Smoke::Up_Change(const float deltaTime) {
-	if (count_change == 0) {
-		count_change += 1;
+	int count_chnage = 0; // コルーチンの呼び出し回数を制限するための変数
+	if (count_chnage == 0) {
+		count_chnage += 1;
 		co_change			= Change();             //コルーチンの生成
 		co_change_it		= co_change.begin(); //コルーチンの実行開始
 	}
@@ -53,11 +57,33 @@ void Smoke::Render() {
 	);
 
 
-	DX9::SpriteBatch->DrawSimple(
-		ui_turn_my.Get(), pos_ui_turn_my,
-		Rect(width_pos, 0.0f, 0.0f + (int)width_ui, 1080.0f),
-		DX9::Colors::RGBA(255, 255, 255, 255)
-	);
+	if (MainScene::num_player == 0) {
+		DX9::SpriteBatch->DrawSimple(
+			ui_turn_my.Get(), pos_ui_turn_my,
+			Rect(width_pos, 0.0f, 0.0f + (int)width_ui, 1080.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255)
+		);
+
+		DX9::SpriteBatch->DrawSimple(
+			ui_turn_partner.Get(), pos_UI_turn_partner,
+			Rect(width_pos, 0.0f, 0.0f + (int)width_ui, 1080.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255)
+		);
+	}
+	else
+	{
+		DX9::SpriteBatch->DrawSimple(
+			ui_turn_my.Get(), pos_UI_turn_partner,
+			Rect(width_pos, 0.0f, 0.0f + (int)width_ui, 1080.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255)
+		);
+
+		DX9::SpriteBatch->DrawSimple(
+			ui_turn_partner.Get(), pos_ui_turn_my,
+			Rect(width_pos, 0.0f, 0.0f + (int)width_ui, 1080.0f),
+			DX9::Colors::RGBA(255, 255, 255, 255)
+		);
+	}
 }
 
 cppcoro::generator<int>Smoke::Change() {
@@ -71,7 +97,6 @@ cppcoro::generator<int>Smoke::Change() {
 		width_ui += num_speed * time_delta;
 		co_yield 1;
 	}
-	//alpha_white = 120;
 	width_ui = 1920;
 
 	while (time_stop < 0.9f) {
@@ -83,6 +108,7 @@ cppcoro::generator<int>Smoke::Change() {
 	{
 		width_pos += num_speed * time_delta;
 		pos_ui_turn_my.x += num_speed * time_delta;
+		pos_UI_turn_partner.x += num_speed * time_delta;
 
 		alpha_white = std::max(alpha_white - num_alpha * time_delta, 0.0f);
 		co_yield 3;

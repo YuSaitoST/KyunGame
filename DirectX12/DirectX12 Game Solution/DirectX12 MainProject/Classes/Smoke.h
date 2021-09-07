@@ -32,7 +32,7 @@ public:
 	float width_pos;
 
 	SimpleMath::Vector3 pos_ui_turn_my;
-
+	SimpleMath::Vector3 pos_UI_turn_partner;
 
 	//コルーチン
 	cppcoro::generator<int> Change();
@@ -40,5 +40,4 @@ public:
 	cppcoro::detail::generator_iterator<int> co_change_it;
 
 private:
-	int count_change;  // コルーチンの呼び出し回数を制限するための変数
 };
