@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Scene.h"
+//#include"Classes/LoadLines.h"
 #include "Classes/Smoke.h"
 #include"Classes/Attack.h"
 #include <random>
@@ -64,6 +65,7 @@ private:
 	SimpleMath::Vector2 pos_cross_hR[5];  // ハート赤の十字座標(中心も含める)
 	SimpleMath::Vector2 pos_cross_pt[4];  // ポインターの十字座標
 	SimpleMath::Vector2 pos_heart[2];
+	SimpleMath::Vector2 pos_heart_old;
 
 	std::mt19937 random_engine;
 	std::uniform_int_distribution<> random_dist;
@@ -76,18 +78,6 @@ private:
 	enum PLAYER {
 		A,
 		B
-	};
-
-	enum POSI_Z {
-		TURN_TEXT,
-		TURN_IMAGE,
-		SMOKE,
-		HEART,
-		POINTER,
-		MAP,
-		COMMAND,
-		PLAYER,
-		BACK_GROUND
 	};
 
 	const SimpleMath::Vector2	POS_FIELD				= SimpleMath::Vector2(505.0f,	40.0f);
@@ -123,6 +113,18 @@ private:
 	void Re_DirectTwelve();
 
 public:
+	enum POSI_Z {
+		TURN_TEXT,
+		TURN_IMAGE,
+		SMOKE,
+		COMMAND,
+		PLAYER,
+		HEART,
+		POINTER,
+		MAP,
+		BACK_GROUND
+	};
+
 	enum Phase {
 		PUT_HEART,
 		START,
@@ -141,6 +143,18 @@ public:
 		VICTORY,
 		DEFEAT  // 敗北
 	};
+
+	const SimpleMath::Vector2 POS_LEFT_GENE			= SimpleMath::Vector2(0.0f, 240.0f);
+	const SimpleMath::Vector2 POS_LEFT_ATTACK		= SimpleMath::Vector2(0.0f, 0.0f);
+	const SimpleMath::Vector2 POS_BOY_GE_A			= SimpleMath::Vector2(1420.0f, 240.0f);
+	const SimpleMath::Vector2 POS_BOY_AT_A			= SimpleMath::Vector2(620.0f, 0.0f);
+	const SimpleMath::Vector2 POS_GIRL_GE_B			= SimpleMath::Vector2(1370.0f, 240.0f);
+	const SimpleMath::Vector2 POS_GIRL_AT_B			= SimpleMath::Vector2(980.0f, 0.0f);
+
+	const float RC_GIRL_NOM_R = 550.0f;
+	const float RC_GIRL_ATT_R = 940.0f;
+	const float RC_BOY_NOM_R = 500.0f;
+	const float RC_BOY_ATT_R = 1300.0f;
 
 	static EMOTION emotion[2];  //これを用いてキャラクターの状態を表す
 

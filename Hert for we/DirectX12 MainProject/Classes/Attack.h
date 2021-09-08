@@ -14,7 +14,7 @@ public:
 	void Initialize();
 	void LoadAssets();
 	bool Up_Attack(const float deltaTime);
-	void Render(int index, float pos_x);
+	void Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 pos_girl);
 
 
 	static int alpha_boy;
@@ -26,9 +26,14 @@ private:
 	cppcoro::generator<int> co_action;
 	cppcoro::detail::generator_iterator<int> co_action_it;
 
+	DX9::SPRITE boy[5];
+	DX9::SPRITE girl[5];
+
 	int count_chnage;
 	float time_delta;
 
-	const int color_gray = 155;
-
+	const int COLOR_GRAY = 155;
+	const int NUM_ALPHA = 100;
+	int num_color[2];  // âÊëúÇÃêF
+	float time_stop;
 };

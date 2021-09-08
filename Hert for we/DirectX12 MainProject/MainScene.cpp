@@ -19,7 +19,7 @@ MainScene::MainScene()
 // Initialize a variable and audio resources.
 void MainScene::Initialize()
 {
-	font										= DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/azuki.ttf", L"あずきフォント", 20);
+	font										= DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"ふい字", 20);
 	pos_pointer						= POS_CENTER;  // 通常時
 	pos_pointer_ready[0]		= POS_CENTER;  // 以下2つは初回準備用
 	pos_pointer_ready[1]		= POS_CENTER;
@@ -27,6 +27,7 @@ void MainScene::Initialize()
 	pos_attack							= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
 	pos_heart[0]						= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
 	pos_heart[1]						= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
+	pos_heart_old					= SimpleMath::Vector2(0.0f, 0.0f);
 	std::fill(std::begin(pos_move),			std::end(pos_move),			SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(pos_cross_hR),		std::end(pos_cross_hR),	SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(pos_cross_pt),		std::end(pos_cross_pt),		SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
@@ -139,8 +140,12 @@ void MainScene::Render()
 
 	DX9::SpriteBatch->Begin();  // スプライトの描画を開始
 
+	//SimpleMath::Vector2 pos_boy_a_	= phase == Phase::ATTACK ? POS_BOY_AT_A : POS_BOY_GE_A;
+	//SimpleMath::Vector2 pos_girl_b_	= phase == Phase::ATTACK ? POS_GIRL_AT_B : POS_GIRL_GE_B;
+
 	if (phase == Phase::START) smoke.Render();
-	attack.Render(PLAYER::A, 0.0f);
+	//attack.Render(PLAYER::A, pos_boy_a_, POS_LEFT_GENE);
+	//attack.Render(PLAYER::B, POS_LEFT_GENE, pos_girl_b_);
 	Re_Draw_PlayerA();
 	Re_Draw_PlayerB();
 
@@ -172,7 +177,7 @@ void MainScene::LA_Load() {
 	girl[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_defeat.png");
 
 	smoke.LoadAssets();
-	attack.LoadAssets();
+//	attack.LoadAssets();
 }
 
 void MainScene::Up_Put(int index) {
@@ -217,8 +222,8 @@ void MainScene::Up_Select() {
 
 	pos_pointer = POS_CENTER;
 
-	// 十字方向の座標の取得
-	if (phase != Phase::MOVE) return;
+	//// 十字方向の座標の取得
+	//if (phase != Phase::MOVE) return;
 			/*以下のコードはハート設置のタイミングで代入するべき、常に値が変更される*/
 	pos_cross_hR[0] = SimpleMath::Vector2(pos_heart[num_player].x, pos_heart[num_player].y - MOVE_POINTER);
 	pos_cross_hR[1] = SimpleMath::Vector2(pos_heart[num_player].x + MOVE_POINTER, pos_heart[num_player].y);
@@ -231,6 +236,8 @@ void MainScene::Up_Select() {
 	pos_move[2] = pos_cross_hR[2];
 	pos_move[3] = pos_cross_hR[3];
 	/*pos_move[4] = pos_cross_hR[4];*/
+
+	pos_heart_old = pos_heart[num_player];
 }
 
 void MainScene::Up_Attack(float deltaTime) {
@@ -238,7 +245,8 @@ void MainScene::Up_Attack(float deltaTime) {
 	const bool input_a_		= DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 	const bool input_b_		= DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
 	if (input_a_) {
-		phase = Phase::SELECT;
+		phase								= Phase::SELECT;
+		emotion[num_player]	= EMOTION::GENERALLY;
 		return;
 	}
 	if (input_b_) {
@@ -281,24 +289,18 @@ void MainScene::Up_At_Check(float deltaTime) {
 	}
 
 	const bool win_		= pos_heart[partner_]	== pos_pointer_ready[num_player];  // ドンピシャで当たったか
-	const bool graze_	= emotion[partner_]		== EMOTION::NERVOUS;
+	//const bool graze_	= emotion[partner_]		== EMOTION::NERVOUS;
 
+	//bool fin_attack = attack.Up_Attack(deltaTime);
+	//if (fin_attack) 	
 
 	if (win_) {
-		emotion[num_player] = EMOTION::VICTORY;  // 動きが未確定
-		emotion[partner_] = EMOTION::NERVOUS;
-
-		bool fin_attack = attack.Up_Attack(deltaTime);
-		if (!fin_attack) return;
-		phase = Phase::SUCCEED;  // リザルトへ
-		return;
+		emotion[num_player] = EMOTION::VICTORY;
+		emotion[partner_] = EMOTION::DEFEAT;
+		phase = Phase::SUCCEED;
 	}
 
-	if (graze_) {
-		bool fin_attack = attack.Up_Attack(deltaTime);
-		return;
-	}
-
+	emotion[num_player] = EMOTION::GENERALLY;
 	phase = Phase::FINE;
 }
 
@@ -347,7 +349,6 @@ void MainScene::Up_Move() {
 		std::clamp(pos_pointer_ready[num_player].y, lumberjack_up_, lumberjack_down_)
 	);
 
-
 	pos_heart[num_player] = pos_pointer_ready[num_player];
 
 	Up_Mo_Check();
@@ -361,6 +362,7 @@ void MainScene::Up_Mo_Check() {
 
 	if (input_a_) {
 		phase = Phase::SELECT;
+		pos_heart[num_player] = pos_heart_old;
 		return;
 	}
 
@@ -500,16 +502,25 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 void MainScene::Re_Draw_PlayerA() {
 	Re_Draw_Standard(0.0f, PLAYER::A);
 
+	SimpleMath::Vector2 pos_boy_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? POS_BOY_AT_A : POS_BOY_GE_A;
+	SimpleMath::Vector2 pos_girl_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
+
+	float rc_boy_x_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? RC_BOY_ATT_R : RC_BOY_NOM_R;
+	float rc_girl_x_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? RC_GIRL_ATT_R : RC_GIRL_NOM_R;
+
+	float rc_y_g_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? 990.f : 750.0f;
+	float rc_y_b_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? 990.f : 750.0f;
+
 	DX9::SpriteBatch->DrawSimple(
 		boy[emotion[PLAYER::B]].Get(), 
-		SimpleMath::Vector3(POS_X2 - 402.0f, 990.0f - 590.0f, POSI_Z::PLAYER),
-		Rect(0.0f, 0.0f, 402.0f, 590.0f), 
+		SimpleMath::Vector3(pos_boy_.x, pos_boy_.y, POSI_Z::PLAYER),
+		Rect(0.0f, 0.0f, rc_boy_x_, rc_y_b_), 
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(0.0f, 990.0f - 476.0f, POSI_Z::PLAYER),
-		Rect(0.0f, 0.0f, 438.0f, 476.0f), 
+		SimpleMath::Vector3(POS_LEFT_GENE.x, POS_LEFT_GENE.y, POSI_Z::PLAYER),
+		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_), 
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], 255)
 	);
 }
@@ -517,16 +528,25 @@ void MainScene::Re_Draw_PlayerA() {
 void MainScene::Re_Draw_PlayerB() {
 	Re_Draw_Standard(POS_X2, PLAYER::B);
 
+	SimpleMath::Vector2 pos_boy_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
+	SimpleMath::Vector2 pos_girl_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? POS_GIRL_AT_B : POS_GIRL_GE_B;
+
+	float rc_x_g_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? RC_GIRL_ATT_R : RC_GIRL_NOM_R;
+	float rc_x_b_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? RC_BOY_ATT_R : RC_BOY_NOM_R;
+
+	float rc_y_g_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? 990.f : 750.0f;
+	float rc_y_b_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? 990.f : 750.0f;
+
 	DX9::SpriteBatch->DrawSimple(
 		boy[emotion[PLAYER::B]].Get(),
-		SimpleMath::Vector3(POS_X2, 990.0f - 590.0f, POSI_Z::PLAYER),
-		Rect(0.0f, 0.0f, 402.0f, 590.0f),
+		SimpleMath::Vector3(POS_X2 + pos_boy_.x, pos_boy_.y, POSI_Z::PLAYER),
+		Rect(0.0f, 0.0f, rc_x_b_, rc_y_b_),
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(2 * POS_X2 - 438.0f, 990.0f - 476.0f, POSI_Z::PLAYER),
-		Rect(0.0f, 0.0f, 438.0f, 476.0f),
+		SimpleMath::Vector3(POS_X2 + pos_girl_.x, pos_girl_.y, POSI_Z::PLAYER),
+		Rect(0.0f, 0.0f, rc_x_g_, rc_y_g_),
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], 255)
 	);
 }

@@ -7,7 +7,7 @@ void Smoke::Initialize() {
 	alpha_white		= 0;
 	time_delta			= 0.0f;
 	time_stop			= 2.0f;
-	count_chnage = 0;
+	count_chnage = 0; // コルーチンの呼び出し回数を制限するための変数
 	pos_ui_turn_my.x = 0.0f;
 	pos_ui_turn_my.y = 385.0f;
 	pos_ui_turn_my.z = 0.0f;
