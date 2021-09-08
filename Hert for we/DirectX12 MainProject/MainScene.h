@@ -63,7 +63,6 @@ private:
 	SimpleMath::Vector2 pos_attack;
 	SimpleMath::Vector2 pos_move[5];
 	SimpleMath::Vector2 pos_cross_hR[5];  // ハート赤の十字座標(中心も含める)
-	SimpleMath::Vector2 pos_cross_pt[4];  // ポインターの十字座標
 	SimpleMath::Vector2 pos_heart[2];
 	SimpleMath::Vector2 pos_heart_old;
 
@@ -74,11 +73,6 @@ private:
 
 	Smoke smoke;
 	Attack attack;
-
-	enum PLAYER {
-		A,
-		B
-	};
 
 	const SimpleMath::Vector2	POS_FIELD				= SimpleMath::Vector2(505.0f,	40.0f);
 	const SimpleMath::Vector2	POS_CENTER			= SimpleMath::Vector2(878.0f,	413.0f);
@@ -113,6 +107,11 @@ private:
 	void Re_DirectTwelve();
 
 public:
+	enum PLAYER {
+		A,
+		B
+	};
+
 	enum POSI_Z {
 		TURN_TEXT,
 		TURN_IMAGE,
@@ -159,4 +158,5 @@ public:
 	static EMOTION emotion[2];  //これを用いてキャラクターの状態を表す
 
 	static int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
+	static int flag_attack;  // 攻撃コルーチンのフラグ
 };

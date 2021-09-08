@@ -9,6 +9,7 @@
 MainScene::Phase MainScene::phase;
 MainScene::EMOTION MainScene::emotion[2];
 int MainScene::num_player;
+int MainScene::flag_attack;
 
 // Initialize member variables.
 MainScene::MainScene()
@@ -30,7 +31,6 @@ void MainScene::Initialize()
 	pos_heart_old					= SimpleMath::Vector2(0.0f, 0.0f);
 	std::fill(std::begin(pos_move),			std::end(pos_move),			SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(pos_cross_hR),		std::end(pos_cross_hR),	SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
-	std::fill(std::begin(pos_cross_pt),		std::end(pos_cross_pt),		SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(emotion),				std::end(emotion),				EMOTION::GENERALLY);
 
 	smoke.Initialize();
@@ -51,6 +51,8 @@ void MainScene::Initialize()
 	num_turn				= 0;
 	num_color[0]			= 255;
 	num_color[1]			= 255;
+
+	flag_attack = 0;
 
 	/* ↓↓↓↓↓↓↓↓↓↓↓↓ */
 	/*→*/flag_debug = true;  /*←*/   // リリーズ時falseにする
@@ -170,11 +172,11 @@ void MainScene::LA_Load() {
 	boy[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_near.png");
 	boy[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_victory.png");
 	boy[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_defeat.png");
-	girl[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_generally.png");
-	girl[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_attack.png");
-	girl[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_near.png");
-	girl[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_victory.png");
-	girl[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_defeat.png");
+	girl[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_generally.png");
+	girl[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_attack.png");
+	girl[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_near.png");
+	girl[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_victory.png");
+	girl[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_defeat.png");
 
 	smoke.LoadAssets();
 //	attack.LoadAssets();
@@ -222,8 +224,8 @@ void MainScene::Up_Select() {
 
 	pos_pointer = POS_CENTER;
 
-	//// 十字方向の座標の取得
-	//if (phase != Phase::MOVE) return;
+
+	// 十字方向の座標の取得
 			/*以下のコードはハート設置のタイミングで代入するべき、常に値が変更される*/
 	pos_cross_hR[0] = SimpleMath::Vector2(pos_heart[num_player].x, pos_heart[num_player].y - MOVE_POINTER);
 	pos_cross_hR[1] = SimpleMath::Vector2(pos_heart[num_player].x + MOVE_POINTER, pos_heart[num_player].y);
@@ -235,15 +237,51 @@ void MainScene::Up_Select() {
 	pos_move[1] = pos_cross_hR[1];
 	pos_move[2] = pos_cross_hR[2];
 	pos_move[3] = pos_cross_hR[3];
-	/*pos_move[4] = pos_cross_hR[4];*/
+	pos_move[4] = pos_cross_hR[4];
 
 	pos_heart_old = pos_heart[num_player];
+
+	if (phase != Phase::MOVE) return;
+
+	// 場外にでた移動マスを消す
+	for (int i = 0; i < 4; i++) {
+		bool end_x_ = pos_move[i].x < POS_END_UL.x || pos_move[i].x > POS_END_DR.x;
+		bool end_y_ = pos_move[i].y < POS_END_UL.y || pos_move[i].y > POS_END_DR.y;
+		if (end_x_ || end_y_) {
+			pos_move[i] = SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
+		}
+	}
 }
 
 void MainScene::Up_Attack(float deltaTime) {
+	int partner_ = (num_player == 0);  // 相手プレイヤーを指定
+
+	if (flag_attack) {
+		bool fin_attack = attack.Up_Attack(deltaTime);
+		if (!fin_attack) return;
+
+
+		const bool win_ = pos_heart[partner_] == pos_pointer_ready[num_player];  // ドンピシャで当たったか
+		const bool graze_ = emotion[partner_] == EMOTION::NERVOUS;
+
+
+		if (win_) {
+			emotion[num_player] = EMOTION::VICTORY;
+			emotion[partner_] = EMOTION::DEFEAT;
+			phase = Phase::SUCCEED;
+		}
+
+		flag_attack = 0;
+		emotion[num_player] = EMOTION::GENERALLY;
+		phase = Phase::FINE;
+		return;
+	}
+
+
 	Up_Move_Pointer(num_player);
 	const bool input_a_		= DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 	const bool input_b_		= DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
+
 	if (input_a_) {
 		phase								= Phase::SELECT;
 		emotion[num_player]	= EMOTION::GENERALLY;
@@ -251,57 +289,26 @@ void MainScene::Up_Attack(float deltaTime) {
 	}
 	if (input_b_) {
 		pos_attack = pos_pointer_ready[num_player];
+		flag_attack += 1;
 		Up_At_Check(deltaTime);
 	}
 }
 
 void MainScene::Up_At_Check(float deltaTime) {
-	int partner_ = num_player == 0 ? 1 : 0;  // 相手プレイヤーを指定
+	int partner_ = (num_player == 0);  // 相手プレイヤーを指定
 
-	pos_cross_hR[0] = SimpleMath::Vector2(pos_heart[partner_].x,										pos_heart[partner_].y - MOVE_POINTER	);
-	pos_cross_hR[1] = SimpleMath::Vector2(pos_heart[partner_].x + MOVE_POINTER,	pos_heart[partner_].y									);
-	pos_cross_hR[2] = SimpleMath::Vector2(pos_heart[partner_].x,										pos_heart[partner_].y + MOVE_POINTER	);
-	pos_cross_hR[3] = SimpleMath::Vector2(pos_heart[partner_].x - MOVE_POINTER,		pos_heart[partner_].y									);
-	pos_cross_hR[4] = SimpleMath::Vector2(pos_heart[partner_].x,										pos_heart[partner_].y									);
+	pos_cross_hR[0] = SimpleMath::Vector2(pos_heart[partner_].x, pos_heart[partner_].y - 179.0f);
+	pos_cross_hR[1] = SimpleMath::Vector2(pos_heart[partner_].x + 179.0f, pos_heart[partner_].y);
+	pos_cross_hR[2] = SimpleMath::Vector2(pos_heart[partner_].x, pos_heart[partner_].y + 179.0f);
+	pos_cross_hR[3] = SimpleMath::Vector2(pos_heart[partner_].x - 179.0f, pos_heart[partner_].y);
+	pos_cross_hR[4] = SimpleMath::Vector2(pos_heart[partner_].x, pos_heart[partner_].y);
 
-	//pos_cross_pt[0] = SimpleMath::Vector2(pos_attack.x,										pos_attack.y - MOVE_POINTER	);
-	//pos_cross_pt[1]	= SimpleMath::Vector2(pos_attack.x + MOVE_POINTER,		pos_attack.y								);
-	//pos_cross_pt[2] = SimpleMath::Vector2(pos_attack.x,										pos_attack.y + MOVE_POINTER	);
-	//pos_cross_pt[3] = SimpleMath::Vector2(pos_attack.x - MOVE_POINTER,		pos_attack.y								);
-
-	// エリア外を自身の座標と重ねるループ
-	for (int i = 0; i < 4; i++) {
-		pos_cross_hR[i]= SimpleMath::Vector2(
-			std::clamp(pos_pointer_ready[num_player].x, POS_END_UL.x, POS_END_DR.x),
-			std::clamp(pos_pointer_ready[num_player].y, POS_END_UL.y, POS_END_DR.y)
-		);
-		pos_cross_pt[i] = SimpleMath::Vector2(
-			std::clamp(pos_pointer_ready[num_player].x, POS_END_UL.x, POS_END_DR.x),
-			std::clamp(pos_pointer_ready[num_player].y, POS_END_UL.y, POS_END_DR.y)
-		);
-	}
 
 	// ポインターとハート、それぞれの十字が重なっているか
-	for (int j = 0; j < 4; j++) {
-		for (int r = 0; r < 4; r++) {
-			if (pos_move[j] == pos_cross_hR[r]) emotion[partner_] = EMOTION::NERVOUS;
-		}
+	float pos_x = 0;
+	for (int j = 0; j < 5; j++) {
+		if (pos_cross_hR[j] == SimpleMath::Vector2(pos_pointer.x + pos_x, pos_pointer.y)) emotion[partner_] = EMOTION::NERVOUS;
 	}
-
-	const bool win_		= pos_heart[partner_]	== pos_pointer_ready[num_player];  // ドンピシャで当たったか
-	//const bool graze_	= emotion[partner_]		== EMOTION::NERVOUS;
-
-	//bool fin_attack = attack.Up_Attack(deltaTime);
-	//if (fin_attack) 	
-
-	if (win_) {
-		emotion[num_player] = EMOTION::VICTORY;
-		emotion[partner_] = EMOTION::DEFEAT;
-		phase = Phase::SUCCEED;
-	}
-
-	emotion[num_player] = EMOTION::GENERALLY;
-	phase = Phase::FINE;
 }
 
 void MainScene::Up_Move() {
@@ -311,28 +318,24 @@ void MainScene::Up_Move() {
 	const bool cross_right_		= DXTK->GamePadEvent[num_player].dpadRight	== GamePad::ButtonStateTracker::PRESSED;
 
 	if (cross_up_) {
-//		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) 
-			pos_pointer_ready[num_player] = pos_cross_hR[0];
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[0];
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[2]) pos_pointer_ready[num_player] = pos_cross_hR[4];
+		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) pos_pointer_ready[num_player] = pos_cross_hR[0];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[0];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[2]) pos_pointer_ready[num_player] = pos_cross_hR[4];
 	}
 	if (cross_down_) {
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[0]) pos_pointer_ready[num_player] = pos_cross_hR[4];
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[2];
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[2]) 
-			pos_pointer_ready[num_player] = pos_cross_hR[2];
+		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) pos_pointer_ready[num_player] = pos_cross_hR[4];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[2];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[2]) pos_pointer_ready[num_player] = pos_cross_hR[2];
 	}
 	if (cross_left_) {
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[1]) pos_pointer_ready[num_player] = pos_cross_hR[4];
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[3];
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[3]) 
-			pos_pointer_ready[num_player] = pos_cross_hR[3];
+		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) pos_pointer_ready[num_player] = pos_cross_hR[4];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[3];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[3]) pos_pointer_ready[num_player] = pos_cross_hR[3];
 	}
 	if (cross_right_) {
-//		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) 
-			pos_pointer_ready[num_player] = pos_cross_hR[1];
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[1];
-		//if (pos_pointer_ready[num_player] == pos_cross_hR[3]) pos_pointer_ready[num_player] = pos_cross_hR[4];
+		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) pos_pointer_ready[num_player] = pos_cross_hR[1];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[1];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[3]) pos_pointer_ready[num_player] = pos_cross_hR[4];
 	}
 
 
@@ -342,7 +345,6 @@ void MainScene::Up_Move() {
 	float lumberjack_right_	= std::min(POS_END_DR.x, pos_cross_hR[1].x);
 
 	float pos_bx_ = 0;
-	//if (num_player == 1) pos_bx_ = 358.0f;  // プレイヤー2の画面座標に合わせる
 
 	pos_pointer_ready[num_player] = SimpleMath::Vector2(
 		std::clamp(pos_pointer_ready[num_player].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
@@ -358,7 +360,7 @@ void MainScene::Up_Mo_Check() {
 	const bool input_a_ = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 	const bool input_b_ = DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
 
-	pos_heart[num_player] = pos_pointer_ready[num_player];
+	//pos_heart[num_player] = pos_pointer_ready[num_player];
 
 	if (input_a_) {
 		phase = Phase::SELECT;
@@ -368,7 +370,7 @@ void MainScene::Up_Mo_Check() {
 
 	if (!input_b_) return;  // 早期return
 
-	pos_heart[num_player] = pos_pointer_ready[num_player];
+	//pos_heart[num_player] = pos_pointer_ready[num_player];
 	phase = Phase::FINE;
 }
 
@@ -455,7 +457,7 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 			SimpleMath::Vector3(pos_x + pos_pointer_ready[index].x, pos_pointer_ready[index].y, POSI_Z::POINTER)
 		);
 	}
-	if (phase == Phase::ATTACK) {
+	if (!flag_attack) {   // phase == Phase::ATTACK
 		DX9::SpriteBatch->DrawSimple(
 			pointer.Get(),
 			SimpleMath::Vector3(pos_pointer.x, pos_pointer.y, POSI_Z::POINTER)
@@ -493,9 +495,9 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 		DX9::SpriteBatch->DrawSimple(
 			area_move.Get(), SimpleMath::Vector3(pos_x + pos_move[3].x, pos_move[3].y, POSI_Z::POINTER)
 		);
-		//DX9::SpriteBatch->DrawSimple(
-		//	area_move.Get(), SimpleMath::Vector3(pos_x + pos_move[4].x, pos_move[4].y, POSI_Z::POINTER)
-		//);
+		DX9::SpriteBatch->DrawSimple(
+			area_move.Get(), SimpleMath::Vector3(pos_x + pos_move[4].x, pos_move[4].y, POSI_Z::POINTER)
+		);
 	}
 }
 
