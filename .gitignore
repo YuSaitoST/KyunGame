@@ -19,6 +19,9 @@ Hert for we/DirectX12 MainProject/x64/Debug/
 Hert for we/DirectX12AffinityLayer/
 Hert for we/DirectXTK12/
 Hert for we/DirectXTK9/
+!Hert for we/DirectXTK9/
+!Hert for we/DirectXTK9/Inc/SpriteBatch9.h
+!Hert for we/DirectXTK9/Src/SpriteBatch9.cpp
 Hert for we/packages/
 Hert for we/x64/
 DirectX12/DirectX12 Game Solution/.vs/

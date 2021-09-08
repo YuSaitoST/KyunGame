@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Scene.h"
+#include"cppcoro/generator.h"
 
 using Microsoft::WRL::ComPtr;
 using std::unique_ptr;
@@ -40,21 +41,33 @@ private:
     DX12::HGPUDESCRIPTOR dx9GpuDescriptor;
 
     // ïœêîÇÃêÈåæ
-
-    int page_state;
-
     DX9::SPRITE title;
     DX9::SPRITE comment;
     DX9::SPRITE ui_start;
+    DX9::SPRITE white;
 
-    enum Page {
-        TITLE,
-        COMMENT,
-        CHANGE
-    };
+    SimpleMath::Vector3 pos_comment_my;
+    SimpleMath::Vector3 pos_comment_partner;
+
+    int page_state;
+    bool flag_comment;
+    float alpha_white;
+    const float num_alpha = 400.0f;
+    const float num_speed = 3000.0f;
+
+    float num_flash;
+    bool flag_falsh;
+    const float num_speed_flash_slow  = 2.0f;
+    const float num_speed_flash_quick = 10.0f;
+
+    float time_change;
+
+    const float POS_START_COMMENT_Y = -870.0f;
+
 
     void LA_Load();
     NextScene Up_Scene_Change(const float deltaTime);
+    void Up_comment(const float deltaTime);
 
     void Re_Draw_Title();
     void Re_DirectTwelve();

@@ -15,7 +15,20 @@ TitleScene::TitleScene() : dx9GpuDescriptor{}
 // Initialize a variable and audio resources.
 void TitleScene::Initialize()
 {
-    page_state = TITLE;
+    flag_comment = false;
+    alpha_white = 0.0f;
+
+    pos_comment_my.x = 115.0f;
+    pos_comment_my.y = POS_START_COMMENT_Y;
+    pos_comment_my.z = 0.0f;
+
+    pos_comment_partner.x = 2035.0f;
+    pos_comment_partner.y = POS_START_COMMENT_Y;
+    pos_comment_partner.z = 0.0f;
+
+    num_flash = 0.0f;
+    flag_falsh = false;
+    time_change = 0.0f;
 }
 
 // Allocate all memory the Direct3D and Direct2D resources.
@@ -75,6 +88,11 @@ NextScene TitleScene::Update(const float deltaTime)
 
     // TODO: Add your game logic here.
 
+
+    Up_comment(deltaTime);
+
+
+
     auto scene = Up_Scene_Change(deltaTime);
     if (scene != NextScene::Continue)
         return scene;
@@ -106,48 +124,128 @@ void TitleScene::LA_Load() {
     title    = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/title.png"  );
     comment  = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/comment.png");
     ui_start = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/start.png"  );
+    white    = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png" );
 }
 
-NextScene TitleScene::Up_Scene_Change(const float deltaTime) {
-    if (DXTK->KeyEvent->pressed.Enter ||
-        DXTK->GamePadEvent[0].b == GamePad::ButtonStateTracker::PRESSED ||
-        DXTK->GamePadEvent[1].b == GamePad::ButtonStateTracker::PRESSED) {
-        page_state++;
-        if (page_state == CHANGE)
-            return NextScene::MainScene;
+void TitleScene::Up_comment(const float deltaTime) {
+    if (flag_falsh == false) {
+        if (flag_comment == false) {
+            if (DXTK->KeyEvent->pressed.Space ||
+                DXTK->GamePadEvent[0].a == GamePad::ButtonStateTracker::PRESSED ||
+                DXTK->GamePadEvent[1].a == GamePad::ButtonStateTracker::PRESSED) {
+                flag_comment = true;
+            }
+        }
+        else
+        {
+            if (DXTK->KeyEvent->pressed.Space ||
+                DXTK->GamePadEvent[0].a == GamePad::ButtonStateTracker::PRESSED ||
+                DXTK->GamePadEvent[1].a == GamePad::ButtonStateTracker::PRESSED) {
+                flag_comment = false;
+            }
+        }
     }
 
+    if (flag_comment == true) {
+        
+        alpha_white += num_alpha * deltaTime;
+        if (alpha_white > 155.0f)
+            alpha_white = 155.0f;
+
+        pos_comment_my.y += num_speed * deltaTime;
+        pos_comment_partner.y += num_speed * deltaTime;
+
+        if(pos_comment_my.y > 60.0f)
+        {
+            pos_comment_my.y = 60.0f;
+            pos_comment_partner.y = 60.0f;
+        }
+    }
+    else
+    {
+        alpha_white -= num_alpha * deltaTime;
+        if (alpha_white < 0.0f) {
+            alpha_white = 0.0f;
+        }
+        pos_comment_my.y -= num_speed * deltaTime;
+        pos_comment_partner.y -= num_speed * deltaTime;
+
+        if (pos_comment_my.y < POS_START_COMMENT_Y)
+        {
+            pos_comment_my.y = POS_START_COMMENT_Y;
+            pos_comment_partner.y = POS_START_COMMENT_Y;
+        }
+
+
+    }
+
+}
+
+
+NextScene TitleScene::Up_Scene_Change(const float deltaTime) {
+    if (flag_comment == false) {
+        if (DXTK->KeyEvent->pressed.Enter ||
+            DXTK->GamePadEvent[0].b == GamePad::ButtonStateTracker::PRESSED ||
+            DXTK->GamePadEvent[1].b == GamePad::ButtonStateTracker::PRESSED) {
+            flag_falsh = true;
+        }
+    }
+
+    if (flag_falsh == true) {
+        num_flash += num_speed_flash_quick * deltaTime;
+        time_change += deltaTime;
+        if (time_change > 2.0f)
+            return NextScene::MainScene;
+    }
+    else {
+        num_flash += num_speed_flash_slow * deltaTime;
+    }
     return NextScene::Continue;
 }
 
+
 void TitleScene::Re_Draw_Title() {
-    if (page_state == TITLE) {
-        DX9::SpriteBatch->DrawSimple(
-            title.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
-        );
-        DX9::SpriteBatch->DrawSimple(
-            title.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
-        );
-    }
 
-    if (page_state == COMMENT) {
-        DX9::SpriteBatch->DrawSimple(
-            comment.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
-        );
-        DX9::SpriteBatch->DrawSimple(
-            comment.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
-        );
-    }
+    DX9::SpriteBatch->DrawSimple(
+        title.Get(), SimpleMath::Vector3(0.0f, 0.0f, 3.0f)
+    );
+    DX9::SpriteBatch->DrawSimple(
+        title.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 3.0f)
+    );
+
 
 
     DX9::SpriteBatch->DrawSimple(
-        ui_start.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f)
+        white.Get(), SimpleMath::Vector3(0.0f, 0.0f, 1.0f),
+        Rect(0.0f, 0.0f, 1920.0f, 1080.0f),
+        DX9::Colors::RGBA(255, 255, 255, (int)alpha_white)
     );
+
 
     DX9::SpriteBatch->DrawSimple(
-        ui_start.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f)
+        white.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 1.0f),
+        Rect(0.0f, 0.0f, 1920.0f, 1080.0f),
+        DX9::Colors::RGBA(255, 255, 255, (int)alpha_white)
     );
 
+
+
+    DX9::SpriteBatch->DrawSimple(
+        comment.Get(), pos_comment_my
+    );
+    DX9::SpriteBatch->DrawSimple(
+        comment.Get(), pos_comment_partner
+    );
+
+    if ((int)num_flash % 2 == 0) {
+        DX9::SpriteBatch->DrawSimple(
+            ui_start.Get(), SimpleMath::Vector3(0.0f, 0.0f, 2.0f)
+        );
+
+        DX9::SpriteBatch->DrawSimple(
+            ui_start.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 2.0f)
+        );
+    }
 }
 
 
