@@ -82,7 +82,22 @@ private:
 	bool speach_flag;
 
 
+	// ‘äŒ”z—ñ‚Ì—v‘f‚ğw’è‚·‚é•Ï”
+	int index_boy;
+	int index_girl;
+
+	int count_random_boy;
+	int count_random_girl;
+
 	LoadLines loadlines;
+
+
+	std::mt19937 random_engine;
+	std::uniform_int_distribution<> random_attack_boy;
+	std::uniform_int_distribution<> random_attack_girl;
+
+
+
 
 	const float COLOR_GRAY = 155.0f;
 	const float COLOR_MAX = 255.0f;

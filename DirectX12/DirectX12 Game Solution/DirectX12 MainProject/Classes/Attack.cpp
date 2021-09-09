@@ -9,7 +9,7 @@ float Attack::alpha_girl;
 
 void Attack::Initialize() {
 
-	font = DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"ふい字", 20);
+	font = DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"ふい字", 35);
 
 	count_chnage = 0;
 	time_delta = 0.0f;
@@ -20,20 +20,20 @@ void Attack::Initialize() {
 
 	pos_speach_girl_1p.x = 0.0f;
 	pos_speach_girl_1p.y = 0.0f;
-	pos_speach_girl_1p.z = -10.0f;
+	pos_speach_girl_1p.z = MainScene::POSI_Z::SPEAK;
 
 	pos_speach_boy_1p.x = 920.0f;
 	pos_speach_boy_1p.y = 0.0f;
-	pos_speach_boy_1p.z = -10.0f;
+	pos_speach_boy_1p.z = MainScene::POSI_Z::SPEAK;
 
 
 	pos_speach_girl_2p.x = 2840.0f;
 	pos_speach_girl_2p.y = 0.0f;
-	pos_speach_girl_2p.z = -10.0f;
+	pos_speach_girl_2p.z = MainScene::POSI_Z::SPEAK;
 
 	pos_speach_boy_2p.x = 1920.0f;
 	pos_speach_boy_2p.y = 0.0f;
-	pos_speach_boy_2p.z = -10.0f;
+	pos_speach_boy_2p.z = MainScene::POSI_Z::SPEAK;
 
 
 	alpha_speach_my = 0.0f;
@@ -52,8 +52,29 @@ void Attack::Initialize() {
 	comment = 0;
 	speach_flag = false;
 
+
+	index_boy = 0;
+	index_girl = 0;
+
+
 	loadlines.Initialize();
 	loadlines.In_File();
+
+	count_random_boy = 0;
+	count_random_girl = 0;
+
+
+	//男子アタック時セリフ
+	std::random_device seed;
+	random_engine = std::mt19937(seed());
+	random_attack_boy = std::uniform_int_distribution<>(0, 19);
+	// ランダム値を入れる時は、  random_dist(random_engine)  を代入;
+
+	//女子アタック時セリフ
+	random_device flower;
+	random_engine = mt19937(flower());
+	random_attack_girl = uniform_int_distribution<>(20, 39);
+	
 
 }
 
@@ -83,6 +104,20 @@ void Attack::LoadAssets() {
 }
 
 bool Attack::Up_Attack(const float deltaTime) {
+	if (count_random_boy == 0) {
+	RE_SET:
+		index_boy = random_attack_boy(random_engine);
+		if (index_boy % 2 == 1) goto RE_SET;
+		count_random_boy++;
+	}
+
+	if (count_random_girl == 0) {
+	RE_START:
+		index_girl = random_attack_girl(random_engine);
+		if (index_girl % 2 == 1) goto RE_START;
+		count_random_girl++;
+	}
+
 	if (count_chnage == 0) {
 		count_chnage += 1;
 		co_action = Action();             //コルーチンの生成
@@ -96,6 +131,7 @@ bool Attack::Up_Attack(const float deltaTime) {
 	}
 	if (co_action_it != co_action.end()) co_action_it++;
 	return false;
+
 }
 
 // 反転用の変数を渡せるようにする（その変数はMainScene.hにて）この関数は使わない
@@ -216,9 +252,11 @@ void Attack::Re_Speak() {
 
 
 	if (speach_flag == true) {
-		RECT dest = RectWH(pos_speach_girl_1p.x, pos_speach_girl_1p.y, 1000, 1000);
-		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), comment, dest, DX9::Colors::Red);
+		RECT dest = RectWH(pos_speach_girl_1p.x+155, pos_speach_girl_1p.y+70, 1000, 1000);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[36].c_str(), comment, dest, DX9::Colors::Red);
 		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
+		RECT means = RectWH(pos_speach_girl_2p.x + 155, pos_speach_girl_2p.y + 70, 1000, 1000);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[36].c_str(), comment, means, DX9::Colors::Red);
 	}
 
 }
@@ -325,18 +363,25 @@ cppcoro::generator<int>Attack::Action() {
 		//pos_speach_girl_2p.x = pos_speach_attack_girl_limit_x_2p;
 
 
-		while (time_stop < 1000.0f)
+		while (time_stop < 3.0f)
 		{
 			speach_flag = true;
 			time_stop += time_delta;
 
-			comment++;
-			if (comment > LoadLines::lines1[0].length()) {
-				comment = LoadLines::lines1[0].length();
+			++comment*time_delta;
+			if (comment > LoadLines::lines1[36].length()) {
+				comment = LoadLines::lines1[36].length();
 			}
 
 			co_yield 3;
 		}
+		speach_flag = false;
+		alpha_speach_my = 0.0f;
+		time_stop = 0.0f;
+
+		//while () {
+
+		//}
 
 
 		//while (true)
