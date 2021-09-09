@@ -148,6 +148,7 @@ void MainScene::Render()
 	if (phase == Phase::START) smoke.Render();
 	//attack.Render(PLAYER::A, pos_boy_a_, POS_LEFT_GENE);
 	//attack.Render(PLAYER::B, POS_LEFT_GENE, pos_girl_b_);
+	attack.Re_Speak();
 	Re_Draw_PlayerA();
 	Re_Draw_PlayerB();
 
@@ -167,16 +168,29 @@ void MainScene::LA_Load() {
 	area_move									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_area.png");
 	com_cursor								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/ƒJ[ƒ\ƒ‹.png");
 	speech										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png");
-	boy[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
-	boy[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
-	boy[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_near.png");
-	boy[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_victory.png");
-	boy[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_defeat.png");
-	girl[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_generally.png");
-	girl[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_attack.png");
-	girl[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_near.png");
-	girl[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_victory.png");
-	girl[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_defeat.png");
+
+	boy_a[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
+	boy_a[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
+	boy_a[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_near.png");
+	boy_a[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_victory.png");
+	boy_a[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_defeat.png");
+	girl_a[EMOTION::GENERALLY]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_generally.png");
+	girl_a[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_attack.png");
+	girl_a[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_near.png");
+	girl_a[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_victory.png");
+	girl_a[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_defeat.png");
+
+	boy_b[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_generally_l.png");
+	boy_b[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_attack_l.png");
+	boy_b[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_near_l.png");
+	boy_b[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_victory_l.png");
+	boy_b[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_defeat_l.png");
+	girl_b[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_generally_r.png");
+	girl_b[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_attack_r.png");
+	girl_b[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_near_r.png");
+	girl_b[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_victory_r.png");
+	girl_b[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_defeat_r.png");
+
 
 	smoke.LoadAssets();
 //	attack.LoadAssets();
@@ -457,7 +471,7 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 			SimpleMath::Vector3(pos_x + pos_pointer_ready[index].x, pos_pointer_ready[index].y, POSI_Z::POINTER)
 		);
 	}
-	if (!flag_attack) {   // phase == Phase::ATTACK
+	if (phase == Phase::ATTACK) {   // !flag_attack
 		DX9::SpriteBatch->DrawSimple(
 			pointer.Get(),
 			SimpleMath::Vector3(pos_pointer.x, pos_pointer.y, POSI_Z::POINTER)
@@ -514,16 +528,16 @@ void MainScene::Re_Draw_PlayerA() {
 	float rc_y_b_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? 990.f : 750.0f;
 
 	DX9::SpriteBatch->DrawSimple(
-		boy[emotion[PLAYER::B]].Get(), 
+		boy_a[emotion[PLAYER::B]].Get(), 
 		SimpleMath::Vector3(pos_boy_.x, pos_boy_.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_boy_x_, rc_y_b_), 
-		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
+		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		girl[emotion[PLAYER::A]].Get(),
+		girl_a[emotion[PLAYER::A]].Get(),
 		SimpleMath::Vector3(POS_LEFT_GENE.x, POS_LEFT_GENE.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_), 
-		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], 255)
+		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
 }
 
@@ -540,16 +554,16 @@ void MainScene::Re_Draw_PlayerB() {
 	float rc_y_b_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? 990.f : 750.0f;
 
 	DX9::SpriteBatch->DrawSimple(
-		boy[emotion[PLAYER::B]].Get(),
+		boy_b[emotion[PLAYER::B]].Get(),
 		SimpleMath::Vector3(POS_X2 + pos_boy_.x, pos_boy_.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_b_, rc_y_b_),
-		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
+		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		girl[emotion[PLAYER::A]].Get(),
+		girl_b[emotion[PLAYER::A]].Get(),
 		SimpleMath::Vector3(POS_X2 + pos_girl_.x, pos_girl_.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_g_, rc_y_g_),
-		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], 255)
+		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
 }
 
