@@ -9,33 +9,26 @@ using std::unique_ptr;
 using std::make_unique;
 using namespace DirectX;
 
-class Smoke {
+class BlackOut {
 public:
 	void Initialize();
 	void LoadAssets();
-	bool Up_Change(const float deltaTime);
+	bool Up_Black(const float deltaTime);
 	void Render();
-	void Re_Move(int index);
-	
-	// スモーク
-	DX9::SPRITE white;
-	SimpleMath::Vector3 pos_white;
-	float alpha_white;
+
+	// ブラックアウト用
+	DX9::SPRITE black;
+	SimpleMath::Vector3 pos_black;
+	float alpha_black;
 	float time_delta;
 	float time_stop;
-	const float num_alpha = 170.0f;
+	const float num_alpha = 90.0f;
 	const float num_speed = 2500.0f;
 
-	DX9::SPRITE ui_turn_my;
-	DX9::SPRITE ui_turn_partner;
-	DX9::SPRITE ui_move;
-	float width_ui;
-	float width_pos;
+	//テキスト表示用
+	DX9::SPRITE text;
+	float alpha_text;
 
-	static bool fin_move;
-
-	SimpleMath::Vector3 pos_ui_turn_my;
-	SimpleMath::Vector3 pos_UI_turn_partner;
 
 	//コルーチン
 	cppcoro::generator<int> Change();

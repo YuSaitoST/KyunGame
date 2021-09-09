@@ -33,14 +33,15 @@ void MainScene::Initialize()
 	std::fill(std::begin(pos_cross_hR),		std::end(pos_cross_hR),	SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(emotion),				std::end(emotion),				EMOTION::GENERALLY);
 
+	black.Initialize();
 	smoke.Initialize();
 	attack.Initialize();
 
 	std::random_device seed;
 	random_engine		= std::mt19937(seed());
-	random_dist			= std::uniform_int_distribution<>(0, 1);
+	random_dist				= std::uniform_int_distribution<>(0, 1);
 
-	phase						= Phase::PUT_HEART;
+	phase						= Phase::SCENARIO;
 	emotion[0]				= EMOTION::GENERALLY;
 	emotion[1]				= EMOTION::GENERALLY;
 
@@ -120,12 +121,14 @@ NextScene MainScene::Update(const float deltaTime)
 	// TODO: Add your game logic here.
 
 	switch (phase) {
+		case Phase::SCENARIO		:	Up_Scenario(deltaTime);		break;
 		case Phase::PUT_HEART	:	Up_Put(0);		Up_Put(1);		break;
 		case Phase::START				:	Up_Start(deltaTime);				break;		// ここで先攻後攻決めるべきかな
 		case Phase::SELECT			:	Up_Select();							break;
 		case Phase::ATTACK			:	Up_Attack(deltaTime);			break;
-		case Phase::MOVE				:	Up_Move();								break;
+		case Phase::MOVE				:	Up_Move(deltaTime);			break;
 		case Phase::FINE				:	Up_Fine();								break;
+		case Phase::SUCCEED		:	Up_Result(deltaTime);			break;
 	}
 
 	return NextScene::Continue;
@@ -142,13 +145,16 @@ void MainScene::Render()
 
 	DX9::SpriteBatch->Begin();  // スプライトの描画を開始
 
-	//SimpleMath::Vector2 pos_boy_a_	= phase == Phase::ATTACK ? POS_BOY_AT_A : POS_BOY_GE_A;
-	//SimpleMath::Vector2 pos_girl_b_	= phase == Phase::ATTACK ? POS_GIRL_AT_B : POS_GIRL_GE_B;
+
 
 	if (phase == Phase::START) smoke.Render();
-	//attack.Render(PLAYER::A, pos_boy_a_, POS_LEFT_GENE);
-	//attack.Render(PLAYER::B, POS_LEFT_GENE, pos_girl_b_);
+	if (phase == Phase::MOVE) smoke.Re_Move(num_player);
+
+	bool flag_black = phase == Phase::SCENARIO || phase == Phase::SUCCEED;
+	if (flag_black) black.Render();
+	
 	attack.Re_Speak();
+
 	Re_Draw_PlayerA();
 	Re_Draw_PlayerB();
 
@@ -159,15 +165,15 @@ void MainScene::Render()
 }
 
 void MainScene::LA_Load() {
-	bg[PLAYER::A]							= DX9::Sprite::CreateFromFile(DXTK->Device9, L"BG/main_bg01.png");
-	bg[PLAYER::B]							= DX9::Sprite::CreateFromFile(DXTK->Device9, L"BG/main_bg02.png");
-	map												= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map.png");
-	heart_red									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"love.png");
-	pointer										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/pointer.png");
-	area_attack									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/attack_area.png");
-	area_move									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_area.png");
-	com_cursor								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/カーソル.png");
-	speech										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png");
+	bg[PLAYER::A]								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"BG/main_bg01.png");
+	bg[PLAYER::B]								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"BG/main_bg02.png");
+	map													= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map.png");
+	heart_red										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"love.png");
+	pointer											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/pointer.png");
+	area_attack										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/attack_area.png");
+	area_move										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_area.png");
+	com_cursor									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/カーソル.png");
+	speech											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png");
 
 	boy_a[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
 	boy_a[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
@@ -192,8 +198,15 @@ void MainScene::LA_Load() {
 	girl_b[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_defeat_r.png");
 
 
+	black.LoadAssets();
 	smoke.LoadAssets();
-//	attack.LoadAssets();
+	attack.LoadAssets();
+}
+
+void MainScene::Up_Scenario(float deltaTime) {
+	bool flag_black = black.Up_Black(deltaTime);
+	if (flag_black) 
+		phase = Phase::PUT_HEART;
 }
 
 void MainScene::Up_Put(int index) {
@@ -283,6 +296,7 @@ void MainScene::Up_Attack(float deltaTime) {
 			emotion[num_player] = EMOTION::VICTORY;
 			emotion[partner_] = EMOTION::DEFEAT;
 			phase = Phase::SUCCEED;
+			return;
 		}
 
 		flag_attack = 0;
@@ -325,7 +339,7 @@ void MainScene::Up_At_Check(float deltaTime) {
 	}
 }
 
-void MainScene::Up_Move() {
+void MainScene::Up_Move(float deltaTime) {
 	const bool cross_up_		= DXTK->GamePadEvent[num_player].dpadUp		== GamePad::ButtonStateTracker::PRESSED;
 	const bool cross_down_	= DXTK->GamePadEvent[num_player].dpadDown	== GamePad::ButtonStateTracker::PRESSED;
 	const bool cross_left_		= DXTK->GamePadEvent[num_player].dpadLeft		== GamePad::ButtonStateTracker::PRESSED;
@@ -367,10 +381,10 @@ void MainScene::Up_Move() {
 
 	pos_heart[num_player] = pos_pointer_ready[num_player];
 
-	Up_Mo_Check();
+	Up_Mo_Check(deltaTime);
 }
 
-void MainScene::Up_Mo_Check() {
+void MainScene::Up_Mo_Check(float deltaTime) {
 	const bool input_a_ = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 	const bool input_b_ = DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
 
@@ -383,6 +397,10 @@ void MainScene::Up_Mo_Check() {
 	}
 
 	if (!input_b_) return;  // 早期return
+	else Smoke::fin_move = true;
+
+	bool flag_move = smoke.Up_Change(deltaTime);
+	if (flag_move) return;
 
 	//pos_heart[num_player] = pos_pointer_ready[num_player];
 	phase = Phase::FINE;
@@ -423,6 +441,10 @@ void MainScene::Up_Fine() {
 	num_turn		+= 1;
 	num_player	= num_player == 0 ? 1 : 0;  // ターン切り替え
 	phase				= Phase::START;
+}
+
+void MainScene::Up_Result(float deltaTime) {
+	bool flag_black = black.Up_Black(deltaTime);
 }
 
 void MainScene::Re_Draw_Standard(float pos_x, int index) {
@@ -535,7 +557,7 @@ void MainScene::Re_Draw_PlayerA() {
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_a[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(POS_LEFT_GENE.x, POS_LEFT_GENE.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(pos_girl_.x, pos_girl_.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_), 
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);

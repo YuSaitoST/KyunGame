@@ -8,6 +8,7 @@
 //#include"Classes/LoadLines.h"
 #include "Classes/Smoke.h"
 #include"Classes/Attack.h"
+#include"Classes/BlackOut.h"
 #include <random>
 #include <Classes/BarUI.h>
 
@@ -74,12 +75,14 @@ private:
 	std::basic_string<wchar_t> turn_player[2];
 
 	Smoke smoke;
+	BlackOut black;
 	Attack attack;
 
 	const SimpleMath::Vector2	POS_FIELD				= SimpleMath::Vector2(505.0f,	40.0f);
 	const SimpleMath::Vector2	POS_CENTER			= SimpleMath::Vector2(878.0f,	413.0f);
 	const SimpleMath::Vector2	POS_END_UL			= SimpleMath::Vector2(520.0f,	55.0f);
 	const SimpleMath::Vector2	POS_END_DR		= SimpleMath::Vector2(1236.0f,	771.0f);
+//	const SimpleMath::Vector2 POS_SELECT=SimpleMath::Vector2()
 	const float								POS_X2					= 1920.0f;
 	const float								POS_OUTAREA		= -200.0f;
 	const float								MOVE_POINTER	= 179.0f;
@@ -94,15 +97,17 @@ private:
 	int win_player;  // デバック用
 
 	void LA_Load();
+	void Up_Scenario(float deltaTime);
 	void Up_Put(int index);  // 後に赤と青どちらかを渡して動かしたい
 	void Up_Start(float deltaTime);
 	void Up_Select();
 	void Up_Attack(float deltaTime);
 	void Up_At_Check(float deltaTime);
-	void Up_Move();  // 未実装
-	void Up_Mo_Check();
+	void Up_Move(float deltaTime);  // 未実装
+	void Up_Mo_Check(float deltaTime);
 	void Up_Move_Pointer(int index);
 	void Up_Fine();
+	void Up_Result(float deltaTime);
 	void Re_Draw_Standard(float pos_x, int index);
 	void Re_Draw_PlayerA();
 	void Re_Draw_PlayerB();
@@ -115,7 +120,8 @@ public:
 	};
 
 	enum POSI_Z {
-		TURN_TEXT,
+		TEXT,
+		SPEAK,
 		TURN_IMAGE,
 		SMOKE,
 		COMMAND,
@@ -127,6 +133,7 @@ public:
 	};
 
 	enum Phase {
+		SCENARIO,
 		PUT_HEART,
 		START,
 		SELECT,

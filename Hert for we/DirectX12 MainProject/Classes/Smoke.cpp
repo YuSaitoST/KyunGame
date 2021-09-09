@@ -2,12 +2,14 @@
 #include <iostream>
 #include <MainScene.h>
 
+bool Smoke::fin_move;
+
 void Smoke::Initialize() {
 
 	alpha_white		= 0;
 	time_delta			= 0.0f;
 	time_stop			= 2.0f;
-	count_chnage = 0; // コルーチンの呼び出し回数を制限するための変数
+	count_chnage = 0;
 	pos_ui_turn_my.x = 0.0f;
 	pos_ui_turn_my.y = 385.0f;
 	pos_ui_turn_my.z = 0.0f;
@@ -20,14 +22,16 @@ void Smoke::Initialize() {
 
 	width_ui = 0.0f;
 	width_pos = 0.0f;
+
+	fin_move = false;
 }
 
 void Smoke::LoadAssets() {
-	white = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png");
+	white						= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png");
 
-	ui_turn_my = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/turn_ui.png");
-	ui_turn_partner = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/partner_turn_ui.png");
-	ui_move = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_ui.png");
+	ui_turn_my				= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/turn_ui.png");
+	ui_turn_partner		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/partner_turn_ui.png");
+	ui_move					= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_ui.png");
 }
 
 bool Smoke::Up_Change(const float deltaTime) {
@@ -41,6 +45,7 @@ bool Smoke::Up_Change(const float deltaTime) {
 		Initialize();
 		return true;
 	}
+
 	if (co_change_it != co_change.end()) co_change_it++;
 	return false;
 }
@@ -88,32 +93,90 @@ void Smoke::Render() {
 	}
 }
 
+void Smoke::Re_Move(int index) {
+	SimpleMath::Vector3 pos_ = index ? pos_ui_turn_my : pos_UI_turn_partner;
+
+	DX9::SpriteBatch->DrawSimple(
+		ui_move.Get(), pos_,
+		Rect(width_pos, 0.0f, 0.0f + (int)width_ui, 1080.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255)
+	);
+
+
+	// ホワイトアウト、プレイヤーによって変える
+	if (index) {
+		DX9::SpriteBatch->DrawSimple(
+			white.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+			Rect(0.0f, 0.0f, 1920.0f, 1080.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_white)
+		);
+	}
+	else {
+		DX9::SpriteBatch->DrawSimple(
+			white.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f),
+			Rect(0.0f, 0.0f, 1920.0f, 1080.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_white)
+		);
+	}
+
+
+
+}
+
 cppcoro::generator<int>Smoke::Change() {
 	co_yield 0;
 
-	while (width_ui < 1920)
-	{
-		alpha_white += num_alpha * time_delta;
-		if (alpha_white > 120)
-			alpha_white = 120;
-		width_ui += num_speed * time_delta;
-		co_yield 1;
+	if (MainScene::phase == MainScene::Phase::START) {
+		while (width_ui < 1920)
+		{
+			alpha_white += num_alpha * time_delta;
+			if (alpha_white > 120)
+				alpha_white = 120;
+			width_ui += num_speed * time_delta;
+			co_yield 1;
+		}
+		width_ui = 1920;
+
+		while (time_stop < 0.9f) {
+			time_stop += time_delta;
+			co_yield 2;
+		}
+
+		while (width_pos < 1920.0f)
+		{
+			width_pos += num_speed * time_delta;
+			pos_ui_turn_my.x += num_speed * time_delta;
+			pos_UI_turn_partner.x += num_speed * time_delta;
+
+			alpha_white = std::max(alpha_white - num_alpha * time_delta, 0.0f);
+			co_yield 3;
+		}
 	}
-	width_ui = 1920;
 
-	while (time_stop < 0.9f) {
-		time_stop += time_delta;
-		co_yield 2;
-	}
+	if (MainScene::phase == MainScene::Phase::MOVE) {
+		while (width_ui < 1920)
+		{
+			alpha_white += num_alpha * time_delta;
+			if (alpha_white > 120)
+				alpha_white = 120;
+			width_ui += num_speed * time_delta;
+			co_yield 1;
+		}
+		width_ui = 1920;
 
-	while (width_pos < 1920.0f)
-	{
-		width_pos += num_speed * time_delta;
-		pos_ui_turn_my.x += num_speed * time_delta;
-		pos_UI_turn_partner.x += num_speed * time_delta;
+		while (fin_move) {
+			co_yield 2;
+		}
 
-		alpha_white = std::max(alpha_white - num_alpha * time_delta, 0.0f);
-		co_yield 3;
+		while (width_pos < 1920.0f)
+		{
+			width_pos += num_speed * time_delta;
+			pos_ui_turn_my.x += num_speed * time_delta;
+			pos_UI_turn_partner.x += num_speed * time_delta;
+
+			alpha_white = std::max(alpha_white - num_alpha * time_delta, 0.0f);
+			co_yield 3;
+		}
 	}
 
 	co_return;

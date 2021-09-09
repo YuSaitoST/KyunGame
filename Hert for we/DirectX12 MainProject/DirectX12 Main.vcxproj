@@ -189,6 +189,7 @@
     <ClInclude Include="Base\StepTimer.h" />
     <ClInclude Include="Classes\Attack.h" />
     <ClInclude Include="Classes\BarUI.h" />
+    <ClInclude Include="Classes\BlackOut.h" />
     <ClInclude Include="Classes\LoadLines.h" />
     <ClInclude Include="Classes\Move.h" />
     <ClInclude Include="Classes\Smoke.h" />
@@ -213,6 +214,7 @@
     </ClCompile>
     <ClCompile Include="Classes\Attack.cpp" />
     <ClCompile Include="Classes\BarUI.cpp" />
+    <ClCompile Include="Classes\BlackOut.cpp" />
     <ClCompile Include="Classes\LoadLines.cpp" />
     <ClCompile Include="Classes\Move.cpp" />
     <ClCompile Include="Classes\Smoke.cpp" />

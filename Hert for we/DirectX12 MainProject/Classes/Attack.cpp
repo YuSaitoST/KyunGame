@@ -2,6 +2,7 @@
 #include <iostream>
 #include<MainScene.h>
 #include"LoadLines.h"
+using namespace std;
 
 float Attack::alpha_boy;
 float Attack::alpha_girl;
@@ -19,20 +20,20 @@ void Attack::Initialize() {
 
 	pos_speach_girl_1p.x = 0.0f;
 	pos_speach_girl_1p.y = 0.0f;
-	pos_speach_girl_1p.z = 0.0f;
+	pos_speach_girl_1p.z = -10.0f;
 
 	pos_speach_boy_1p.x = 920.0f;
 	pos_speach_boy_1p.y = 0.0f;
-	pos_speach_boy_1p.z = 0.0f;
+	pos_speach_boy_1p.z = -10.0f;
 
 
 	pos_speach_girl_2p.x = 2840.0f;
 	pos_speach_girl_2p.y = 0.0f;
-	pos_speach_girl_2p.z = 0.0f;
+	pos_speach_girl_2p.z = -10.0f;
 
 	pos_speach_boy_2p.x = 1920.0f;
 	pos_speach_boy_2p.y = 0.0f;
-	pos_speach_boy_2p.z = 0.0f;
+	pos_speach_boy_2p.z = -10.0f;
 
 
 	alpha_speach_my = 0.0f;
@@ -40,6 +41,25 @@ void Attack::Initialize() {
 
 	num_color[0] = 255;
 	num_color[1] = 255;
+
+	speach_my_reply             = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png"   );
+	speach_my_attack      = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_ul.png");
+	speach_partner_reply        = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_r.png" );
+	speach_partner_attack = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_ur.png");
+
+	speach = ATTACK_GIRL;
+
+	comment = 0;
+	speach_flag = false;
+
+
+	index_boy = 0;
+	index_girl = 1;
+
+
+	loadlines.Initialize();
+	loadlines.In_File();
+
 }
 
 void Attack::LoadAssets() {
@@ -65,8 +85,6 @@ void Attack::LoadAssets() {
 	girl_b[MainScene::EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_victory_r.png");
 	girl_b[MainScene::EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_defeat_r.png");
 
-	speach_my      = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png"  );
-	speach_partner = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_r.png");
 }
 
 bool Attack::Up_Attack(const float deltaTime) {
@@ -85,7 +103,7 @@ bool Attack::Up_Attack(const float deltaTime) {
 	return false;
 }
 
-// 反転用の変数を渡せるようにする（その変数はMainScene.hにて）
+// 反転用の変数を渡せるようにする（その変数はMainScene.hにて）この関数は使わない
 void Attack::Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 pos_girl) {
 	float pos_x_ = index == 1 ? 1920.0f : 0.0f;
 
@@ -104,14 +122,14 @@ void Attack::Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 
 
 	//1P
 	DX9::SpriteBatch->DrawSimple(
-		speach_my.Get(),
+		speach_my_reply.Get(),
 		pos_speach_girl_1p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
 		DX9::Colors::RGBA(255, 255, 255, alpha_speach_my)
 	);
 
 	DX9::SpriteBatch->DrawSimple(
-		speach_partner.Get(),
+		speach_partner_reply.Get(),
 		pos_speach_boy_1p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
 		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
@@ -119,14 +137,14 @@ void Attack::Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 
 
 	//2P
 	DX9::SpriteBatch->DrawSimple(
-		speach_partner.Get(),
+		speach_partner_reply.Get(),
 		pos_speach_girl_2p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
 		DX9::Colors::RGBA(255, 255, 255, alpha_speach_my)
 	);
 
 	DX9::SpriteBatch->DrawSimple(
-		speach_my.Get(),
+		speach_my_reply.Get(),
 		pos_speach_boy_2p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
 		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
@@ -134,35 +152,80 @@ void Attack::Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 
 }
 
 void Attack::Re_Speak() {
-	//1P
-	DX9::SpriteBatch->DrawSimple(
-		speach_my.Get(),
-		pos_speach_girl_1p,
-		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-		DX9::Colors::RGBA(255, 255, 255, alpha_speach_my)
-	);
+	//1P画面
+	if (speach == ATTACK_GIRL) {
+		DX9::SpriteBatch->DrawSimple(
+			speach_my_attack.Get(),
+			pos_speach_girl_1p,
+			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_my)
+		);
 
-	DX9::SpriteBatch->DrawSimple(
-		speach_partner.Get(),
-		pos_speach_boy_1p,
-		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
-	);
+		DX9::SpriteBatch->DrawSimple(
+			speach_partner_reply.Get(),
+			pos_speach_boy_1p,
+			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_partner)
+		);
+	}
 
-	//2P
-	DX9::SpriteBatch->DrawSimple(
-		speach_partner.Get(),
-		pos_speach_girl_2p,
-		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-		DX9::Colors::RGBA(255, 255, 255, alpha_speach_my)
-	);
+	if (speach == ATTACK_BOY) {
+		DX9::SpriteBatch->DrawSimple(
+			speach_my_reply.Get(),
+			pos_speach_girl_1p,
+			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_my)
+		);
 
-	DX9::SpriteBatch->DrawSimple(
-		speach_my.Get(),
-		pos_speach_boy_2p,
-		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
-	);
+		DX9::SpriteBatch->DrawSimple(
+			speach_partner_attack.Get(),
+			pos_speach_boy_1p,
+			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_partner)
+		);
+	}
+
+
+	//2P画面
+	if (speach == ATTACK_GIRL) {
+		DX9::SpriteBatch->DrawSimple(
+			speach_partner_attack.Get(),
+			pos_speach_girl_2p,
+			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_my)
+		);
+
+		DX9::SpriteBatch->DrawSimple(
+			speach_my_reply.Get(),
+			pos_speach_boy_2p,
+			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_partner)
+		);
+	}
+
+	if (speach == ATTACK_BOY) {
+		DX9::SpriteBatch->DrawSimple(
+			speach_partner_reply.Get(),
+			pos_speach_girl_2p,
+			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_my)
+		);
+
+		DX9::SpriteBatch->DrawSimple(
+			speach_my_attack.Get(),
+			pos_speach_boy_2p,
+			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_partner)
+		);
+	}
+
+
+	if (speach_flag == true) {
+		RECT dest = RectWH(pos_speach_girl_1p.x, pos_speach_girl_1p.y, 1000, 1000);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), comment, dest, DX9::Colors::Red);
+		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
+	}
+
 }
 
 
@@ -211,56 +274,79 @@ cppcoro::generator<int>Attack::Action() {
 	if (MainScene::num_player == 0) {
 		co_yield 0;
 		//女子の透明度を下げる
-		while (alpha_girl > 0.0f) {
-			alpha_girl -= NUM_ALPHA_CHARA * time_delta;
+		//while (alpha_girl > 0.0f) {
+		//	alpha_girl = max(alpha_girl - NUM_ALPHA_CHARA * time_delta, 0.0f);
+		//	co_yield 1;
+		//}
+		//alpha_girl = 0.0f;
+		//女子の差分切り替え
+		//while (time_stop < 0.1f)
+		//{
+		//	//time_stop += time_delta;
+		//	time_stop = min(time_stop + time_delta, 0.1f);
+		//	co_yield 2;
+		//}
+		//女子の透明度を上げる
+		//while (alpha_girl < 255.0f)
+		//{
+		//	alpha_girl = min(alpha_girl + NUM_ALPHA_CHARA * time_delta, 255.0f);
+		//	co_yield 3;
+		//}
+
+
+		MainScene::emotion[MainScene::num_player] = MainScene::EMOTION::PROPOSAL;
+		num_color[1] = COLOR_MAX;
+		speach = ATTACK_GIRL;
+		pos_speach_girl_1p.y = pos_speach_attack_y;
+		pos_speach_girl_2p.y = pos_speach_attack_y;
+
+
+		while (time_stop < 0.2f) {
+			time_stop = min(time_stop + time_delta, 0.2f);
 			co_yield 1;
 		}
-		alpha_girl = 0.0f;
-
-		//女子の差分切り替え
-		while (time_stop < 1.0f)
-		{
-			MainScene::emotion[MainScene::num_player] = MainScene::EMOTION::PROPOSAL;
-			time_stop += time_delta;
-			co_yield 2;
-		}
-		time_stop = 1.0f;
-
-		//女子の透明度を上げる
-		while (alpha_girl < 255.0f)
-		{
-			alpha_girl += NUM_ALPHA_CHARA * time_delta;
-			co_yield 3;
-		}
-		alpha_girl = 255.0f;
 
 		//吹き出しの移動
-		while (alpha_speach_my < COLOR_MAX)
+		while (pos_speach_girl_2p.x > pos_speach_attack_girl_limit_x_2p)
 		{
-			num_color[1] = COLOR_MAX;
-			pos_speach_girl_1p.y = pos_speach_attack_y;
-			pos_speach_girl_2p.y = pos_speach_attack_y;
 
-			alpha_speach_my += NUM_ALPHA_SPEACH * time_delta;
+			//alpha_speach_my += NUM_ALPHA_SPEACH * time_delta;
+			alpha_speach_my = min(alpha_speach_my + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 
-			pos_speach_girl_1p.x += NUM_SPEED * time_delta;
-			if (pos_speach_girl_1p.x > pos_speach_attack_girl_limit_x_1p)
-				pos_speach_girl_1p.x = pos_speach_attack_girl_limit_x_1p;
-			
-			pos_speach_girl_2p.x -= NUM_SPEED * time_delta;
-			if (pos_speach_girl_2p.x < pos_speach_attack_girl_limit_x_2p)
-				pos_speach_girl_2p.x = pos_speach_attack_girl_limit_x_2p;
+			//pos_speach_girl_1p.x += NUM_SPEED * time_delta;
+			//if (pos_speach_girl_1p.x > pos_speach_attack_girl_limit_x_1p)
+			//	pos_speach_girl_1p.x = pos_speach_attack_girl_limit_x_1p;
+			pos_speach_girl_1p.x = min(pos_speach_girl_1p.x + NUM_SPEED * time_delta, pos_speach_attack_girl_limit_x_1p);
 
-			co_yield 4;
+			//pos_speach_girl_2p.x -= NUM_SPEED * time_delta;
+			//if (pos_speach_girl_2p.x < pos_speach_attack_girl_limit_x_2p)
+			//	pos_speach_girl_2p.x = pos_speach_attack_girl_limit_x_2p;
+			pos_speach_girl_2p.x = max(pos_speach_girl_2p.x - NUM_SPEED * time_delta, pos_speach_attack_girl_limit_x_2p);
+
+			co_yield 2;
+		}
+		//alpha_speach_my = COLOR_MAX;
+		//pos_speach_girl_1p.x = pos_speach_attack_girl_limit_x_1p;
+		//pos_speach_girl_2p.x = pos_speach_attack_girl_limit_x_2p;
+
+
+		while (time_stop < 1000.0f)
+		{
+			speach_flag = true;
+			time_stop += time_delta;
+
+			comment++;
+			if (comment > LoadLines::lines1[0].length()) {
+				comment = LoadLines::lines1[0].length();
+			}
+
+			co_yield 3;
 		}
 
-		////while ()
-		////{
-		//RECT dest = RectWH(0, 0, 100, 100);
-		//	LoadLines::lines1[0].length();
-		//		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), 2, dest, DX9::Colors::White);
-		//		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
-		////}
+
+		//while (true)
+		//{
+		//}
 
 		co_return;
 	}
