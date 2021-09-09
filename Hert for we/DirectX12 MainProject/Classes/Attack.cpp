@@ -1,7 +1,10 @@
 #include"Classes/Attack.h"
 #include <iostream>
 #include<MainScene.h>
-#include <Classes/LoadLines.cpp>
+#include"LoadLines.h"
+
+float Attack::alpha_boy;
+float Attack::alpha_girl;
 
 void Attack::Initialize() {
 
@@ -10,7 +13,7 @@ void Attack::Initialize() {
 	count_chnage = 0;
 	time_delta = 0.0f;
 	alpha_boy = 255.0f;
-	alpha_girl = 155.0f;
+	alpha_girl = 255.0f;
 	time_stop = 0.0f;
 
 
@@ -40,16 +43,27 @@ void Attack::Initialize() {
 }
 
 void Attack::LoadAssets() {
-	boy[MainScene::EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
-	boy[MainScene::EMOTION::PROPOSAL]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
-	boy[MainScene::EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_near.png");
-	boy[MainScene::EMOTION::VICTORY]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_victory.png");
-	boy[MainScene::EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_defeat.png");
-	girl[MainScene::EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_generally.png");
-	girl[MainScene::EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_attack.png");
-	girl[MainScene::EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_near.png");
-	girl[MainScene::EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_victory.png");
-	girl[MainScene::EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/girl_defeat.png");
+	boy_a[MainScene::EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_generally.png");
+	boy_a[MainScene::EMOTION::PROPOSAL]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_attack.png");
+	boy_a[MainScene::EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_near.png");
+	boy_a[MainScene::EMOTION::VICTORY]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_victory.png");
+	boy_a[MainScene::EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_defeat.png");
+	girl_a[MainScene::EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_generally.png");
+	girl_a[MainScene::EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_attack.png");
+	girl_a[MainScene::EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_near.png");
+	girl_a[MainScene::EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_victory.png");
+	girl_a[MainScene::EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_defeat.png");
+
+	boy_b[MainScene::EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_generally_l.png");
+	boy_b[MainScene::EMOTION::PROPOSAL]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_attack_l.png");
+	boy_b[MainScene::EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_near_l.png");
+	boy_b[MainScene::EMOTION::VICTORY]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_victory_l.png");
+	boy_b[MainScene::EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/boy_defeat_l.png");
+	girl_b[MainScene::EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_generally_r.png");
+	girl_b[MainScene::EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_attack_r.png");
+	girl_b[MainScene::EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_near_r.png");
+	girl_b[MainScene::EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_victory_r.png");
+	girl_b[MainScene::EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_defeat_r.png");
 
 	speach_my      = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png"  );
 	speach_partner = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_r.png");
@@ -76,13 +90,13 @@ void Attack::Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 
 	float pos_x_ = index == 1 ? 1920.0f : 0.0f;
 
 	DX9::SpriteBatch->DrawSimple(
-		boy[MainScene::emotion[index]].Get(),
+		boy_a[MainScene::emotion[index]].Get(),
 		SimpleMath::Vector3(pos_x_ + pos_boy.x, pos_boy.y, MainScene::POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, 402.0f, 590.0f),
 		DX9::Colors::RGBA((int)num_color[0], (int)num_color[0], (int)num_color[0], (int)alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		girl[MainScene::emotion[index]].Get(),
+		girl_a[MainScene::emotion[index]].Get(),
 		SimpleMath::Vector3(pos_x_ + pos_girl.x, pos_girl.y, MainScene::POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, 438.0f, 476.0f),
 		DX9::Colors::RGBA((int)num_color[1], (int)num_color[1], (int)num_color[1], (int)alpha_girl)
@@ -116,6 +130,79 @@ void Attack::Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 
 		pos_speach_boy_2p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
 		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
+	);
+}
+
+void Attack::Re_Speak() {
+	//1P
+	DX9::SpriteBatch->DrawSimple(
+		speach_my.Get(),
+		pos_speach_girl_1p,
+		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+		DX9::Colors::RGBA(255, 255, 255, alpha_speach_my)
+	);
+
+	DX9::SpriteBatch->DrawSimple(
+		speach_partner.Get(),
+		pos_speach_boy_1p,
+		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
+	);
+
+	//2P
+	DX9::SpriteBatch->DrawSimple(
+		speach_partner.Get(),
+		pos_speach_girl_2p,
+		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+		DX9::Colors::RGBA(255, 255, 255, alpha_speach_my)
+	);
+
+	DX9::SpriteBatch->DrawSimple(
+		speach_my.Get(),
+		pos_speach_boy_2p,
+		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
+		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
+	);
+}
+
+
+// 時間かかりそうだから、これを使わない方針で調整する
+void Attack::Re_Chara(int index) {
+	// プレイヤーの画面に合わせて使う画像を変える
+	DX9::SPRITE boy = index == 0 ? boy_a[MainScene::emotion[MainScene::PLAYER::B]] : boy_b[MainScene::emotion[MainScene::PLAYER::B]];
+	DX9::SPRITE girl = index == 0 ? girl_a[MainScene::emotion[MainScene::PLAYER::A]] : girl_b[MainScene::emotion[MainScene::PLAYER::A]];
+
+	// 座標
+	SimpleMath::Vector2 pos_boy_;
+	SimpleMath::Vector2 pos_girl_;
+	if (index) {
+		pos_boy_ = MainScene::emotion[MainScene::PLAYER::B] == MainScene::EMOTION::PROPOSAL ? POS_BOY_AT_A : POS_BOY_GE_A;
+		pos_girl_ = MainScene::emotion[MainScene::PLAYER::A] == MainScene::EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
+	}
+	else {
+		pos_boy_ = MainScene::emotion[MainScene::PLAYER::B] == MainScene::EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
+		pos_girl_ = MainScene::emotion[MainScene::PLAYER::A] == MainScene::EMOTION::PROPOSAL ? POS_GIRL_AT_B : POS_GIRL_GE_B;
+	}
+
+	// rectのx座標
+	float rc_boy_x_ = MainScene::emotion[MainScene::PLAYER::B] == MainScene::EMOTION::PROPOSAL ? RC_BOY_ATT_R : RC_BOY_NOM_R;
+	float rc_girl_x_ = MainScene::emotion[MainScene::PLAYER::A] == MainScene::EMOTION::PROPOSAL ? RC_GIRL_ATT_R : RC_GIRL_NOM_R;
+
+	// rectのy座標
+	float rc_y_g_ = MainScene::emotion[MainScene::PLAYER::A] == MainScene::EMOTION::PROPOSAL ? 990.f : 750.0f;
+	float rc_y_b_ = MainScene::emotion[MainScene::PLAYER::B] == MainScene::EMOTION::PROPOSAL ? 990.f : 750.0f;
+
+	DX9::SpriteBatch->DrawSimple(
+		boy.Get(),
+		SimpleMath::Vector3(pos_boy_.x, pos_boy_.y, MainScene::POSI_Z::PLAYER),
+		Rect(0.0f, 0.0f, rc_boy_x_, rc_y_b_),
+		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], 255)
+	);
+	DX9::SpriteBatch->DrawSimple(
+		girl_a[MainScene::emotion[MainScene::PLAYER::A]].Get(),
+		SimpleMath::Vector3(POS_LEFT_GENE.x, POS_LEFT_GENE.y, MainScene::POSI_Z::PLAYER),
+		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_),
+		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], 255)
 	);
 }
 
@@ -167,13 +254,13 @@ cppcoro::generator<int>Attack::Action() {
 			co_yield 4;
 		}
 
-		//while ()
-		//{
-		RECT dest = RectWH(0, 0, 100, 100);
-			LoadLines::lines1[0].length();
-				DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), 2, dest, DX9::Colors::White);
-				//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
-		//}
+		////while ()
+		////{
+		//RECT dest = RectWH(0, 0, 100, 100);
+		//	LoadLines::lines1[0].length();
+		//		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), 2, dest, DX9::Colors::White);
+		//		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
+		////}
 
 		co_return;
 	}

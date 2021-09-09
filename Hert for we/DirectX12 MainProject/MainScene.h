@@ -52,8 +52,10 @@ private:
 	DX9::SPRITE area_attack;
 	DX9::SPRITE area_move;
 	DX9::SPRITE heart_red;
-	DX9::SPRITE boy[5];
-	DX9::SPRITE girl[5];
+	DX9::SPRITE boy_a[5];
+	DX9::SPRITE girl_a[5];
+	DX9::SPRITE boy_b[5];
+	DX9::SPRITE girl_b[5];
 	DX9::SPRITE com_cursor;
 	DX9::SPRITE speech;
 
