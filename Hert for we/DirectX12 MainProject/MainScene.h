@@ -5,10 +5,11 @@
 #pragma once
 
 #include "Scene.h"
-//#include"Classes/LoadLines.h"
+#include"Classes/LoadLines.h"
 #include "Classes/Smoke.h"
 #include"Classes/Attack.h"
 #include"Classes/BlackOut.h"
+#include"Classes/Move.h"
 #include <random>
 #include <Classes/BarUI.h>
 
@@ -59,6 +60,7 @@ private:
 	DX9::SPRITE girl_b[5];
 	DX9::SPRITE com_cursor;
 	DX9::SPRITE speech;
+	DX9::SPRITE select;
 
 	SimpleMath::Vector2 pos_pointer;
 	SimpleMath::Vector2 pos_pointer_ready[2];
@@ -77,6 +79,7 @@ private:
 	Smoke smoke;
 	BlackOut black;
 	Attack attack;
+	Move move;
 
 	const SimpleMath::Vector2	POS_FIELD				= SimpleMath::Vector2(505.0f,	40.0f);
 	const SimpleMath::Vector2	POS_CENTER			= SimpleMath::Vector2(878.0f,	413.0f);

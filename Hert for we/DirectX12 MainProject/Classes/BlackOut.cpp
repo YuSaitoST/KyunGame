@@ -79,7 +79,7 @@ cppcoro::generator<int>BlackOut::Change() {
 	}
 
 	if (MainScene::phase == MainScene::Phase::SUCCEED) {
-		while (alpha_black < 255.0f) {
+		while (alpha_black > 0.0f) {
 			alpha_black = std::min(alpha_black + num_alpha * time_delta, 255.0f);
 			co_yield 4;
 		}

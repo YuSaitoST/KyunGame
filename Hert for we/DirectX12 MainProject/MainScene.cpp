@@ -20,7 +20,7 @@ MainScene::MainScene()
 // Initialize a variable and audio resources.
 void MainScene::Initialize()
 {
-	font										= DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"ふい字", 20);
+	font										= DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"ふい字", 35);
 	pos_pointer						= POS_CENTER;  // 通常時
 	pos_pointer_ready[0]		= POS_CENTER;  // 以下2つは初回準備用
 	pos_pointer_ready[1]		= POS_CENTER;
@@ -36,6 +36,7 @@ void MainScene::Initialize()
 	black.Initialize();
 	smoke.Initialize();
 	attack.Initialize();
+	move.Initialize();
 
 	std::random_device seed;
 	random_engine		= std::mt19937(seed());
@@ -131,6 +132,10 @@ NextScene MainScene::Update(const float deltaTime)
 		case Phase::SUCCEED		:	Up_Result(deltaTime);			break;
 	}
 
+	if (phase == Phase::MOVE) {
+		move.Up_Moveing(deltaTime);
+	}
+
 	return NextScene::Continue;
 }
 
@@ -148,10 +153,10 @@ void MainScene::Render()
 
 
 	if (phase == Phase::START) smoke.Render();
-	if (phase == Phase::MOVE) smoke.Re_Move(num_player);
 
 	bool flag_black = phase == Phase::SCENARIO || phase == Phase::SUCCEED;
 	if (flag_black) black.Render();
+	if (phase == Phase::MOVE) move.Render(num_player);
 	
 	attack.Re_Speak();
 
@@ -174,6 +179,7 @@ void MainScene::LA_Load() {
 	area_move										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/move_area.png");
 	com_cursor									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/カーソル.png");
 	speech											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png");
+	select												= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/choices.png");
 
 	boy_a[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
 	boy_a[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
@@ -201,6 +207,7 @@ void MainScene::LA_Load() {
 	black.LoadAssets();
 	smoke.LoadAssets();
 	attack.LoadAssets();
+	move.LoadAseet();
 }
 
 void MainScene::Up_Scenario(float deltaTime) {
@@ -397,10 +404,6 @@ void MainScene::Up_Mo_Check(float deltaTime) {
 	}
 
 	if (!input_b_) return;  // 早期return
-	else Smoke::fin_move = true;
-
-	bool flag_move = smoke.Up_Change(deltaTime);
-	if (flag_move) return;
 
 	//pos_heart[num_player] = pos_pointer_ready[num_player];
 	phase = Phase::FINE;
@@ -495,17 +498,20 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 	}
 	if (phase == Phase::ATTACK) {   // !flag_attack
 		DX9::SpriteBatch->DrawSimple(
-			pointer.Get(),
+			area_attack.Get(),
 			SimpleMath::Vector3(pos_pointer.x, pos_pointer.y, POSI_Z::POINTER)
 		);
 		DX9::SpriteBatch->DrawSimple(
-			pointer.Get(),
+			area_attack.Get(),
 			SimpleMath::Vector3(pos_pointer.x + 1920.0f, pos_pointer.y, POSI_Z::POINTER)
 		);
 	}
 
 	if (num_player != index) return;
 	if (phase == Phase::SELECT) {
+		DX9::SpriteBatch->DrawSimple(
+			select.Get(), SimpleMath::Vector3(pos_x + 22.0f, 16.0f, POSI_Z::PLAYER)
+		);
 		DX9::SpriteBatch->DrawSimple(
 			com_cursor.Get(), SimpleMath::Vector3(pos_x + pos_cursor.x, pos_cursor.y, POSI_Z::COMMAND)
 		);

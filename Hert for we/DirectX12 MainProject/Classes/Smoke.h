@@ -32,7 +32,6 @@ public:
 	float width_ui;
 	float width_pos;
 
-	static bool fin_move;
 
 	SimpleMath::Vector3 pos_ui_turn_my;
 	SimpleMath::Vector3 pos_UI_turn_partner;

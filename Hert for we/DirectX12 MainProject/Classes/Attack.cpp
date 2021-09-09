@@ -330,7 +330,7 @@ cppcoro::generator<int>Attack::Action() {
 		//pos_speach_girl_2p.x = pos_speach_attack_girl_limit_x_2p;
 
 
-		while (time_stop < 1000.0f)
+		while (time_stop < 5.0f)
 		{
 			speach_flag = true;
 			time_stop += time_delta;

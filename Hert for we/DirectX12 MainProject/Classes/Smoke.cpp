@@ -2,8 +2,6 @@
 #include <iostream>
 #include <MainScene.h>
 
-bool Smoke::fin_move;
-
 void Smoke::Initialize() {
 
 	alpha_white		= 0;
@@ -22,8 +20,6 @@ void Smoke::Initialize() {
 
 	width_ui = 0.0f;
 	width_pos = 0.0f;
-
-	fin_move = false;
 }
 
 void Smoke::LoadAssets() {
@@ -93,91 +89,32 @@ void Smoke::Render() {
 	}
 }
 
-void Smoke::Re_Move(int index) {
-	SimpleMath::Vector3 pos_ = index ? pos_ui_turn_my : pos_UI_turn_partner;
-
-	DX9::SpriteBatch->DrawSimple(
-		ui_move.Get(), pos_,
-		Rect(width_pos, 0.0f, 0.0f + (int)width_ui, 1080.0f),
-		DX9::Colors::RGBA(255, 255, 255, 255)
-	);
-
-
-	// ホワイトアウト、プレイヤーによって変える
-	if (index) {
-		DX9::SpriteBatch->DrawSimple(
-			white.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
-			Rect(0.0f, 0.0f, 1920.0f, 1080.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_white)
-		);
-	}
-	else {
-		DX9::SpriteBatch->DrawSimple(
-			white.Get(), SimpleMath::Vector3(1920.0f, 0.0f, 0.0f),
-			Rect(0.0f, 0.0f, 1920.0f, 1080.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_white)
-		);
-	}
-
-
-
-}
-
 cppcoro::generator<int>Smoke::Change() {
 	co_yield 0;
 
-	if (MainScene::phase == MainScene::Phase::START) {
-		while (width_ui < 1920)
-		{
-			alpha_white += num_alpha * time_delta;
-			if (alpha_white > 120)
-				alpha_white = 120;
-			width_ui += num_speed * time_delta;
-			co_yield 1;
-		}
-		width_ui = 1920;
+	while (width_ui < 1920)
+	{
+		alpha_white += num_alpha * time_delta;
+		if (alpha_white > 120)
+			alpha_white = 120;
+		width_ui += num_speed * time_delta;
+		co_yield 1;
+	}
+	width_ui = 1920;
 
-		while (time_stop < 0.9f) {
-			time_stop += time_delta;
-			co_yield 2;
-		}
-
-		while (width_pos < 1920.0f)
-		{
-			width_pos += num_speed * time_delta;
-			pos_ui_turn_my.x += num_speed * time_delta;
-			pos_UI_turn_partner.x += num_speed * time_delta;
-
-			alpha_white = std::max(alpha_white - num_alpha * time_delta, 0.0f);
-			co_yield 3;
-		}
+	while (time_stop < 0.9f) {
+		time_stop += time_delta;
+		co_yield 2;
 	}
 
-	if (MainScene::phase == MainScene::Phase::MOVE) {
-		while (width_ui < 1920)
-		{
-			alpha_white += num_alpha * time_delta;
-			if (alpha_white > 120)
-				alpha_white = 120;
-			width_ui += num_speed * time_delta;
-			co_yield 1;
-		}
-		width_ui = 1920;
+	while (width_pos < 1920.0f)
+	{
+		width_pos += num_speed * time_delta;
+		pos_ui_turn_my.x += num_speed * time_delta;
+		pos_UI_turn_partner.x += num_speed * time_delta;
 
-		while (fin_move) {
-			co_yield 2;
-		}
-
-		while (width_pos < 1920.0f)
-		{
-			width_pos += num_speed * time_delta;
-			pos_ui_turn_my.x += num_speed * time_delta;
-			pos_UI_turn_partner.x += num_speed * time_delta;
-
-			alpha_white = std::max(alpha_white - num_alpha * time_delta, 0.0f);
-			co_yield 3;
-		}
+		alpha_white = std::max(alpha_white - num_alpha * time_delta, 0.0f);
+		co_yield 3;
 	}
-
 	co_return;
 }
