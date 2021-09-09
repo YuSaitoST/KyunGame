@@ -12,15 +12,15 @@ void LoadLines::Initialize() {
 
 void LoadLines::In_File() {
 	FILE* fp;
-	assert(_wfopen_s(&fp, L"comment.csv", L"r") == 0);
+	assert(_wfopen_s(&fp, L"comment.csv", L"r,ccs=UTF-8") == 0);
 
-	char read_line[256];
-	fgets(read_line, 255, fp);
+	wchar_t read_line[256];
+	fgetws(read_line, 255, fp);
 
-	wchar_t flavor_text[256];
-	MultiByteToWideChar(CP_ACP, 0, read_line, -1, flavor_text, 255);  // •ÏŠ·
+	//wchar_t flavor_text[256];
+	//MultiByteToWideChar(CP_ACP, 0, read_line, -1, flavor_text, 255);  // •ÏŠ·
 
-	lines1[0] = flavor_text;
+	lines1[0] = read_line;
 
 	fclose(fp);  // ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
 }
