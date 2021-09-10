@@ -177,4 +177,10 @@ public:
 	static bool flag_suka;
 	static bool flag_graze;
 	static bool flag_hit;
+
+	// ƒLƒƒƒ‰—h‚ê‚Ì•Ï”
+	static SimpleMath::Vector2 pos_girl_a;
+	static SimpleMath::Vector2 pos_girl_b;
+	static SimpleMath::Vector2 pos_boy_a;
+	static SimpleMath::Vector2 pos_boy_b;
 };

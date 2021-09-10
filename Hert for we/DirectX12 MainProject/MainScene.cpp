@@ -14,6 +14,10 @@ int MainScene::flag_attack;
 bool MainScene::flag_suka;
 bool MainScene::flag_graze;
 bool MainScene::flag_hit;
+SimpleMath::Vector2 MainScene::pos_girl_a;
+SimpleMath::Vector2 MainScene::pos_girl_b;
+SimpleMath::Vector2 MainScene::pos_boy_a;
+SimpleMath::Vector2 MainScene::pos_boy_b;
 
 // Initialize member variables.
 MainScene::MainScene()
@@ -32,7 +36,7 @@ void MainScene::Initialize()
 	pos_attack							= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
 	pos_heart[0]						= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
 	pos_heart[1]						= SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
-	pos_heart_old					= SimpleMath::Vector2(0.0f, 0.0f);
+	pos_heart_old					= pos_heart[0];  // 一旦プレイヤーAの方を、ランダムで変わるならこっちも
 	std::fill(std::begin(pos_move),			std::end(pos_move),			SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(pos_cross_hR),		std::end(pos_cross_hR),	SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA));
 	std::fill(std::begin(emotion),				std::end(emotion),				EMOTION::GENERALLY);
@@ -246,6 +250,7 @@ void MainScene::Up_Put(int index) {
 
 void MainScene::Up_Start(float deltaTime) {
 	std::fill(std::begin(num_ready_all), std::end(num_ready_all), 0);
+	pos_heart_old = pos_heart[num_player];
 	//パチンコ演出したいなら↓
 	//num_color[0] = num_color[0] == 120 ? 255 : 120;  // 色指定の式は先攻後攻処理完成後に再調整
 	//num_color[1] = num_color[1] == 255 ? 120 : 255;
@@ -266,9 +271,9 @@ void MainScene::Up_Select() {
 		if (pos_cursor.y == 200.0f) phase = Phase::MOVE;
 	}
 
-	pos_pointer = POS_CENTER;
-	//pos_pointer_ready[0] = POS_CENTER;
-	//pos_pointer_ready[1] = POS_CENTER;
+	// 新規封印
+	//pos_pointer = pos_heart[num_player];
+	pos_heart[num_player] = pos_heart_old;
 
 
 	// 十字方向の座標の取得
@@ -285,7 +290,6 @@ void MainScene::Up_Select() {
 	pos_move[3] = pos_cross_hR[3];
 	pos_move[4] = pos_cross_hR[4];
 
-	pos_heart_old = pos_cross_hR[4];
 
 	if (phase != Phase::MOVE) return;
 
@@ -332,7 +336,7 @@ void MainScene::Up_Attack(float deltaTime) {
 
 	if (input_a_) {
 		phase								= Phase::SELECT;
-		emotion[num_player]	= EMOTION::GENERALLY;
+//		emotion[num_player]	= EMOTION::GENERALLY;
 		return;
 	}
 	if (input_b_) {
@@ -355,7 +359,7 @@ void MainScene::Up_At_Check(float deltaTime) {
 	// ポインターとハート、それぞれの十字が重なっているか
 	float pos_x = 0;
 	for (int j = 0; j < 5; j++) {
-		if (pos_cross_hR[j] == SimpleMath::Vector2(pos_pointer.x + pos_x, pos_pointer.y)) emotion[partner_] = EMOTION::NERVOUS;
+//		if (pos_cross_hR[j] == SimpleMath::Vector2(pos_pointer.x + pos_x, pos_pointer.y)) emotion[partner_] = EMOTION::NERVOUS;
 	}
 }
 
@@ -412,7 +416,6 @@ void MainScene::Up_Mo_Check(float deltaTime) {
 
 	if (input_a_) {
 		phase = Phase::SELECT;
-		pos_heart[num_player] = pos_heart_old;
 		return;
 	}
 
@@ -559,8 +562,8 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 void MainScene::Re_Draw_PlayerA() {
 	Re_Draw_Standard(0.0f, PLAYER::A);
 
-	SimpleMath::Vector2 pos_boy_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? POS_BOY_AT_A : POS_BOY_GE_A;
-	SimpleMath::Vector2 pos_girl_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
+	pos_boy_a	= emotion[PLAYER::B] == EMOTION::PROPOSAL ? POS_BOY_AT_A : POS_BOY_GE_A;
+	pos_girl_a	= emotion[PLAYER::A] == EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
 
 	float rc_boy_x_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? RC_BOY_ATT_R : RC_BOY_NOM_R;
 	float rc_girl_x_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? RC_GIRL_ATT_R : RC_GIRL_NOM_R;
@@ -570,13 +573,13 @@ void MainScene::Re_Draw_PlayerA() {
 
 	DX9::SpriteBatch->DrawSimple(
 		boy_a[emotion[PLAYER::B]].Get(), 
-		SimpleMath::Vector3(pos_boy_.x, pos_boy_.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(pos_boy_a.x, pos_boy_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_boy_x_, rc_y_b_), 
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_a[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(pos_girl_.x, pos_girl_.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(pos_girl_a.x, pos_girl_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_), 
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
@@ -585,8 +588,8 @@ void MainScene::Re_Draw_PlayerA() {
 void MainScene::Re_Draw_PlayerB() {
 	Re_Draw_Standard(POS_X2, PLAYER::B);
 
-	SimpleMath::Vector2 pos_boy_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
-	SimpleMath::Vector2 pos_girl_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? POS_GIRL_AT_B : POS_GIRL_GE_B;
+	pos_boy_b = emotion[PLAYER::B] == EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
+	pos_girl_b = emotion[PLAYER::A] == EMOTION::PROPOSAL ? POS_GIRL_AT_B : POS_GIRL_GE_B;
 
 	float rc_x_g_ = emotion[PLAYER::A] == EMOTION::PROPOSAL ? RC_GIRL_ATT_R : RC_GIRL_NOM_R;
 	float rc_x_b_ = emotion[PLAYER::B] == EMOTION::PROPOSAL ? RC_BOY_ATT_R : RC_BOY_NOM_R;
@@ -596,13 +599,13 @@ void MainScene::Re_Draw_PlayerB() {
 
 	DX9::SpriteBatch->DrawSimple(
 		boy_b[emotion[PLAYER::B]].Get(),
-		SimpleMath::Vector3(POS_X2 + pos_boy_.x, pos_boy_.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_X2 + pos_boy_b.x, pos_boy_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_b_, rc_y_b_),
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_b[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(POS_X2 + pos_girl_.x, pos_girl_.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_X2 + pos_girl_b.x, pos_girl_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_g_, rc_y_g_),
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
