@@ -140,7 +140,10 @@ NextScene MainScene::Update(const float deltaTime)
 	// If you use 'deltaTime', remove it.
 	UNREFERENCED_PARAMETER(deltaTime);
 
-	// TODO: Add your game logic here.
+	// TODO: Add your game logic here
+
+	bgm_main->Play();
+	if (bgm_main->isComplete()) bgm_main->Replay();
 
 	switch (phase) {
 		case Phase::SCENARIO		:	Up_Scenario(deltaTime);				break;
@@ -193,7 +196,8 @@ void MainScene::Render()
 void MainScene::LA_Load() {
 	bg[PLAYER::A]								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"BG/main_bg01.png");
 	bg[PLAYER::B]								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"BG/main_bg02.png");
-	map													= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map.png");
+	map[0]											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map_1.png");
+	map[1]											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map_2.png");
 	heart_red										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"love.png");
 	pointer											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/pointer.png");
 	area_attack										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/attack_area.png");
@@ -224,9 +228,15 @@ void MainScene::LA_Load() {
 	girl_b[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_victory_r.png");
 	girl_b[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_defeat_r.png");
 
-	//bgm_main = XAudio::CreateSoundEffect(DXTK->AudioEngine, L"BGM\\ファイル名.wav");
-	//bgm_main_instance = bgm_main->CreateInstance();
-	// 呼び出すところで instance->Play();
+	bgm_main										= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\main_bgm.mp3");
+	//se_decision= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+	//se_move= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+	//se_attack= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+	//se_nervous= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+	//se_speak= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+	//se_cancel= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+	//se_change= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+
 
 	black.LoadAssets();
 	smoke.LoadAssets();
@@ -262,9 +272,9 @@ void MainScene::Up_Start(float deltaTime) {
 	std::fill(std::begin(num_ready_all), std::end(num_ready_all), 0);
 	pos_heart_old = pos_heart[num_player];
 
-	num_color[num_player] = 255;
+	num_color[num_player] = 155;
 	int partner_ = num_player ? 0 : 1;
-	num_color[partner_] = 155;
+	num_color[partner_] = 255;
 
 	flag_suka		= false;
 	flag_graze		= false;
@@ -496,10 +506,7 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 		bg[index].Get(), SimpleMath::Vector3(pos_x + 0.0f, 0.0f, POSI_Z::BACK_GROUND)
 	);
 	DX9::SpriteBatch->DrawSimple(
-		map.Get(), SimpleMath::Vector3(pos_x + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
-	);
-	DX9::SpriteBatch->DrawSimple(
-		heart_red.Get(), SimpleMath::Vector3(pos_x + pos_heart[index].x, pos_heart[index].y, POSI_Z::HEART)
+		map[0].Get(), SimpleMath::Vector3(pos_x + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
 	);
 
 	if (flag_debug) {
@@ -536,6 +543,14 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 			pointer.Get(),
 			SimpleMath::Vector3(pos_x + pos_pointer_ready[index].x, pos_pointer_ready[index].y, POSI_Z::POINTER)
 		);
+	}
+	if (num_player == index) {
+		if (phase != Phase::ATTACK) {
+			// アタック蒔は自分のハートの位置関係ないので非表示にさせる
+			DX9::SpriteBatch->DrawSimple(
+				heart_red.Get(), SimpleMath::Vector3(pos_x + pos_heart[index].x, pos_heart[index].y, POSI_Z::HEART)
+			);
+		}
 	}
 	if (phase == Phase::ATTACK) {   // !flag_attack
 		DX9::SpriteBatch->DrawSimple(
@@ -600,13 +615,13 @@ void MainScene::Re_Draw_PlayerA() {
 		boy_a[emotion[PLAYER::B]].Get(), 
 		SimpleMath::Vector3(pos_boy_a.x, POS_BOY_A + pos_boy_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_boy_x_, rc_y_b_), 
-		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
+		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_a[emotion[PLAYER::A]].Get(),
 		SimpleMath::Vector3(pos_girl_a.x, POS_GIRL_A + pos_girl_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_), 
-		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
+		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_girl)
 	);
 }
 
@@ -626,13 +641,13 @@ void MainScene::Re_Draw_PlayerB() {
 		boy_b[emotion[PLAYER::B]].Get(),
 		SimpleMath::Vector3(POS_X2 + pos_boy_b.x, POS_BOY_B + pos_boy_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_b_, rc_y_b_),
-		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
+		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_b[emotion[PLAYER::A]].Get(),
 		SimpleMath::Vector3(POS_X2 + pos_girl_b.x, POS_GIRL_B + pos_girl_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_g_, rc_y_g_),
-		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
+		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_girl)
 	);
 }
 

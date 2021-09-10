@@ -49,7 +49,7 @@ private:
 	DX9::SPRITEFONT font;
 
 	DX9::SPRITE bg[2];
-	DX9::SPRITE map;
+	DX9::SPRITE map[2];
 	DX9::SPRITE pointer;
 	DX9::SPRITE area_attack;
 	DX9::SPRITE area_move;
@@ -62,8 +62,14 @@ private:
 	DX9::SPRITE speech;
 	DX9::SPRITE select;
 
-	XAudio::SOUNDEFFECT bgm_main;
-	XAudio::SOUNDEFFECTINSTANCE bgm_main_instance;
+	DX9::MEDIARENDERER bgm_main;
+	DX9::MEDIARENDERER se_cancel;
+	DX9::MEDIARENDERER se_speak;
+	DX9::MEDIARENDERER se_change;
+	DX9::MEDIARENDERER se_move;
+	DX9::MEDIARENDERER se_decision;
+	DX9::MEDIARENDERER se_attack;
+	DX9::MEDIARENDERER se_nervous;
 
 	SimpleMath::Vector2 pos_pointer;
 	SimpleMath::Vector2 pos_pointer_ready[2];

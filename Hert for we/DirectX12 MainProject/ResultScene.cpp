@@ -16,6 +16,8 @@ ResultScene::ResultScene()
 void ResultScene::Initialize()
 {
     font = DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"‚Ó‚¢Žš", 20);
+    bgm_result = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\ending_bgm.mp3");
+    /*se_flowers= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")*/
 }
 
 // Allocate all memory the Direct3D and Direct2D resources.

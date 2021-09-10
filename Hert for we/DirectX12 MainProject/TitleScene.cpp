@@ -88,6 +88,8 @@ NextScene TitleScene::Update(const float deltaTime)
 
     // TODO: Add your game logic here.
 
+    bgm_title->Play();
+    if (bgm_title->isComplete()) bgm_title->Replay();
 
     Up_comment(deltaTime);
 
@@ -121,10 +123,14 @@ void TitleScene::Render()
 }
 
 void TitleScene::LA_Load() {
-    title    = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/title.png"  );
-    comment  = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/explanation_bg.png");
-    ui_start = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/start.png"  );
-    white    = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png" );
+    title              = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/title.png"  );
+    comment    = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/explanation_bg.png");
+    ui_start        = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/start.png"  );
+    white           = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png" );
+
+    bgm_title    = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\title_bgm.mp3");
+    //se_ope=DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+    //se_start=DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
 }
 
 void TitleScene::Up_comment(const float deltaTime) {
