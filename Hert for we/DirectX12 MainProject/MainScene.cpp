@@ -281,6 +281,7 @@ void MainScene::Up_Select() {
 	}
 
 	pos_pointer = POS_CENTER;
+	pos_pointer_ready[num_player] = POS_CENTER;
 	pos_heart[num_player] = pos_heart_old;
 
 
@@ -309,6 +310,7 @@ void MainScene::Up_Select() {
 			pos_move[i] = SimpleMath::Vector2(POS_OUTAREA, POS_OUTAREA);
 		}
 	}
+	pos_pointer_ready[num_player] = pos_cross_hR[4];
 }
 
 void MainScene::Up_Attack(float deltaTime) {
@@ -317,7 +319,7 @@ void MainScene::Up_Attack(float deltaTime) {
 	if (flag_attack) {
 		// コルーチン用のフラグ建築
 		if (pos_heart[partner_] == pos_pointer_ready[num_player])		flag_hit = true;
-		else if (!flag_graze)																			flag_suka = true;
+		else if (!flag_graze && !flag_hit)														flag_suka = true;
 
 		bool fin_attack = attack.Up_Attack(deltaTime);
 		if (!fin_attack) return;
@@ -412,10 +414,10 @@ void MainScene::Up_Move(float deltaTime) {
 
 	// 十字外に出たときのランバージャック
 	for (int i = 0; i < 5; i++) {
-		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[0].x - 179.0f, pos_cross_hR[0].y))	pos_pointer_ready[num_player] = POS_CENTER;
-		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[0].x + 179.0f, pos_cross_hR[0].y))	pos_pointer_ready[num_player] = POS_CENTER;
-		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[2].x + 179.0f, pos_cross_hR[2].y))	pos_pointer_ready[num_player] = POS_CENTER;
-		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[2].x - 179.0f, pos_cross_hR[2].y))	pos_pointer_ready[num_player] = POS_CENTER;
+		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[0].x - 179.0f, pos_cross_hR[0].y))	pos_pointer_ready[num_player] = pos_cross_hR[4];
+		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[0].x + 179.0f, pos_cross_hR[0].y))	pos_pointer_ready[num_player] = pos_cross_hR[4];
+		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[2].x + 179.0f, pos_cross_hR[2].y))	pos_pointer_ready[num_player] = pos_cross_hR[4];
+		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[2].x - 179.0f, pos_cross_hR[2].y))	pos_pointer_ready[num_player] = pos_cross_hR[4];
 	}
 
 	pos_heart[num_player] = pos_pointer_ready[num_player];
@@ -475,8 +477,10 @@ void MainScene::Up_Fine() {
 	phase				= Phase::START;
 }
 
-void MainScene::Up_Result(float deltaTime) {
+NextScene MainScene::Up_Result(float deltaTime) {
 	bool flag_black = black.Up_Black(deltaTime);
+	if (flag_black) return NextScene::ResultScene;
+	return NextScene::Continue;
 }
 
 void MainScene::Re_Draw_Standard(float pos_x, int index) {

@@ -111,7 +111,7 @@ private:
 	void Up_Mo_Check(float deltaTime);
 	void Up_Move_Pointer(int index);
 	void Up_Fine();
-	void Up_Result(float deltaTime);
+	NextScene Up_Result(float deltaTime);
 	void Re_Draw_Standard(float pos_x, int index);
 	void Re_Draw_PlayerA();
 	void Re_Draw_PlayerB();
