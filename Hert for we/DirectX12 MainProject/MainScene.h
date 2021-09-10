@@ -183,4 +183,10 @@ public:
 	static SimpleMath::Vector2 pos_girl_b;
 	static SimpleMath::Vector2 pos_boy_a;
 	static SimpleMath::Vector2 pos_boy_b;
+
+	static float POS_GIRL_A;
+	static float POS_GIRL_B; 
+	static float POS_BOY_A;
+	static float POS_BOY_B;
+
 };

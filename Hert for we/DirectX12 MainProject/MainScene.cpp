@@ -18,6 +18,10 @@ SimpleMath::Vector2 MainScene::pos_girl_a;
 SimpleMath::Vector2 MainScene::pos_girl_b;
 SimpleMath::Vector2 MainScene::pos_boy_a;
 SimpleMath::Vector2 MainScene::pos_boy_b;
+float MainScene::POS_GIRL_A;
+float MainScene::POS_GIRL_B;
+float MainScene::POS_BOY_A;
+float MainScene::POS_BOY_B;
 
 // Initialize member variables.
 MainScene::MainScene()
@@ -61,6 +65,11 @@ void MainScene::Initialize()
 	num_turn				= 0;
 	num_color[0]			= 255;
 	num_color[1]			= 255;
+
+	POS_GIRL_A = 0.0f;
+	POS_GIRL_B = 0.0f;
+	POS_BOY_A = 0.0f;
+	POS_GIRL_B = 0.0f;
 
 	flag_attack = 0;
 	flag_suka = false;
@@ -397,14 +406,18 @@ void MainScene::Up_Move(float deltaTime) {
 
 	float pos_bx_ = 0;
 
-	//if (pos_pointer.x == POS_END_UL.x) {
-	//	pos_pointer
-	//}
-
 	pos_pointer_ready[num_player] = SimpleMath::Vector2(
 		std::clamp(pos_pointer_ready[num_player].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
 		std::clamp(pos_pointer_ready[num_player].y, lumberjack_up_, lumberjack_down_)
 	);
+
+	// 十字外に出たときのランバージャック
+	for (int i = 0; i < 5; i++) {
+		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[0].x - 179.0f, pos_cross_hR[0].y))	pos_pointer_ready[num_player] = POS_CENTER;
+		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[0].x + 179.0f, pos_cross_hR[0].y))	pos_pointer_ready[num_player] = POS_CENTER;
+		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[2].x + 179.0f, pos_cross_hR[2].y))	pos_pointer_ready[num_player] = POS_CENTER;
+		if (pos_pointer_ready[num_player] == SimpleMath::Vector2(pos_cross_hR[2].x - 179.0f, pos_cross_hR[2].y))	pos_pointer_ready[num_player] = POS_CENTER;
+	}
 
 	pos_heart[num_player] = pos_pointer_ready[num_player];
 
@@ -576,13 +589,13 @@ void MainScene::Re_Draw_PlayerA() {
 
 	DX9::SpriteBatch->DrawSimple(
 		boy_a[emotion[PLAYER::B]].Get(), 
-		SimpleMath::Vector3(pos_boy_a.x, pos_boy_a.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_BOY_A + pos_boy_a.x, pos_boy_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_boy_x_, rc_y_b_), 
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_a[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(pos_girl_a.x, pos_girl_a.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_GIRL_A + pos_girl_a.x, pos_girl_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_), 
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
@@ -602,13 +615,13 @@ void MainScene::Re_Draw_PlayerB() {
 
 	DX9::SpriteBatch->DrawSimple(
 		boy_b[emotion[PLAYER::B]].Get(),
-		SimpleMath::Vector3(POS_X2 + pos_boy_b.x, pos_boy_b.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_X2 + POS_BOY_B + pos_boy_b.x, pos_boy_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_b_, rc_y_b_),
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_b[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(POS_X2 + pos_girl_b.x, pos_girl_b.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_X2 + POS_GIRL_B + pos_girl_b.x, pos_girl_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_g_, rc_y_g_),
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
