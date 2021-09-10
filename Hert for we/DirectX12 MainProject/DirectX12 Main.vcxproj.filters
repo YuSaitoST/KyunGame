@@ -66,6 +66,9 @@
     <ClInclude Include="Classes\BlackOut.h">
       <Filter>Classes</Filter>
     </ClInclude>
+    <ClInclude Include="ResultScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Base\Main.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="Classes\BlackOut.cpp">
       <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultScene.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
