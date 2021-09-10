@@ -8,6 +8,7 @@
 
 MainScene::Phase MainScene::phase;
 MainScene::EMOTION MainScene::emotion[2];
+int MainScene::num_color[2];
 int MainScene::num_player;
 int MainScene::flag_attack;
 bool MainScene::flag_suka;
@@ -266,6 +267,8 @@ void MainScene::Up_Select() {
 	}
 
 	pos_pointer = POS_CENTER;
+	//pos_pointer_ready[0] = POS_CENTER;
+	//pos_pointer_ready[1] = POS_CENTER;
 
 
 	// 十字方向の座標の取得
@@ -282,7 +285,7 @@ void MainScene::Up_Select() {
 	pos_move[3] = pos_cross_hR[3];
 	pos_move[4] = pos_cross_hR[4];
 
-	pos_heart_old = pos_heart[num_player];
+	pos_heart_old = pos_cross_hR[4];
 
 	if (phase != Phase::MOVE) return;
 
@@ -300,13 +303,13 @@ void MainScene::Up_Attack(float deltaTime) {
 	int partner_ = (num_player == 0);  // 相手プレイヤーを指定
 
 	if (flag_attack) {
-		bool fin_attack = attack.Up_Attack(deltaTime);
-		if (!fin_attack) return;
-
 		// コルーチン用のフラグ建築
 		if (pos_heart[partner_] == pos_pointer_ready[num_player])		flag_hit		= true;
 		else if (emotion[partner_] == EMOTION::NERVOUS)					flag_graze	= true;
 		else																										flag_suka	= true;
+
+		bool fin_attack = attack.Up_Attack(deltaTime);
+		if (!fin_attack) return;
 
 
 		if (flag_hit) {
