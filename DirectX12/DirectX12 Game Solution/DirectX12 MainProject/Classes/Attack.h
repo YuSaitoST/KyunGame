@@ -70,7 +70,7 @@ private:
 	const float pos_speach_attack_boy_limit_x_2p = 2505.0f;
 
 
-	const float pos_speach_normal_y = 597.0f;
+	const float pos_speach_reply_y = 597.0f;
 	const float pos_speach_attack_y = 40.0f;
 
 
@@ -78,9 +78,13 @@ private:
 	float time_delta;
 
 
-	int comment;
-	bool speach_flag;
+	int comment_attack;
+	int comment_reply;
+	bool flag_speach_attack_girl;
+	bool flag_speach_reply_boy;
 
+	bool flag_speach_attack_boy;
+	bool flag_speach_reply_girl;
 
 	// 台詞配列の要素を指定する変数
 	int index_boy;
@@ -104,7 +108,7 @@ private:
 	const float NUM_ALPHA_CHARA = 1100.0f;
 	const float NUM_ALPHA_SPEACH = 400.0f;
 	const float NUM_SPEED = 700.0f;
-	float num_color[2];  // 画像の色
+	//float num_color[2];  // 画像の色
 	float time_stop;
 
 
