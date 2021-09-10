@@ -94,8 +94,7 @@ private:
 
 	int num_turn;  // ターン数
 	int num_ready;  // 互いの準備完了状態
-	int num_ready_all[2];  // 両者が準備完了かどうか
-	int num_color[2];  // 画像の色
+	int num_ready_all[2];  // 両者が
 
 	bool flag_debug;  // デバッグ時のみtrueにする
 	bool fin_game;  // デバック用
@@ -171,6 +170,7 @@ public:
 
 	static EMOTION emotion[2];  //これを用いてキャラクターの状態を表す
 
+	static int num_color[2];  // 画像の色
 	static int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
 	static int flag_attack;  // 攻撃コルーチンのフラグ
 
