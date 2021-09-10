@@ -280,8 +280,7 @@ void MainScene::Up_Select() {
 		if (pos_cursor.y == 200.0f) phase = Phase::MOVE;
 	}
 
-	// V‹K••ˆó
-	//pos_pointer = pos_heart[num_player];
+	pos_pointer = POS_CENTER;
 	pos_heart[num_player] = pos_heart_old;
 
 
@@ -428,7 +427,6 @@ void MainScene::Up_Mo_Check(float deltaTime) {
 	const bool input_a_ = DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 	const bool input_b_ = DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
 
-	//pos_heart[num_player] = pos_pointer_ready[num_player];
 
 	if (input_a_) {
 		phase = Phase::SELECT;
@@ -437,7 +435,6 @@ void MainScene::Up_Mo_Check(float deltaTime) {
 
 	if (!input_b_) return;  // ‘Šúreturn
 
-	//pos_heart[num_player] = pos_pointer_ready[num_player];
 	phase = Phase::FINE;
 }
 
@@ -589,13 +586,13 @@ void MainScene::Re_Draw_PlayerA() {
 
 	DX9::SpriteBatch->DrawSimple(
 		boy_a[emotion[PLAYER::B]].Get(), 
-		SimpleMath::Vector3(POS_BOY_A + pos_boy_a.x, pos_boy_a.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(pos_boy_a.x, POS_BOY_A + pos_boy_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_boy_x_, rc_y_b_), 
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_a[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(POS_GIRL_A + pos_girl_a.x, pos_girl_a.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(pos_girl_a.x, POS_GIRL_A + pos_girl_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_), 
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
@@ -615,13 +612,13 @@ void MainScene::Re_Draw_PlayerB() {
 
 	DX9::SpriteBatch->DrawSimple(
 		boy_b[emotion[PLAYER::B]].Get(),
-		SimpleMath::Vector3(POS_X2 + POS_BOY_B + pos_boy_b.x, pos_boy_b.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_X2 + pos_boy_b.x, POS_BOY_B + pos_boy_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_b_, rc_y_b_),
 		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_b[emotion[PLAYER::A]].Get(),
-		SimpleMath::Vector3(POS_X2 + POS_GIRL_B + pos_girl_b.x, pos_girl_b.y, POSI_Z::PLAYER),
+		SimpleMath::Vector3(POS_X2 + pos_girl_b.x, POS_GIRL_B + pos_girl_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_g_, rc_y_g_),
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
