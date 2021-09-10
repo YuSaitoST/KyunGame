@@ -551,6 +551,12 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 				heart_red.Get(), SimpleMath::Vector3(pos_x + pos_heart[index].x, pos_heart[index].y, POSI_Z::HEART)
 			);
 		}
+
+		// ’†“r”¼’[
+		int partner_ = num_player ? 0 : 1;
+		DX9::SpriteBatch->DrawSimple(
+			bg[partner_].Get(), SimpleMath::Vector3(pos_x + 0.0f, 0.0f, POSI_Z::BACK_GROUND)
+		);
 	}
 	if (phase == Phase::ATTACK) {   // !flag_attack
 		DX9::SpriteBatch->DrawSimple(
