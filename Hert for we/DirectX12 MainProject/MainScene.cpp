@@ -317,7 +317,12 @@ void MainScene::Up_Attack(float deltaTime) {
 	int partner_ = (num_player == 0);  // 相手プレイヤーを指定
 
 	if (flag_attack) {
-		// コルーチン用のフラグ建築
+		// コルーチン用のフラグ
+		// ポインターとハート、それぞれの十字が重なっているか
+		float pos_x = 0;
+		for (int j = 0; j < 5; j++) {
+			if (pos_cross_hR[j] == SimpleMath::Vector2(pos_pointer.x + pos_x, pos_pointer.y)) flag_graze = true;
+		}
 		if (pos_heart[partner_] == pos_pointer_ready[num_player])		flag_hit = true;
 		else if (!flag_graze && !flag_hit)														flag_suka = true;
 
@@ -363,13 +368,6 @@ void MainScene::Up_At_Check(float deltaTime) {
 	pos_cross_hR[2] = SimpleMath::Vector2(pos_heart[partner_].x, pos_heart[partner_].y + 179.0f);
 	pos_cross_hR[3] = SimpleMath::Vector2(pos_heart[partner_].x - 179.0f, pos_heart[partner_].y);
 	pos_cross_hR[4] = SimpleMath::Vector2(pos_heart[partner_].x, pos_heart[partner_].y);
-
-
-	// ポインターとハート、それぞれの十字が重なっているか
-	float pos_x = 0;
-	for (int j = 0; j < 5; j++) {
-		if (pos_cross_hR[j] == SimpleMath::Vector2(pos_pointer.x + pos_x, pos_pointer.y)) flag_graze = true;
-	}
 }
 
 void MainScene::Up_Move(float deltaTime) {
@@ -479,7 +477,8 @@ void MainScene::Up_Fine() {
 
 NextScene MainScene::Up_Result(float deltaTime) {
 	bool flag_black = black.Up_Black(deltaTime);
-	if (flag_black) return NextScene::ResultScene;
+	if (flag_black) 
+		return NextScene::ResultScene;
 	return NextScene::Continue;
 }
 

@@ -15,13 +15,7 @@ ResultScene::ResultScene()
 // Initialize a variable and audio resources.
 void ResultScene::Initialize()
 {
-    alpha_black = MainScene::phase == MainScene::Phase::SCENARIO ? 255.0f : 0.0f;
 
-    time_delta = 0.0f;
-    time_stop = 2.0f;
-
-    count_chnage = 0;
-    time_stop = 0.0f;
 }
 
 // Allocate all memory the Direct3D and Direct2D resources.
@@ -82,9 +76,6 @@ NextScene ResultScene::Update(const float deltaTime)
 	// TODO: Add your game logic here.
 
 
-    bool flag_black_ = Up_Black(deltaTime);
-    if (!flag_black_) return NextScene::Continue;
-
     const bool input_1_ = DXTK->GamePadEvent[0].b == GamePad::ButtonStateTracker::PRESSED;
     const bool input_2_ = DXTK->GamePadEvent[1].b == GamePad::ButtonStateTracker::PRESSED;
     if (input_1_ || input_2_) return NextScene::TitleScene;
@@ -103,9 +94,9 @@ void ResultScene::Render()
     DX9::SpriteBatch->Begin();
 
     DX9::SpriteBatch->DrawSimple(
-        black.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+        black.Get(), SimpleMath::Vector3(0.0f, 0.0f, -3),
         Rect(0.0f, 0.0f, 3840.0f, 1080.0f),
-        DX9::Colors::RGBA(255, 255, 255, (int)alpha_black)
+        DX9::Colors::RGBA(255, 255, 255, 255)
     );
 
     DX9::SpriteBatch->End();
@@ -115,24 +106,7 @@ void ResultScene::Render()
 }
 
 void ResultScene::LA_Load() {
-
-}
-
-bool ResultScene::Up_Black(float deltaTime) {
-    if (count_chnage == 0) {
-        count_chnage += 1;
-        if (MainScene::phase != MainScene::Phase::SCENARIO) alpha_black = 0.0f;
-        co_change = Change();             //コルーチンの生成
-        co_change_it = co_change.begin(); //コルーチンの実行開始
-    }
-    time_delta = deltaTime;
-    if (co_change_it == co_change.end()) {
-        Initialize();
-        return true;
-    }
-
-    if (co_change_it != co_change.end()) co_change_it++;
-    return false;
+    black = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/black.png");
 }
 
 void ResultScene::Re_DirectTwelve() {
@@ -154,27 +128,4 @@ void ResultScene::Re_DirectTwelve() {
 
     DXTK->Direct3D9->WaitUpdate();
     DXTK->ExecuteCommandList();
-}
-
-cppcoro::generator<int>ResultScene::Change() {
-    co_yield 0;
-
-    //// 待機
-    //while (time_stop < 2.5f) {
-    //    time_stop += time_delta;
-    //    co_yield 1;
-    //}
-
-    while (alpha_black < 255.0f) {
-        alpha_black = std::min(alpha_black + num_alpha * time_delta, 255.0f);
-        co_yield 1;
-    }
-    
-    // ブラックアウト
-    while (alpha_black > 0.0f)
-    {
-        alpha_black = std::max(alpha_black - num_alpha * time_delta, 0.0f);
-        co_yield 2;
-    }
-    co_return;
 }
