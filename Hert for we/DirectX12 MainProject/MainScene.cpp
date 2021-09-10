@@ -308,14 +308,13 @@ void MainScene::Up_Attack(float deltaTime) {
 
 	if (flag_attack) {
 		// コルーチン用のフラグ建築
-		if (pos_heart[partner_] == pos_pointer_ready[num_player])		flag_hit		= true;
-		else if (emotion[partner_] == EMOTION::NERVOUS)					flag_graze	= true;
-		else																										flag_suka	= true;
+		if (pos_heart[partner_] == pos_pointer_ready[num_player])		flag_hit = true;
+		else if (!flag_graze)																			flag_suka = true;
 
 		bool fin_attack = attack.Up_Attack(deltaTime);
 		if (!fin_attack) return;
 
-
+		
 		if (flag_hit) {
 			emotion[num_player] = EMOTION::VICTORY;
 			emotion[partner_] = EMOTION::DEFEAT;
@@ -359,7 +358,7 @@ void MainScene::Up_At_Check(float deltaTime) {
 	// ポインターとハート、それぞれの十字が重なっているか
 	float pos_x = 0;
 	for (int j = 0; j < 5; j++) {
-//		if (pos_cross_hR[j] == SimpleMath::Vector2(pos_pointer.x + pos_x, pos_pointer.y)) emotion[partner_] = EMOTION::NERVOUS;
+		if (pos_cross_hR[j] == SimpleMath::Vector2(pos_pointer.x + pos_x, pos_pointer.y)) flag_graze = true;
 	}
 }
 
@@ -397,6 +396,10 @@ void MainScene::Up_Move(float deltaTime) {
 	float lumberjack_right_	= std::min(POS_END_DR.x, pos_cross_hR[1].x);
 
 	float pos_bx_ = 0;
+
+	//if (pos_pointer.x == POS_END_UL.x) {
+	//	pos_pointer
+	//}
 
 	pos_pointer_ready[num_player] = SimpleMath::Vector2(
 		std::clamp(pos_pointer_ready[num_player].x, lumberjack_left_ + pos_bx_, lumberjack_right_ + pos_bx_),
