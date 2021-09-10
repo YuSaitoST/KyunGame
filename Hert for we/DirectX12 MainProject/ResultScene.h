@@ -39,7 +39,11 @@ private:
 	DX12::SPRITEBATCH    spriteBatch;
 	DX12::HGPUDESCRIPTOR dx9GpuDescriptor;
 
+	DX9::SPRITEFONT font;
+
 	DX9::SPRITE black;
+
+	XAudio::SOUNDEFFECT se_flowers;
 
 	void LA_Load();
 	bool Up_Black(float deltaTime);

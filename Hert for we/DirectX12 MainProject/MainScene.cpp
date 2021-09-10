@@ -14,6 +14,7 @@ int MainScene::flag_attack;
 bool MainScene::flag_suka;
 bool MainScene::flag_graze;
 bool MainScene::flag_hit;
+bool MainScene::flag_debug;
 SimpleMath::Vector2 MainScene::pos_girl_a;
 SimpleMath::Vector2 MainScene::pos_girl_b;
 SimpleMath::Vector2 MainScene::pos_boy_a;
@@ -142,14 +143,14 @@ NextScene MainScene::Update(const float deltaTime)
 	// TODO: Add your game logic here.
 
 	switch (phase) {
-		case Phase::SCENARIO		:	Up_Scenario(deltaTime);		break;
-		case Phase::PUT_HEART	:	Up_Put(0);		Up_Put(1);		break;
-		case Phase::START				:	Up_Start(deltaTime);				break;		// ここで先攻後攻決めるべきかな
-		case Phase::SELECT			:	Up_Select();							break;
-		case Phase::ATTACK			:	Up_Attack(deltaTime);			break;
-		case Phase::MOVE				:	Up_Move(deltaTime);			break;
-		case Phase::FINE				:	Up_Fine();								break;
-		case Phase::SUCCEED		:	Up_Result(deltaTime);			break;
+		case Phase::SCENARIO		:	Up_Scenario(deltaTime);				break;
+		case Phase::PUT_HEART	:	Up_Put(0);		Up_Put(1);				break;
+		case Phase::START				:	Up_Start(deltaTime);						break;		// ここで先攻後攻決めるべきかな
+		case Phase::SELECT			:	Up_Select();									break;
+		case Phase::ATTACK			:	Up_Attack(deltaTime);					break;
+		case Phase::MOVE				:	Up_Move(deltaTime);					break;
+		case Phase::FINE				:	Up_Fine();										break;
+		case Phase::SUCCEED		:	return Up_Result(deltaTime);		break;
 	}
 
 	if (phase == Phase::MOVE) {
@@ -260,6 +261,15 @@ void MainScene::Up_Put(int index) {
 void MainScene::Up_Start(float deltaTime) {
 	std::fill(std::begin(num_ready_all), std::end(num_ready_all), 0);
 	pos_heart_old = pos_heart[num_player];
+
+	num_color[num_player] = 255;
+	int partner_ = num_player ? 0 : 1;
+	num_color[partner_] = 155;
+
+	flag_suka		= false;
+	flag_graze		= false;
+	flag_hit			= false;
+
 	//パチンコ演出したいなら↓
 	//num_color[0] = num_color[0] == 120 ? 255 : 120;  // 色指定の式は先攻後攻処理完成後に再調整
 	//num_color[1] = num_color[1] == 255 ? 120 : 255;
@@ -320,11 +330,11 @@ void MainScene::Up_Attack(float deltaTime) {
 		// コルーチン用のフラグ
 		// ポインターとハート、それぞれの十字が重なっているか
 		float pos_x = 0;
-		for (int j = 0; j < 5; j++) {
+		for (int j = 0; j < 4; j++) {
 			if (pos_cross_hR[j] == SimpleMath::Vector2(pos_pointer.x + pos_x, pos_pointer.y)) flag_graze = true;
 		}
-		if (pos_heart[partner_] == pos_pointer_ready[num_player])		flag_hit = true;
-		else if (!flag_graze && !flag_hit)														flag_suka = true;
+		if (pos_heart[partner_] == pos_pointer_ready[num_player])		flag_hit		= true;
+		else if (!flag_graze && !flag_hit)														flag_suka	= true;
 
 		bool fin_attack = attack.Up_Attack(deltaTime);
 		if (!fin_attack) return;
@@ -477,8 +487,7 @@ void MainScene::Up_Fine() {
 
 NextScene MainScene::Up_Result(float deltaTime) {
 	bool flag_black = black.Up_Black(deltaTime);
-	if (flag_black) 
-		return NextScene::ResultScene;
+	if (flag_black) return NextScene::ResultScene;
 	return NextScene::Continue;
 }
 

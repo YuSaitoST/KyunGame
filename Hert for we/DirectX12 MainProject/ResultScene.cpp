@@ -15,7 +15,7 @@ ResultScene::ResultScene()
 // Initialize a variable and audio resources.
 void ResultScene::Initialize()
 {
-
+    font = DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"‚Ó‚¢Žš", 20);
 }
 
 // Allocate all memory the Direct3D and Direct2D resources.
@@ -98,6 +98,13 @@ void ResultScene::Render()
         Rect(0.0f, 0.0f, 3840.0f, 1080.0f),
         DX9::Colors::RGBA(255, 255, 255, 255)
     );
+
+    if (MainScene::flag_debug) {
+        DX9::SpriteBatch->DrawString(
+            font.Get(), SimpleMath::Vector2(0.0f, 0.0f),
+            DX9::Colors::RGBA(255, 255, 255, 255), L"‰´‚±‚ÌŠJ”­‚ªI‚í‚Á‚½‚çŽÀ‰Æ‚É‹A‚é‚ñ‚¾"
+        );
+    }
 
     DX9::SpriteBatch->End();
     DXTK->Direct3D9->EndScene();
