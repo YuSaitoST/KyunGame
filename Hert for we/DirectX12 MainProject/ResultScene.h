@@ -39,24 +39,11 @@ private:
 	DX12::SPRITEBATCH    spriteBatch;
 	DX12::HGPUDESCRIPTOR dx9GpuDescriptor;
 
-	//コルーチン
-	cppcoro::generator<int> Change();
-	cppcoro::generator<int> co_change;
-	cppcoro::detail::generator_iterator<int> co_change_it;
+	DX9::SPRITE black;
 
 	void LA_Load();
 	bool Up_Black(float deltaTime);
 	void Re_DirectTwelve();
-
-	// ブラックアウト用
-	DX9::SPRITE black;
-	SimpleMath::Vector3 pos_black;
-	float alpha_black;
-	float time_delta;
-	float time_stop;
-	const float num_alpha = 90.0f;
-	const float num_speed = 2500.0f;
-	int count_chnage; // コルーチンの呼び出し回数を制限するための変数
 
 public:
 };
