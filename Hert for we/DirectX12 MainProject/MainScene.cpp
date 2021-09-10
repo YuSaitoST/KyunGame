@@ -10,6 +10,9 @@ MainScene::Phase MainScene::phase;
 MainScene::EMOTION MainScene::emotion[2];
 int MainScene::num_player;
 int MainScene::flag_attack;
+bool MainScene::flag_suka;
+bool MainScene::flag_graze;
+bool MainScene::flag_hit;
 
 // Initialize member variables.
 MainScene::MainScene()
@@ -55,6 +58,9 @@ void MainScene::Initialize()
 	num_color[1]			= 255;
 
 	flag_attack = 0;
+	flag_suka = false;
+	flag_graze = false;
+	flag_hit = false;
 
 	/* ↓↓↓↓↓↓↓↓↓↓↓↓ */
 	/*→*/flag_debug = true;  /*←*/   // リリーズ時falseにする
@@ -203,6 +209,9 @@ void MainScene::LA_Load() {
 	girl_b[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_victory_r.png");
 	girl_b[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_defeat_r.png");
 
+	//bgm_main = XAudio::CreateSoundEffect(DXTK->AudioEngine, L"BGM\\ファイル名.wav");
+	//bgm_main_instance = bgm_main->CreateInstance();
+	// 呼び出すところで instance->Play();
 
 	black.LoadAssets();
 	smoke.LoadAssets();
@@ -294,12 +303,13 @@ void MainScene::Up_Attack(float deltaTime) {
 		bool fin_attack = attack.Up_Attack(deltaTime);
 		if (!fin_attack) return;
 
+		// コルーチン用のフラグ建築
+		if (pos_heart[partner_] == pos_pointer_ready[num_player])		flag_hit		= true;
+		else if (emotion[partner_] == EMOTION::NERVOUS)					flag_graze	= true;
+		else																										flag_suka	= true;
 
-		const bool win_ = pos_heart[partner_] == pos_pointer_ready[num_player];  // ドンピシャで当たったか
-		const bool graze_ = emotion[partner_] == EMOTION::NERVOUS;
 
-
-		if (win_) {
+		if (flag_hit) {
 			emotion[num_player] = EMOTION::VICTORY;
 			emotion[partner_] = EMOTION::DEFEAT;
 			phase = Phase::SUCCEED;
