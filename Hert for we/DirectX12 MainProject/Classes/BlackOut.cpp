@@ -1,10 +1,11 @@
 #include "Classes/BlackOut.h"
 #include <iostream>
 #include <MainScene.h>
+#include <ResultScene.h>
 
 void BlackOut::Initialize() {
 
-	alpha_black = 255;
+	alpha_black = MainScene::phase == MainScene::Phase::SCENARIO ? 255.0f : 0.0f;
 	alpha_text = 0;
 
 	time_delta = 0.0f;
@@ -23,6 +24,7 @@ void BlackOut::LoadAssets() {
 bool BlackOut::Up_Black(const float deltaTime) {
 	if (count_chnage == 0) {
 		count_chnage += 1;
+		if (MainScene::phase != MainScene::Phase::SCENARIO) alpha_black = 0.0f;
 		co_change = Change();             //コルーチンの生成
 		co_change_it = co_change.begin(); //コルーチンの実行開始
 	}
@@ -79,7 +81,7 @@ cppcoro::generator<int>BlackOut::Change() {
 	}
 
 	if (MainScene::phase == MainScene::Phase::SUCCEED) {
-		while (alpha_black > 0.0f) {
+		while (alpha_black < 255.0f) {
 			alpha_black = std::min(alpha_black + num_alpha * time_delta, 255.0f);
 			co_yield 4;
 		}

@@ -43,7 +43,8 @@ private:
 
 	DX9::SPRITE black;
 
-	XAudio::SOUNDEFFECT se_flowers;
+	DX9::MEDIARENDERER bgm_result;
+	DX9::MEDIARENDERER se_flowers;
 
 	void LA_Load();
 	bool Up_Black(float deltaTime);
