@@ -96,7 +96,6 @@ private:
 	int num_ready;  // 互いの準備完了状態
 	int num_ready_all[2];  // 両者が
 
-	bool flag_debug;  // デバッグ時のみtrueにする
 	bool fin_game;  // デバック用
 	int win_player;  // デバック用
 
@@ -189,4 +188,6 @@ public:
 	static float POS_BOY_A;
 	static float POS_BOY_B;
 
+
+	static bool flag_debug;  // デバッグ時のみtrueにする
 };
