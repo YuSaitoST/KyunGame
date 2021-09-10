@@ -62,6 +62,9 @@ private:
 	DX9::SPRITE speech;
 	DX9::SPRITE select;
 
+	XAudio::SOUNDEFFECT bgm_main;
+	XAudio::SOUNDEFFECTINSTANCE bgm_main_instance;
+
 	SimpleMath::Vector2 pos_pointer;
 	SimpleMath::Vector2 pos_pointer_ready[2];
 	SimpleMath::Vector2 pos_cursor;
@@ -85,7 +88,6 @@ private:
 	const SimpleMath::Vector2	POS_CENTER			= SimpleMath::Vector2(878.0f,	413.0f);
 	const SimpleMath::Vector2	POS_END_UL			= SimpleMath::Vector2(520.0f,	55.0f);
 	const SimpleMath::Vector2	POS_END_DR		= SimpleMath::Vector2(1236.0f,	771.0f);
-//	const SimpleMath::Vector2 POS_SELECT=SimpleMath::Vector2()
 	const float								POS_X2					= 1920.0f;
 	const float								POS_OUTAREA		= -200.0f;
 	const float								MOVE_POINTER	= 179.0f;
@@ -171,4 +173,8 @@ public:
 
 	static int num_player;  // ターンプレイヤーを表す、パッドの判別にも使用
 	static int flag_attack;  // 攻撃コルーチンのフラグ
+
+	static bool flag_suka;
+	static bool flag_graze;
+	static bool flag_hit;
 };
