@@ -47,7 +47,7 @@ private:
 	DX9::MEDIARENDERER se_flowers;
 
 	void LA_Load();
-	bool Up_Black(float deltaTime);
+	void Re_Speak();
 	void Re_DirectTwelve();
 
 public:

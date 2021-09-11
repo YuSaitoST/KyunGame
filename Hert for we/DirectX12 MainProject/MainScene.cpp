@@ -246,8 +246,7 @@ void MainScene::LA_Load() {
 
 void MainScene::Up_Scenario(float deltaTime) {
 	bool flag_black = black.Up_Black(deltaTime);
-	if (flag_black) 
-		phase = Phase::PUT_HEART;
+	if (flag_black) phase = Phase::PUT_HEART;
 }
 
 void MainScene::Up_Put(int index) {
@@ -606,8 +605,6 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 }
 
 void MainScene::Re_Draw_PlayerA() {
-	Re_Draw_Standard(0.0f, PLAYER::A);
-
 	pos_boy_a	= emotion[PLAYER::B] == EMOTION::PROPOSAL ? POS_BOY_AT_A : POS_BOY_GE_A;
 	pos_girl_a	= emotion[PLAYER::A] == EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
 
@@ -630,6 +627,10 @@ void MainScene::Re_Draw_PlayerA() {
 		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
 
+	if (phase == Phase::SCENARIO) return;
+
+	Re_Draw_Standard(0.0f, PLAYER::A);
+
 	// 相手のマップを表示させる処理
 	if (phase == Phase::ATTACK && num_player == PLAYER::A) {
 		int partner_ = num_player ? 0 : 1;
@@ -640,8 +641,6 @@ void MainScene::Re_Draw_PlayerA() {
 }
 
 void MainScene::Re_Draw_PlayerB() {
-	Re_Draw_Standard(POS_X2, PLAYER::B);
-
 	pos_boy_b = emotion[PLAYER::B] == EMOTION::PROPOSAL ? POS_LEFT_ATTACK : POS_LEFT_GENE;
 	pos_girl_b = emotion[PLAYER::A] == EMOTION::PROPOSAL ? POS_GIRL_AT_B : POS_GIRL_GE_B;
 
@@ -664,6 +663,11 @@ void MainScene::Re_Draw_PlayerB() {
 		DX9::Colors::RGBA(num_color[01], num_color[1], num_color[1], Attack::alpha_girl)
 	);
 
+	if (phase == Phase::SCENARIO) return;
+
+	Re_Draw_Standard(POS_X2, PLAYER::B);
+
+	// 相手のマップを表示させる処理
 	if (phase == Phase::ATTACK && num_player == PLAYER::B) {
 		int partner_ = num_player ? 0 : 1;
 		DX9::SpriteBatch->DrawSimple(

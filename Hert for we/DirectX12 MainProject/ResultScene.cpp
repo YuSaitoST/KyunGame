@@ -108,6 +108,8 @@ void ResultScene::Render()
         );
     }
 
+    Re_Speak();
+
     DX9::SpriteBatch->End();
     DXTK->Direct3D9->EndScene();
 
@@ -116,6 +118,11 @@ void ResultScene::Render()
 
 void ResultScene::LA_Load() {
     black = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/black.png");
+}
+
+// テキスト表示を行う
+void ResultScene::Re_Speak() {
+
 }
 
 void ResultScene::Re_DirectTwelve() {

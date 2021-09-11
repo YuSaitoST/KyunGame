@@ -55,6 +55,10 @@ void BlackOut::Render() {
 		Rect(0.0f, 0.0f, 1920.0f, 990.0f),
 		DX9::Colors::RGBA(255, 255, 255, (int)alpha_text)
 	);
+
+	if (MainScene::phase != MainScene::Phase::SCENARIO) return;
+
+	// ここに会話シーンの描画を入れる
 }
 
 cppcoro::generator<int>BlackOut::Change() {
@@ -78,6 +82,8 @@ cppcoro::generator<int>BlackOut::Change() {
 			alpha_black	= std::max(alpha_black - num_alpha * time_delta, 0.0f);
 			co_yield 3;
 		}
+
+		// ここに会話のコルーチンを入れる
 	}
 
 	if (MainScene::phase == MainScene::Phase::SUCCEED) {
