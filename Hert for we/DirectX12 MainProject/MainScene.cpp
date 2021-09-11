@@ -142,8 +142,8 @@ NextScene MainScene::Update(const float deltaTime)
 
 	// TODO: Add your game logic here
 
-	bgm_main->Play();
-	if (bgm_main->isComplete()) bgm_main->Replay();
+	//bgm_main->Play();
+	//if (bgm_main->isComplete()) bgm_main->Replay();
 
 	switch (phase) {
 		case Phase::SCENARIO		:	Up_Scenario(deltaTime);				break;
@@ -534,28 +534,20 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 			);
 		}
 	}
+	if (phase != Phase::ATTACK) {
+		// アタック蒔以外は自分のハートとマップの位置関を表示させる
+		DX9::SpriteBatch->DrawSimple(
+			heart_red.Get(), SimpleMath::Vector3(pos_x + pos_heart[index].x, pos_heart[index].y, POSI_Z::HEART)
+		);
+		DX9::SpriteBatch->DrawSimple(
+			map[index].Get(), SimpleMath::Vector3(pos_x + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
+		);
+	}
 	if (phase == Phase::PUT_HEART) {
 		if (num_ready_all[index] == 1) return;
 		DX9::SpriteBatch->DrawSimple(
 			pointer.Get(),
 			SimpleMath::Vector3(pos_x + pos_pointer_ready[index].x, pos_pointer_ready[index].y, POSI_Z::POINTER)
-		);
-	}
-	if (num_player == index) {
-		if (phase != Phase::ATTACK) {
-			// アタック蒔は自分のハートの位置関係ないので非表示にさせる
-			DX9::SpriteBatch->DrawSimple(
-				heart_red.Get(), SimpleMath::Vector3(pos_x + pos_heart[index].x, pos_heart[index].y, POSI_Z::HEART)
-			);
-			DX9::SpriteBatch->DrawSimple(
-				map[num_player].Get(), SimpleMath::Vector3(pos_x + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
-			);
-		}
-
-		// 中途半端、デバッグして確認する
-		int partner_ = num_player ? 0 : 1;
-		DX9::SpriteBatch->DrawSimple(
-			bg[partner_].Get(), SimpleMath::Vector3(pos_x + 0.0f, 0.0f, POSI_Z::BACK_GROUND)
 		);
 	}
 	if (phase == Phase::ATTACK) {   // !flag_attack
@@ -567,6 +559,14 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 			area_attack.Get(),
 			SimpleMath::Vector3(pos_pointer.x + 1920.0f, pos_pointer.y, POSI_Z::POINTER)
 		);
+		if (num_player != index) {
+			DX9::SpriteBatch->DrawSimple(
+				heart_red.Get(), SimpleMath::Vector3(pos_x + pos_heart[index].x, pos_heart[index].y, POSI_Z::HEART)
+			);
+			DX9::SpriteBatch->DrawSimple(
+				map[index].Get(), SimpleMath::Vector3(pos_x + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
+			);
+		}
 	}
 
 	if (num_player != index) return;
@@ -621,14 +621,22 @@ void MainScene::Re_Draw_PlayerA() {
 		boy_a[emotion[PLAYER::B]].Get(), 
 		SimpleMath::Vector3(pos_boy_a.x, POS_BOY_A + pos_boy_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_boy_x_, rc_y_b_), 
-		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_boy)
+		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_a[emotion[PLAYER::A]].Get(),
 		SimpleMath::Vector3(pos_girl_a.x, POS_GIRL_A + pos_girl_a.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_girl_x_, rc_y_g_), 
-		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_girl)
+		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_girl)
 	);
+
+	// 相手のマップを表示させる処理
+	if (phase == Phase::ATTACK && num_player == PLAYER::A) {
+		int partner_ = num_player ? 0 : 1;
+		DX9::SpriteBatch->DrawSimple(
+			map[partner_].Get(), SimpleMath::Vector3(POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
+		);
+	}
 }
 
 void MainScene::Re_Draw_PlayerB() {
@@ -647,14 +655,21 @@ void MainScene::Re_Draw_PlayerB() {
 		boy_b[emotion[PLAYER::B]].Get(),
 		SimpleMath::Vector3(POS_X2 + pos_boy_b.x, POS_BOY_B + pos_boy_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_b_, rc_y_b_),
-		DX9::Colors::RGBA(num_color[1], num_color[1], num_color[1], Attack::alpha_boy)
+		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_boy)
 	);
 	DX9::SpriteBatch->DrawSimple(
 		girl_b[emotion[PLAYER::A]].Get(),
 		SimpleMath::Vector3(POS_X2 + pos_girl_b.x, POS_GIRL_B + pos_girl_b.y, POSI_Z::PLAYER),
 		Rect(0.0f, 0.0f, rc_x_g_, rc_y_g_),
-		DX9::Colors::RGBA(num_color[0], num_color[0], num_color[0], Attack::alpha_girl)
+		DX9::Colors::RGBA(num_color[01], num_color[1], num_color[1], Attack::alpha_girl)
 	);
+
+	if (phase == Phase::ATTACK && num_player == PLAYER::B) {
+		int partner_ = num_player ? 0 : 1;
+		DX9::SpriteBatch->DrawSimple(
+			map[partner_].Get(), SimpleMath::Vector3(POS_X2 + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
+		);
+	}
 }
 
 void MainScene::Re_DirectTwelve() {
