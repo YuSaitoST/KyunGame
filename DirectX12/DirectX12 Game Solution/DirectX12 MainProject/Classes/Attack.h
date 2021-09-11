@@ -86,6 +86,9 @@ private:
 	bool flag_speach_attack_boy;
 	bool flag_speach_reply_girl;
 
+	bool flag_speach_hit_boy;
+	bool flag_speach_hit_girl;
+
 	// ‘äŒ”z—ñ‚Ì—v‘f‚ğw’è‚·‚é•Ï”
 	int index_boy;
 	int index_girl;
