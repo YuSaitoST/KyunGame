@@ -505,9 +505,6 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 	DX9::SpriteBatch->DrawSimple(
 		bg[index].Get(), SimpleMath::Vector3(pos_x + 0.0f, 0.0f, POSI_Z::BACK_GROUND)
 	);
-	DX9::SpriteBatch->DrawSimple(
-		map[0].Get(), SimpleMath::Vector3(pos_x + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
-	);
 
 	if (flag_debug) {
 		DX9::SpriteBatch->DrawString(
@@ -550,9 +547,12 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 			DX9::SpriteBatch->DrawSimple(
 				heart_red.Get(), SimpleMath::Vector3(pos_x + pos_heart[index].x, pos_heart[index].y, POSI_Z::HEART)
 			);
+			DX9::SpriteBatch->DrawSimple(
+				map[num_player].Get(), SimpleMath::Vector3(pos_x + POS_FIELD.x, POS_FIELD.y, POSI_Z::MAP)
+			);
 		}
 
-		// 中途半端
+		// 中途半端、デバッグして確認する
 		int partner_ = num_player ? 0 : 1;
 		DX9::SpriteBatch->DrawSimple(
 			bg[partner_].Get(), SimpleMath::Vector3(pos_x + 0.0f, 0.0f, POSI_Z::BACK_GROUND)
