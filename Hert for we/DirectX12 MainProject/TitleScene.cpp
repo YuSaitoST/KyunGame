@@ -123,9 +123,9 @@ void TitleScene::Render()
 }
 
 void TitleScene::LA_Load() {
-    title              = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/title.png"  );
+    title              = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/title_bg.png"  );
     comment    = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/explanation_bg.png");
-    ui_start        = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/start.png"  );
+    ui_start        = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/start_ui.png"  );
     white           = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png" );
 
     bgm_title    = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\title_bgm.mp3");
