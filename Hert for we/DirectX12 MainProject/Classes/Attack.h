@@ -34,6 +34,10 @@ private:
 	cppcoro::generator<int> co_action;
 	cppcoro::detail::generator_iterator<int> co_action_it;
 
+	DX9::MEDIARENDERER se_cv_attack;
+	DX9::MEDIARENDERER se_cv_graze;
+	DX9::MEDIARENDERER se_cv_nomal;
+
 	DX9::SPRITE boy_a[5];
 	DX9::SPRITE boy_b[5];
 	DX9::SPRITE girl_a[5];
@@ -70,7 +74,7 @@ private:
 	const float pos_speach_attack_boy_limit_x_2p = 2505.0f;
 
 
-	const float pos_speach_normal_y = 597.0f;
+	const float pos_speach_reply_y = 597.0f;
 	const float pos_speach_attack_y = 40.0f;
 
 
@@ -78,23 +82,37 @@ private:
 	float time_delta;
 
 
-	int comment;
-	bool speach_flag;
+	int comment_attack;
+	int comment_reply;
+	bool flag_speach_attack_girl;
+	bool flag_speach_reply_boy;
 
+	bool flag_speach_attack_boy;
+	bool flag_speach_reply_girl;
 
 	// 台詞配列の要素を指定する変数
 	int index_boy;
 	int index_girl;
 
+	int count_random_boy;
+	int count_random_girl;
 
 	LoadLines loadlines;
+
+
+	std::mt19937 random_engine;
+	std::uniform_int_distribution<> random_attack_boy;
+	std::uniform_int_distribution<> random_attack_girl;
+
+
+
 
 	const float COLOR_GRAY = 155.0f;
 	const float COLOR_MAX = 255.0f;
 	const float NUM_ALPHA_CHARA = 1100.0f;
 	const float NUM_ALPHA_SPEACH = 400.0f;
 	const float NUM_SPEED = 700.0f;
-	float num_color[2];  // 画像の色
+	//float num_color[2];  // 画像の色
 	float time_stop;
 
 

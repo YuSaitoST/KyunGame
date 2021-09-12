@@ -78,7 +78,7 @@ void MainScene::Initialize()
 	flag_hit = false;
 	flag_se = false;
 	/* ↓↓↓↓↓↓↓↓↓↓↓↓ */
-	/*→*/flag_debug = true;  /*←*/   // リリーズ時falseにする
+	/*→*/flag_debug = false;  /*←*/   // リリーズ時falseにする
 	/* ↑↑↑↑↑↑↑↑↑↑↑↑ */
 
 
