@@ -36,8 +36,8 @@ void Attack::Initialize() {
 	pos_speach_boy_2p.z = MainScene::POSI_Z::SPEAK;
 
 
-	alpha_speach_my = 0.0f;
-	alpha_speach_partner = 0.0f;
+	alpha_speach_girl = 0.0f;
+	alpha_speach_boy = 0.0f;
 
 	//num_color[0] = 255;
 	//num_color[1] = 255;
@@ -49,8 +49,8 @@ void Attack::Initialize() {
 
 	speach = ATTACK_GIRL;
 
-	comment_attack = 0;
-	comment_reply = 0;
+	comment_attack = 0.0f;
+	comment_reply = 0.0f;
 	flag_speach_attack_girl = false;
 	flag_speach_reply_boy   = false;
 
@@ -163,14 +163,14 @@ void Attack::Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 
 		speach_my_reply.Get(),
 		pos_speach_girl_1p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-		DX9::Colors::RGBA(255, 255, 255, alpha_speach_my)
+		DX9::Colors::RGBA(255, 255, 255, alpha_speach_girl)
 	);
 
 	DX9::SpriteBatch->DrawSimple(
 		speach_partner_reply.Get(),
 		pos_speach_boy_1p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
+		DX9::Colors::RGBA(255, 255, 255, alpha_speach_boy)
 	);
 
 	//2P
@@ -178,14 +178,14 @@ void Attack::Render(int index, SimpleMath::Vector2 pos_boy, SimpleMath::Vector2 
 		speach_partner_reply.Get(),
 		pos_speach_girl_2p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-		DX9::Colors::RGBA(255, 255, 255, alpha_speach_my)
+		DX9::Colors::RGBA(255, 255, 255, alpha_speach_girl)
 	);
 
 	DX9::SpriteBatch->DrawSimple(
 		speach_my_reply.Get(),
 		pos_speach_boy_2p,
 		Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-		DX9::Colors::RGBA(255, 255, 255, alpha_speach_partner)
+		DX9::Colors::RGBA(255, 255, 255, alpha_speach_boy)
 	);
 }
 
@@ -197,14 +197,14 @@ void Attack::Re_Speak() {
 			speach_my_attack.Get(),
 			pos_speach_girl_1p,
 			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_my)
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_girl)
 		);
 
 		DX9::SpriteBatch->DrawSimple(
 			speach_partner_reply.Get(),
 			pos_speach_boy_1p,
 			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_partner)
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_boy)
 		);
 
 		//2P画面
@@ -212,48 +212,48 @@ void Attack::Re_Speak() {
 			speach_partner_attack.Get(),
 			pos_speach_girl_2p,
 			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_my)
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_girl)
 		);
 
 		DX9::SpriteBatch->DrawSimple(
 			speach_my_reply.Get(),
 			pos_speach_boy_2p,
 			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_partner)
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_boy)
 		);
 
 		//女子アタックセリフ表示
 		if (flag_speach_attack_girl == true) {
 			//1P画面
 			RECT dest = RectWH(pos_speach_girl_1p.x + 135, pos_speach_girl_1p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_girl].c_str(), comment_attack, dest, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_girl].c_str(), (int)comment_attack, dest, DX9::Colors::Black);
 			//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 			//2P画面
 			RECT means = RectWH(pos_speach_girl_2p.x + 60, pos_speach_girl_2p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_girl].c_str(), comment_attack, means, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_girl].c_str(), (int)comment_attack, means, DX9::Colors::Black);
 		}
 		//男子返答セリフ表示
 		if (flag_speach_reply_boy == true) {
 			//1P画面
 			RECT dest = RectWH(pos_speach_boy_1p.x + 70, pos_speach_boy_1p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_girl+1].c_str(), comment_reply, dest, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_girl+1].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
 			//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 			//2P画面
 			RECT means = RectWH(pos_speach_boy_2p.x + 115, pos_speach_boy_2p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_girl+1].c_str(), comment_reply, means, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_girl+1].c_str(), (int)comment_reply, means, DX9::Colors::Black);
 		}
 
 		//男子ハート直撃時返答セリフ表示
 		if (flag_speach_hit_boy == true) {
 			RECT dest = RectWH(pos_speach_boy_1p.x + 70, pos_speach_boy_1p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), comment_reply, dest, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
 			//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 			//2P画面
 			RECT means = RectWH(pos_speach_boy_2p.x + 115, pos_speach_boy_2p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), comment_reply, means, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, means, DX9::Colors::Black);
 		}
 	}
 
@@ -264,14 +264,14 @@ void Attack::Re_Speak() {
 			speach_my_reply.Get(),
 			pos_speach_girl_1p,
 			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_my)
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_girl)
 		);
 
 		DX9::SpriteBatch->DrawSimple(
 			speach_partner_attack.Get(),
 			pos_speach_boy_1p,
 			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_partner)
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_boy)
 		);
 
 		//2P画面
@@ -279,48 +279,48 @@ void Attack::Re_Speak() {
 			speach_partner_reply.Get(),
 			pos_speach_girl_2p,
 			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_my)
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_girl)
 		);
 
 		DX9::SpriteBatch->DrawSimple(
 			speach_my_attack.Get(),
 			pos_speach_boy_2p,
 			Rect(0.0f, 0.0f, 1000.0f, 260.0f),
-			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_partner)
+			DX9::Colors::RGBA(255, 255, 255, (int)alpha_speach_boy)
 		);
 
 		//男子アタックセリフ表示
 		if (flag_speach_attack_boy == true) {
 			//1P画面
 			RECT dest = RectWH(pos_speach_boy_1p.x + 75, pos_speach_boy_1p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_boy].c_str(), comment_attack, dest, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_boy].c_str(), (int)comment_attack, dest, DX9::Colors::Black);
 			//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 			//2P画面
 			RECT means = RectWH(pos_speach_boy_2p.x + 115, pos_speach_boy_2p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_boy].c_str(), comment_attack, means, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_boy].c_str(), (int)comment_attack, means, DX9::Colors::Black);
 		}
 		//女子返答セリフ表示
 		if (flag_speach_reply_girl == true) {
 			//1P画面
 			RECT dest = RectWH(pos_speach_girl_1p.x + 125, pos_speach_girl_1p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_boy + 1].c_str(), comment_reply, dest, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_boy + 1].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
 			//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 			//2P画面
 			RECT means = RectWH(pos_speach_girl_2p.x + 65, pos_speach_girl_2p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_boy + 1].c_str(), comment_reply, means, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index_boy + 1].c_str(), (int)comment_reply, means, DX9::Colors::Black);
 		}
 
 		//女子ハート直撃時返答セリフ表示
 		if (flag_speach_hit_girl == true) {
 			RECT dest = RectWH(pos_speach_girl_1p.x + 125, pos_speach_girl_1p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[1].c_str(), comment_reply, dest, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[1].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
 			//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 			//2P画面
 			RECT means = RectWH(pos_speach_girl_2p.x + 65, pos_speach_girl_2p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[1].c_str(), comment_reply, means, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[1].c_str(), (int)comment_reply, means, DX9::Colors::Black);
 		}
 	}
 }
@@ -420,9 +420,9 @@ cppcoro::generator<int>Attack::Action() {
 		time_stop = 0.0f;
 
 		//吹き出しの移動
-		while (alpha_speach_my < COLOR_MAX)
+		while (alpha_speach_girl < COLOR_MAX)
 		{
-			alpha_speach_my = min(alpha_speach_my + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+			alpha_speach_girl = min(alpha_speach_girl + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 
 			pos_speach_girl_1p.x = min(pos_speach_girl_1p.x + NUM_SPEED * time_delta, pos_speach_attack_girl_limit_x_1p);
 
@@ -437,16 +437,16 @@ cppcoro::generator<int>Attack::Action() {
 			flag_speach_attack_girl = true;
 			time_stop += time_delta;
 
-			++comment_attack* time_delta;
+			comment_attack += TALK_SPEED * time_delta;
 			if (comment_attack > LoadLines::lines1[index_girl].length()) {
 				comment_attack = LoadLines::lines1[index_girl].length();
 			}
 			co_yield 3;
 		}
 		flag_speach_attack_girl = false;
-		alpha_speach_my = 0.0f;
+		alpha_speach_girl = 0.0f;
 		time_stop = 0.0f;
-		comment_attack = 0;
+		comment_attack = 0.0f;
 		MainScene::emotion[MainScene::num_player] = MainScene::EMOTION::GENERALLY;
 
 		//間
@@ -463,9 +463,9 @@ cppcoro::generator<int>Attack::Action() {
 			pos_speach_boy_1p.x = pos_speach_normal_boy_limit_x_1p;
 			pos_speach_boy_2p.x = pos_speach_normal_boy_limit_x_2p;
 			//吹き出し(男子返答)の表示
-			while (alpha_speach_partner < COLOR_MAX)
+			while (alpha_speach_boy < COLOR_MAX)
 			{
-				alpha_speach_partner = min(alpha_speach_partner + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+				alpha_speach_boy = min(alpha_speach_boy + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 
 				//pos_speach_boy_1p.x = max(pos_speach_boy_1p.x - NUM_SPEED * time_delta, pos_speach_normal_boy_limit_x_1p);
 				//pos_speach_boy_2p.x = min(pos_speach_boy_2p.x + NUM_SPEED * time_delta, pos_speach_normal_boy_limit_x_2p);
@@ -477,15 +477,15 @@ cppcoro::generator<int>Attack::Action() {
 				flag_speach_reply_boy = true;
 				time_stop += time_delta;
 
-				comment_reply++* time_delta;
+				comment_reply += TALK_SPEED * time_delta;
 				if (comment_reply > LoadLines::lines1[index_girl + 1].length()) {
 					comment_reply = LoadLines::lines1[index_girl + 1].length();
 				}
 				co_yield 6;
 			}
-			comment_reply = 0;
+			comment_reply = 0.0f;
 			time_stop = 0.0f;
-			alpha_speach_partner = 0.0f;
+			alpha_speach_boy = 0.0f;
 			flag_speach_reply_boy = false;
 
 			//直撃だった場合の演出
@@ -502,8 +502,8 @@ cppcoro::generator<int>Attack::Action() {
 				time_stop = 0.0f;
 
 				//吹き出し(男子)の表示
-				while (alpha_speach_partner < COLOR_MAX) {
-					alpha_speach_partner = min(alpha_speach_partner + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+				while (alpha_speach_boy < COLOR_MAX) {
+					alpha_speach_boy = min(alpha_speach_boy + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 					co_yield 8;
 				}
 
@@ -512,7 +512,7 @@ cppcoro::generator<int>Attack::Action() {
 				{
 					time_stop += time_delta;
 
-					comment_reply++* time_delta;
+					comment_reply += TALK_SPEED * time_delta;
 					if (comment_reply > LoadLines::lines1[0].length()) {
 						comment_reply = LoadLines::lines1[0].length();
 					}
@@ -570,8 +570,8 @@ cppcoro::generator<int>Attack::Action() {
 			pos_speach_boy_2p.x = pos_speach_normal_boy_limit_x_2p;
 
 			//吹き出し(男子返答)の表示
-			while (alpha_speach_partner < COLOR_MAX) {
-				alpha_speach_partner = min(alpha_speach_partner + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+			while (alpha_speach_boy < COLOR_MAX) {
+				alpha_speach_boy = min(alpha_speach_boy + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 
 				//pos_speach_boy_1p.x = max(pos_speach_boy_1p.x - NUM_SPEED * time_delta, pos_speach_normal_boy_limit_x_1p);
 				//pos_speach_boy_2p.x = min(pos_speach_boy_2p.x + NUM_SPEED * time_delta, pos_speach_normal_boy_limit_x_2p);
@@ -583,7 +583,7 @@ cppcoro::generator<int>Attack::Action() {
 				flag_speach_reply_boy = true;
 				time_stop += time_delta;
 
-				comment_reply++* time_delta;
+				comment_reply += TALK_SPEED * time_delta;
 				if (comment_reply > LoadLines::lines1[index_girl + 1].length()) {
 					comment_reply = LoadLines::lines1[index_girl + 1].length();
 				}
@@ -619,9 +619,9 @@ cppcoro::generator<int>Attack::Action() {
 		time_stop = 0.0f;
 
 		//吹き出しの移動
-		while (alpha_speach_partner < COLOR_MAX)
+		while (alpha_speach_boy < COLOR_MAX)
 		{
-			alpha_speach_partner = min(alpha_speach_partner + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+			alpha_speach_boy = min(alpha_speach_boy + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 
 			pos_speach_boy_1p.x = max(pos_speach_boy_1p.x - NUM_SPEED * time_delta, pos_speach_attack_boy_limit_x_1p);
 
@@ -636,14 +636,14 @@ cppcoro::generator<int>Attack::Action() {
 			flag_speach_attack_boy = true;
 			time_stop += time_delta;
 
-			++comment_attack* time_delta;
+			comment_attack += TALK_SPEED * time_delta;
 			if (comment_attack > LoadLines::lines1[index_boy].length()) {
 				comment_attack = LoadLines::lines1[index_boy].length();
 			}
 			co_yield 3;
 		}
 		flag_speach_attack_boy = false;
-		alpha_speach_partner = 0.0f;
+		alpha_speach_boy = 0.0f;
 		time_stop = 0.0f;
 		comment_attack = 0;
 		MainScene::emotion[MainScene::num_player] = MainScene::EMOTION::GENERALLY;
@@ -663,9 +663,9 @@ cppcoro::generator<int>Attack::Action() {
 			pos_speach_girl_2p.x = pos_speach_normal_girl_limit_x_2p;
 
 			//吹き出し(女子返答)の表示
-			while (alpha_speach_my < COLOR_MAX)
+			while (alpha_speach_girl < COLOR_MAX)
 			{
-				alpha_speach_my = min(alpha_speach_my + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+				alpha_speach_girl = min(alpha_speach_girl + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 
 				//pos_speach_girl_1p.x = max(pos_speach_girl_1p.x - NUM_SPEED * time_delta, pos_speach_normal_girl_limit_x_1p);
 				//pos_speach_girl_2p.x = min(pos_speach_girl_2p.x + NUM_SPEED * time_delta, pos_speach_normal_girl_limit_x_2p);
@@ -677,15 +677,15 @@ cppcoro::generator<int>Attack::Action() {
 				flag_speach_reply_girl = true;
 				time_stop += time_delta;
 
-				comment_reply++* time_delta;
+				comment_reply += TALK_SPEED * time_delta;
 				if (comment_reply > LoadLines::lines1[index_boy + 1].length()) {
 					comment_reply = LoadLines::lines1[index_boy + 1].length();
 				}
 				co_yield 6;
 			}
-			comment_reply = 0;
+			comment_reply = 0.0f;
 			time_stop = 0.0f;
-			alpha_speach_my = 0.0f;
+			alpha_speach_girl = 0.0f;
 			flag_speach_reply_girl = false;
 
 			//直撃だった場合の演出
@@ -701,8 +701,8 @@ cppcoro::generator<int>Attack::Action() {
 				time_stop = 0.0f;
 
 				//吹き出し(女子)の表示
-				while (alpha_speach_my < COLOR_MAX) {
-					alpha_speach_my = min(alpha_speach_my + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+				while (alpha_speach_girl < COLOR_MAX) {
+					alpha_speach_girl = min(alpha_speach_girl + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 					co_yield 8;
 				}
 
@@ -710,7 +710,7 @@ cppcoro::generator<int>Attack::Action() {
 				while (time_stop < 3.0f) {
 					time_stop += time_delta;
 
-					comment_reply++* time_delta;
+					comment_reply += TALK_SPEED * time_delta;
 					if (comment_reply > LoadLines::lines1[1].length()) {
 						comment_reply = LoadLines::lines1[1].length();
 						//呪文詠唱はこちら！↓↓↓
@@ -764,8 +764,8 @@ cppcoro::generator<int>Attack::Action() {
 			pos_speach_girl_2p.x = pos_speach_normal_girl_limit_x_2p;
 
 			//吹き出し(女子返答)の表示
-			while (alpha_speach_my < COLOR_MAX) {
-				alpha_speach_my = min(alpha_speach_my + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+			while (alpha_speach_girl < COLOR_MAX) {
+				alpha_speach_girl = min(alpha_speach_girl + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 
 				//pos_speach_girl_1p.x = max(pos_speach_girl_1p.x - NUM_SPEED * time_delta, pos_speach_normal_girl_limit_x_1p);
 				//pos_speach_girl_2p.x = min(pos_speach_girl_2p.x + NUM_SPEED * time_delta, pos_speach_normal_girl_limit_x_2p);
@@ -777,7 +777,7 @@ cppcoro::generator<int>Attack::Action() {
 				flag_speach_reply_girl = true;
 				time_stop += time_delta;
 
-				comment_reply++* time_delta;
+				comment_reply += TALK_SPEED * time_delta;
 				if (comment_reply > LoadLines::lines1[index_boy + 1].length()) {
 					comment_reply = LoadLines::lines1[index_boy + 1].length();
 				}

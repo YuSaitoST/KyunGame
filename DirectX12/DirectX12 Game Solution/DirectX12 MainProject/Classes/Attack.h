@@ -55,8 +55,8 @@ private:
 	};
 	int speach;
 
-	float alpha_speach_my;
-	float alpha_speach_partner;
+	float alpha_speach_girl;
+	float alpha_speach_boy;
 
 
 	const float pos_speach_normal_girl_limit_x_1p = 434.0f;
@@ -76,10 +76,10 @@ private:
 
 	int count_chnage;
 	float time_delta;
+	const float TALK_SPEED = 20.0f;
 
-
-	int comment_attack;
-	int comment_reply;
+	float comment_attack;
+	float comment_reply;
 	bool flag_speach_attack_girl;
 	bool flag_speach_reply_boy;
 
