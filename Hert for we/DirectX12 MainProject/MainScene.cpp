@@ -53,7 +53,7 @@ void MainScene::Initialize()
 
 	std::random_device seed;
 	random_engine		= std::mt19937(seed());
-	random_dist				= std::uniform_int_distribution<>(0, 1);
+	random_dist			= std::uniform_int_distribution<>(0, 1);
 
 	phase						= Phase::SCENARIO;
 	emotion[0]				= EMOTION::GENERALLY;
@@ -76,7 +76,7 @@ void MainScene::Initialize()
 	flag_suka = false;
 	flag_graze = false;
 	flag_hit = false;
-
+	flag_se = false;
 	/* ↓↓↓↓↓↓↓↓↓↓↓↓ */
 	/*→*/flag_debug = true;  /*←*/   // リリーズ時falseにする
 	/* ↑↑↑↑↑↑↑↑↑↑↑↑ */
@@ -142,8 +142,8 @@ NextScene MainScene::Update(const float deltaTime)
 
 	// TODO: Add your game logic here
 
-	//bgm_main->Play();
-	//if (bgm_main->isComplete()) bgm_main->Replay();
+	bgm_main->Play();
+	if (bgm_main->isComplete()) bgm_main->Replay();
 
 	switch (phase) {
 		case Phase::SCENARIO		:	Up_Scenario(deltaTime);				break;
@@ -229,14 +229,12 @@ void MainScene::LA_Load() {
 	girl_b[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/B_player/girl_defeat_r.png");
 
 	bgm_main										= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\main_bgm.mp3");
-	//se_decision= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
-	//se_move= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
-	//se_attack= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
-	//se_nervous= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
-	//se_speak= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
-	//se_cancel= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
-	//se_change= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
-
+	se_cursor = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Main\\cursor.mp3");
+	se_attack = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Main\\attack.mp3");
+	se_move = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Main\\move.mp3");
+	se_cancel = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Main\\main_cancel.mp3");
+	se_change = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Main\\change.mp3");
+	se_decision = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Main\\決定２.mp3");
 
 	black.LoadAssets();
 	smoke.LoadAssets();
@@ -268,22 +266,30 @@ void MainScene::Up_Put(int index) {
 }
 
 void MainScene::Up_Start(float deltaTime) {
-	std::fill(std::begin(num_ready_all), std::end(num_ready_all), 0);
-	pos_heart_old = pos_heart[num_player];
 
-	num_color[num_player] = 155;
-	int partner_ = num_player ? 0 : 1;
-	num_color[partner_] = 255;
+	if (!flag_se) {
+		std::fill(std::begin(num_ready_all), std::end(num_ready_all), 0);
+		pos_heart_old = pos_heart[num_player];
 
-	flag_suka		= false;
-	flag_graze		= false;
-	flag_hit			= false;
+		num_color[num_player] = 155;
+		int partner_ = num_player ? 0 : 1;
+		num_color[partner_] = 255;
+
+		flag_suka = false;
+		flag_graze = false;
+		flag_hit = false;
+		flag_se = true;
+
+		se_change->Play();
+	}
 
 	//パチンコ演出したいなら↓
 	//num_color[0] = num_color[0] == 120 ? 255 : 120;  // 色指定の式は先攻後攻処理完成後に再調整
 	//num_color[1] = num_color[1] == 255 ? 120 : 255;
 	bool fin_change_ = smoke.Up_Change(deltaTime);
-	if(fin_change_) phase = Phase::SELECT;
+	if (!fin_change_) return;
+	phase = Phase::SELECT;
+	se_change->Play();
 }
 
 void MainScene::Up_Select() {
@@ -297,6 +303,7 @@ void MainScene::Up_Select() {
 	if (input_b_) {
 		if (pos_cursor.y == 100.0f) phase = Phase::ATTACK;
 		if (pos_cursor.y == 200.0f) phase = Phase::MOVE;
+		se_decision->Replay();
 	}
 
 	pos_pointer = POS_CENTER;
@@ -368,13 +375,15 @@ void MainScene::Up_Attack(float deltaTime) {
 	const bool input_b_		= DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
 
 	if (input_a_) {
-		phase								= Phase::SELECT;
-//		emotion[num_player]	= EMOTION::GENERALLY;
+		phase	= Phase::SELECT;
+		se_cancel->Replay();
+//		emotion[num_player] = EMOTION::GENERALLY;
 		return;
 	}
 	if (input_b_) {
 		pos_attack = pos_pointer_ready[num_player];
 		flag_attack += 1;
+		se_attack->Replay();
 		Up_At_Check(deltaTime);
 	}
 }
@@ -397,23 +406,47 @@ void MainScene::Up_Move(float deltaTime) {
 
 	if (cross_up_) {
 		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) pos_pointer_ready[num_player] = pos_cross_hR[0];
-		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[0];
-		else if (pos_pointer_ready[num_player] == pos_cross_hR[2]) pos_pointer_ready[num_player] = pos_cross_hR[4];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) {
+			pos_pointer_ready[num_player] = pos_cross_hR[0];
+			se_move->Replay();
+		}
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[2]) {
+			pos_pointer_ready[num_player] = pos_cross_hR[4];
+			se_move->Replay();
+		}
 	}
 	if (cross_down_) {
-		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) pos_pointer_ready[num_player] = pos_cross_hR[4];
-		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[2];
+		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) {
+			pos_pointer_ready[num_player] = pos_cross_hR[4];
+			se_move->Replay();
+		}
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) {
+			pos_pointer_ready[num_player] = pos_cross_hR[2];
+			se_move->Replay();
+		}
 		else if (pos_pointer_ready[num_player] == pos_cross_hR[2]) pos_pointer_ready[num_player] = pos_cross_hR[2];
 	}
 	if (cross_left_) {
-		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) pos_pointer_ready[num_player] = pos_cross_hR[4];
-		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[3];
+		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) {
+			pos_pointer_ready[num_player] = pos_cross_hR[4];
+			se_move->Replay();
+		}
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) {
+			pos_pointer_ready[num_player] = pos_cross_hR[3];
+			se_move->Replay();
+		}
 		else if (pos_pointer_ready[num_player] == pos_cross_hR[3]) pos_pointer_ready[num_player] = pos_cross_hR[3];
 	}
 	if (cross_right_) {
 		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) pos_pointer_ready[num_player] = pos_cross_hR[1];
-		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) pos_pointer_ready[num_player] = pos_cross_hR[1];
-		else if (pos_pointer_ready[num_player] == pos_cross_hR[3]) pos_pointer_ready[num_player] = pos_cross_hR[4];
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) {
+			pos_pointer_ready[num_player] = pos_cross_hR[1];
+			se_move->Replay();
+		}
+		else if (pos_pointer_ready[num_player] == pos_cross_hR[3]) {
+			pos_pointer_ready[num_player] = pos_cross_hR[4];
+			se_move->Replay();
+		}
 	}
 
 
@@ -449,6 +482,7 @@ void MainScene::Up_Mo_Check(float deltaTime) {
 
 	if (input_a_) {
 		phase = Phase::SELECT;
+		se_cancel->Replay();
 		return;
 	}
 
@@ -466,10 +500,22 @@ void MainScene::Up_Move_Pointer(int index) {
 	const bool cross_left_			= DXTK->GamePadEvent[index].dpadLeft		== GamePad::ButtonStateTracker::PRESSED;
 	const bool cross_right_			= DXTK->GamePadEvent[index].dpadRight	== GamePad::ButtonStateTracker::PRESSED;
 
-	if (cross_up_)			pos_pointer_ready[index].y	-=	MOVE_POINTER;
-	if (cross_down_)	pos_pointer_ready[index].y	+=	MOVE_POINTER;
-	if (cross_left_)			pos_pointer_ready[index].x	-=	MOVE_POINTER;
-	if (cross_right_)		pos_pointer_ready[index].x	+=	MOVE_POINTER;
+	if (cross_up_) {
+		pos_pointer_ready[index].y -= MOVE_POINTER;
+		se_cursor->Replay();
+	}
+	if (cross_down_) {
+		pos_pointer_ready[index].y += MOVE_POINTER;
+		se_cursor->Replay();
+	}
+	if (cross_left_) {
+		pos_pointer_ready[index].x -= MOVE_POINTER;
+		se_cursor->Replay();
+	}
+	if (cross_right_) {
+		pos_pointer_ready[index].x += MOVE_POINTER;
+		se_cursor->Replay();
+	}
 
 
 	float lumberjack_up_			= POS_END_UL.y;

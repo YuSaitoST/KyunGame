@@ -129,24 +129,29 @@ void TitleScene::LA_Load() {
     white           = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png" );
 
     bgm_title    = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\title_bgm.mp3");
-    //se_ope=DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
-    //se_start=DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\title_bgm.mp3")
+    se_ope = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Title\\help.mp3");
+    se_cansel = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Title\\help_cancel.mp3");
+    se_start = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Title\\start.mp3");
 }
 
 void TitleScene::Up_comment(const float deltaTime) {
     if (flag_falsh == false) {
         if (flag_comment == false) {
-            if (DXTK->KeyEvent->pressed.Space ||
+            bool flag_padKey = 
                 DXTK->GamePadEvent[0].a == GamePad::ButtonStateTracker::PRESSED ||
-                DXTK->GamePadEvent[1].a == GamePad::ButtonStateTracker::PRESSED) {
+                DXTK->GamePadEvent[1].a == GamePad::ButtonStateTracker::PRESSED;
+            if (DXTK->KeyEvent->pressed.Space || flag_padKey) {
+                se_cansel->Replay();
                 flag_comment = true;
             }
         }
         else
         {
-            if (DXTK->KeyEvent->pressed.Space ||
+            bool flag_padKey = 
                 DXTK->GamePadEvent[0].a == GamePad::ButtonStateTracker::PRESSED ||
-                DXTK->GamePadEvent[1].a == GamePad::ButtonStateTracker::PRESSED) {
+                DXTK->GamePadEvent[1].a == GamePad::ButtonStateTracker::PRESSED;
+            if (DXTK->KeyEvent->pressed.Space || flag_padKey) {
+                se_cansel->Replay();
                 flag_comment = false;
             }
         }
@@ -181,19 +186,17 @@ void TitleScene::Up_comment(const float deltaTime) {
             pos_comment_my.y = POS_START_COMMENT_Y;
             pos_comment_partner.y = POS_START_COMMENT_Y;
         }
-
-
     }
-
 }
-
 
 NextScene TitleScene::Up_Scene_Change(const float deltaTime) {
     if (flag_comment == false) {
-        if (DXTK->KeyEvent->pressed.Enter ||
+        bool flag_padKey_ =
             DXTK->GamePadEvent[0].b == GamePad::ButtonStateTracker::PRESSED ||
-            DXTK->GamePadEvent[1].b == GamePad::ButtonStateTracker::PRESSED) {
+            DXTK->GamePadEvent[1].b == GamePad::ButtonStateTracker::PRESSED;
+        if (DXTK->KeyEvent->pressed.Enter || flag_padKey_) {
             flag_falsh = true;
+            se_start->Replay();
         }
     }
 
@@ -208,7 +211,6 @@ NextScene TitleScene::Up_Scene_Change(const float deltaTime) {
     }
     return NextScene::Continue;
 }
-
 
 void TitleScene::Re_Draw_Title() {
 
@@ -253,8 +255,6 @@ void TitleScene::Re_Draw_Title() {
         );
     }
 }
-
-
 
 void TitleScene::Re_DirectTwelve() {
     DXTK->Direct3D9->UpdateResource();

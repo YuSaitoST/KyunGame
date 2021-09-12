@@ -49,6 +49,7 @@ private:
     DX9::MEDIARENDERER bgm_title;
     DX9::MEDIARENDERER se_start;
     DX9::MEDIARENDERER se_ope;
+    DX9::MEDIARENDERER se_cansel;
 
     SimpleMath::Vector3 pos_comment_my;
     SimpleMath::Vector3 pos_comment_partner;

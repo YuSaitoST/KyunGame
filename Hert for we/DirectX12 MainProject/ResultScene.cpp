@@ -77,6 +77,10 @@ NextScene ResultScene::Update(const float deltaTime)
 
 	// TODO: Add your game logic here.
 
+    // 台詞のコルーチンを、終わったら花火のse流す
+
+
+    se_flowers->Replay();
 
     const bool input_1_ = DXTK->GamePadEvent[0].b == GamePad::ButtonStateTracker::PRESSED;
     const bool input_2_ = DXTK->GamePadEvent[1].b == GamePad::ButtonStateTracker::PRESSED;
@@ -118,6 +122,8 @@ void ResultScene::Render()
 
 void ResultScene::LA_Load() {
     black = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/black.png");
+
+    se_flowers = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Result\\hanabi.mp3");
 }
 
 // テキスト表示を行う

@@ -64,12 +64,11 @@ private:
 
 	DX9::MEDIARENDERER bgm_main;
 	DX9::MEDIARENDERER se_cancel;
-	DX9::MEDIARENDERER se_speak;
 	DX9::MEDIARENDERER se_change;
-	DX9::MEDIARENDERER se_move;
-	DX9::MEDIARENDERER se_decision;
+	DX9::MEDIARENDERER se_cursor;
+	DX9::MEDIARENDERER se_decision;  // 決定
 	DX9::MEDIARENDERER se_attack;
-	DX9::MEDIARENDERER se_nervous;
+	DX9::MEDIARENDERER se_move;
 
 	SimpleMath::Vector2 pos_pointer;
 	SimpleMath::Vector2 pos_pointer_ready[2];
@@ -102,6 +101,7 @@ private:
 	int num_ready;  // 互いの準備完了状態
 	int num_ready_all[2];  // 両者が
 
+	bool flag_se;  // seがなったかのフラグ
 	bool fin_game;  // デバック用
 	int win_player;  // デバック用
 
