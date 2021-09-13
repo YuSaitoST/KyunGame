@@ -49,6 +49,10 @@ public:
 	float alpha_speach_boy;
 	float alpha_speach_synchro;
 	float comment_reply;
+	int comment_plus;
+	const int TALK_GIRL = 40;
+	const int TALK_BOY  = 41;
+	const int TALK_SYNCHRO = 44;
 
 	bool flag_talk_boy;
 	bool flag_talk_girl;
@@ -61,7 +65,7 @@ public:
 
 	//63 31.5
 	const float pos_speach_synchro_x_1p = 465.0f;
-	const float pos_speach_synchro_x_2p = 2437.0f;
+	const float pos_speach_synchro_x_2p = 2417.0f;
 
 
 	const float pos_speach_reply_y = 597.0f;
