@@ -196,8 +196,8 @@ void MainScene::Render()
 void MainScene::LA_Load() {
 	bg[PLAYER::A]								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"BG/main_bg01.png");
 	bg[PLAYER::B]								= DX9::Sprite::CreateFromFile(DXTK->Device9, L"BG/main_bg02.png");
-	map[0]											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map_1.png");
-	map[1]											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map_2.png");
+	map[0]											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map_girl.png");
+	map[1]											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"map_boy.png");
 	heart_red										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"love.png");
 	pointer											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/pointer.png");
 	area_attack										= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/attack_area.png");
