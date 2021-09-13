@@ -537,10 +537,15 @@ void MainScene::Up_Move_Pointer(int index) {
 	pos_pointer = pos_pointer_ready[index];
 }
 
-void MainScene::Up_Fine() {
-	num_turn		+= 1;
-	num_player	= num_player == 0 ? 1 : 0;  // ターン切り替え
-	phase				= Phase::START;
+void MainScene::Up_Fine() 
+{
+	flag_hit				= false;
+	flag_graze			= false;
+	flag_suka			= false;
+	num_turn			+= 1;
+	num_player		= num_player == 0 ? 1 : 0;  // ターン切り替え
+	pos_heart_old	= pos_heart[num_player];
+	phase					= Phase::START;
 }
 
 NextScene MainScene::Up_Result(float deltaTime) {
