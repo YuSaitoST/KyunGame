@@ -50,6 +50,7 @@ void BlackOut::Initialize() {
 	alpha_speach_synchro = 0.0f;
 
 	comment_reply = 0.0f;
+	comment_plus = 0;
 
 	flag_talk_boy  = false;
 	flag_talk_girl = false;
@@ -119,12 +120,12 @@ void BlackOut::Render() {
 	if (flag_talk_boy == true) {
 		//1P画面
 		RECT dest = RectWH(pos_speach_boy_1p.x + 70, pos_speach_boy_1p.y + 70, 1000, 1000);
-		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[TALK_BOY + comment_plus].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
 		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 		//2P画面
 		RECT means = RectWH(pos_speach_boy_2p.x + 115, pos_speach_boy_2p.y + 70, 1000, 1000);
-		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, means, DX9::Colors::Black);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[TALK_BOY + comment_plus].c_str(), (int)comment_reply, means, DX9::Colors::Black);
 	}
 
 
@@ -147,12 +148,12 @@ void BlackOut::Render() {
 	if (flag_talk_girl == true) {
 		//1P画面
 		RECT place = RectWH(pos_speach_girl_1p.x + 125, pos_speach_girl_1p.y + 70, 1000, 1000);
-		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, place, DX9::Colors::Black);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[TALK_GIRL + comment_plus].c_str(), (int)comment_reply, place, DX9::Colors::Black);
 		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 		//2P画面
 		RECT spot = RectWH(pos_speach_girl_2p.x + 65, pos_speach_girl_2p.y + 70, 1000, 1000);
-		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, spot, DX9::Colors::Black);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[TALK_GIRL + comment_plus].c_str(), (int)comment_reply, spot, DX9::Colors::Black);
 	}
 
 	//吹き出し(両方)
@@ -173,12 +174,12 @@ void BlackOut::Render() {
 	if (flag_talk_synchro == true) {
 		//1P画面
 		RECT place = RectWH(pos_speach_synchro_1p.x + 125, pos_speach_synchro_1p.y + 70, 1000, 1000);
-		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, place, DX9::Colors::Black);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[TALK_SYNCHRO].c_str(), (int)comment_reply, place, DX9::Colors::Black);
 		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 		//2P画面
-		RECT spot = RectWH(pos_speach_synchro_2p.x + 65, pos_speach_synchro_2p.y + 70, 1000, 1000);
-		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, spot, DX9::Colors::Black);
+		RECT spot = RectWH(pos_speach_synchro_2p.x + 125, pos_speach_synchro_2p.y + 70, 1000, 1000);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[TALK_SYNCHRO].c_str(), (int)comment_reply, spot, DX9::Colors::Black);
 	}
 
 }
@@ -212,33 +213,56 @@ cppcoro::generator<int>BlackOut::Change() {
 			co_yield 4;
 		}
 		time_stop = 0.0f;
-
-		//吹き出し(男子)の表示
-		while (alpha_speach_boy < COLOR_MAX) {
-			alpha_speach_boy = std::min(alpha_speach_boy + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+		
+		//吹き出し(女子)の表示
+		while (alpha_speach_girl < COLOR_MAX) {
+			alpha_speach_girl = std::min(alpha_speach_girl + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
 			co_yield 5;
 		}
 
-		//セリフ(男子)の表示
+		//セリフ(女子)の表示
 		while (time_stop < 3.0f) {
-			flag_talk_boy = true;
+			flag_talk_girl = true;
 			time_stop += time_delta;
 
 			comment_reply += TALK_SPEED * time_delta;
-			if (comment_reply > LoadLines::lines1[0].length())
-				comment_reply = LoadLines::lines1[0].length();
+			if (comment_reply > LoadLines::lines1[TALK_GIRL].length())
+				comment_reply = LoadLines::lines1[TALK_GIRL].length();
 
 			co_yield 8;
 		}
 		time_stop = 0.0f;
 		comment_reply = 0.0f;
+		alpha_speach_girl = 0.0f;
+		flag_talk_girl = false;
+
+		//吹き出し(男子)の表示
+		while (alpha_speach_boy < COLOR_MAX) {
+			alpha_speach_boy = std::min(alpha_speach_boy + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
+			co_yield 9;
+		}
+
+		//セリフ(男子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_boy = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[TALK_BOY].length())
+				comment_reply = LoadLines::lines1[TALK_BOY].length();
+
+			co_yield 10;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
 		alpha_speach_boy = 0.0f;
 		flag_talk_boy = false;
+		comment_plus = 2;
 
 		//吹き出し(女子)の表示
 		while (alpha_speach_girl < COLOR_MAX) {
 			alpha_speach_girl = std::min(alpha_speach_girl + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
-			co_yield 9;
+			co_yield 5;
 		}
 
 		//セリフ(女子)の表示
@@ -247,10 +271,10 @@ cppcoro::generator<int>BlackOut::Change() {
 			time_stop += time_delta;
 
 			comment_reply += TALK_SPEED * time_delta;
-			if (comment_reply > LoadLines::lines1[0].length())
-				comment_reply = LoadLines::lines1[0].length();
+			if (comment_reply > LoadLines::lines1[TALK_GIRL + comment_plus].length())
+				comment_reply = LoadLines::lines1[TALK_GIRL + comment_plus].length();
 
-			co_yield 10;
+			co_yield 11;
 		}
 		time_stop = 0.0f;
 		comment_reply = 0.0f;
@@ -260,7 +284,7 @@ cppcoro::generator<int>BlackOut::Change() {
 		//吹き出し(男子)の表示
 		while (alpha_speach_boy < COLOR_MAX) {
 			alpha_speach_boy = std::min(alpha_speach_boy + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
-			co_yield 5;
+			co_yield 12;
 		}
 
 		//セリフ(男子)の表示
@@ -269,37 +293,15 @@ cppcoro::generator<int>BlackOut::Change() {
 			time_stop += time_delta;
 
 			comment_reply += TALK_SPEED * time_delta;
-			if (comment_reply > LoadLines::lines1[0].length())
-				comment_reply = LoadLines::lines1[0].length();
-
-			co_yield 11;
-		}
-		time_stop = 0.0f;
-		comment_reply = 0.0f;
-		alpha_speach_boy = 0.0f;
-		flag_talk_boy = false;
-
-		//吹き出し(女子)の表示
-		while (alpha_speach_girl < COLOR_MAX) {
-			alpha_speach_girl = std::min(alpha_speach_girl + NUM_ALPHA_SPEACH * time_delta, COLOR_MAX);
-			co_yield 12;
-		}
-
-		//セリフ(女子)の表示
-		while (time_stop < 3.0f) {
-			flag_talk_girl = true;
-			time_stop += time_delta;
-
-			comment_reply += TALK_SPEED * time_delta;
-			if (comment_reply > LoadLines::lines1[0].length())
-				comment_reply = LoadLines::lines1[0].length();
+			if (comment_reply > LoadLines::lines1[TALK_BOY + comment_plus].length())
+				comment_reply = LoadLines::lines1[TALK_BOY + comment_plus].length();
 
 			co_yield 13;
 		}
 		time_stop = 0.0f;
 		comment_reply = 0.0f;
-		alpha_speach_girl = 0.0f;
-		flag_talk_girl = false;
+		alpha_speach_boy = 0.0f;
+		flag_talk_boy = false;
 
 		//男女のリアクション
 		while (time_stop < 0.5f)
@@ -342,8 +344,8 @@ cppcoro::generator<int>BlackOut::Change() {
 			time_stop += time_delta;
 
 			comment_reply += TALK_SPEED * time_delta;
-			if (comment_reply > LoadLines::lines1[0].length())
-				comment_reply = LoadLines::lines1[0].length();
+			if (comment_reply > LoadLines::lines1[TALK_SYNCHRO].length())
+				comment_reply = LoadLines::lines1[TALK_SYNCHRO].length();
 
 			co_yield 16;
 		}
