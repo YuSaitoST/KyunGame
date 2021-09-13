@@ -110,7 +110,7 @@ private:
 
 
 
-	const float COLOR_GRAY = 155.0f;
+	const float COLOR_GRAY = 55.0f;
 	const float COLOR_MAX = 255.0f;
 	const float NUM_ALPHA_CHARA = 1100.0f;
 	const float NUM_ALPHA_SPEACH = 400.0f;

@@ -1,24 +1,21 @@
 #include "Classes/LoadLines.h"
 #include <iostream>
 
-std::basic_string<wchar_t> LoadLines::lines1[40];
+std::basic_string<wchar_t> LoadLines::lines1[56];
 
 void LoadLines::Initialize() {
 }
 
 void LoadLines::In_File() {
 	FILE* fp;
-	if (_wfopen_s(&fp, L"comment.csv", L"r,ccs=UTF-8") != 0) {
-		assert(!"comment.csv‚ªŠJ‚¯‚Ü‚¹‚ñ");
-		throw std::exception();
-	}
+	assert(_wfopen_s(&fp, L"comment.csv", L"r,ccs=UTF-8") == 0);
 
 	wchar_t read_line[256];
 
 	//wchar_t flavor_text[256];
 	//MultiByteToWideChar(CP_ACP, 0, read_line, -1, flavor_text, 255);  // •ÏŠ·
 
-	for (int i = 0; i < 40; ++i) {
+	for (int i = 0; i < 57; ++i) {
 		fgetws(read_line, 255, fp);
 		lines1[i] = read_line;
 

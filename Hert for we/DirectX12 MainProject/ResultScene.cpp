@@ -5,6 +5,9 @@
 #include "Base/pch.h"
 #include "Base/dxtk.h"
 #include "SceneFactory.h"
+#include "Classes/LoadLines.h"
+
+int ResultScene::winner;
 
 // Initialize member variables.
 ResultScene::ResultScene()
@@ -23,6 +26,48 @@ void ResultScene::Initialize()
     time_delta = 0.0f;
     num_alpha = 0.0f;
     flag_fade = false;
+
+
+	// 会話用
+	pos_speach_girl_1p.x = pos_speach_normal_girl_limit_x_1p;
+	pos_speach_girl_1p.y = pos_speach_reply_y;
+	pos_speach_girl_1p.z = MainScene::POSI_Z::SPEAK;
+
+	pos_speach_boy_1p.x = pos_speach_normal_boy_limit_x_1p;
+	pos_speach_boy_1p.y = pos_speach_reply_y;
+	pos_speach_boy_1p.z = MainScene::POSI_Z::SPEAK;
+
+
+	pos_speach_girl_2p.x = pos_speach_normal_girl_limit_x_2p;
+	pos_speach_girl_2p.y = pos_speach_reply_y;
+	pos_speach_girl_2p.z = MainScene::POSI_Z::SPEAK;
+
+	pos_speach_boy_2p.x = pos_speach_normal_boy_limit_x_2p;
+	pos_speach_boy_2p.y = pos_speach_reply_y;
+	pos_speach_boy_2p.z = MainScene::POSI_Z::SPEAK;
+
+	pos_speach_synchro_1p.x = pos_speach_synchro_x_1p;
+	pos_speach_synchro_1p.y = pos_speach_reply_y;
+	pos_speach_synchro_1p.z = MainScene::POSI_Z::SPEAK;
+
+	pos_speach_synchro_2p.x = pos_speach_synchro_x_2p;
+	pos_speach_synchro_2p.y = pos_speach_reply_y;
+	pos_speach_synchro_2p.z = MainScene::POSI_Z::SPEAK;
+
+
+	flag_talk_boy = false;
+	flag_talk_girl = false;
+	flag_talk_synchro = false;
+
+	comment_reply = 0.0f;
+
+	time_stop = 0.0f;
+	alpha_text = 0.0f;
+
+	//index = winner ? 45 : 50;
+	index = 45;
+
+	load.In_File();
 
     co_operate = Operate();             //コルーチンの生成
     co_operate_it = co_operate.begin(); //コルーチンの実行開始
@@ -87,21 +132,15 @@ NextScene ResultScene::Update(const float deltaTime)
 
 
     // 台詞のコルーチンを、終わったら花火のse流す
-    time_delta += deltaTime;
+    time_delta = deltaTime;
 
     se_flowers->Play();
 
     if (co_operate_it == co_operate.end()) {
-        const bool input_1_ = DXTK->GamePadEvent[0].b == GamePad::ButtonStateTracker::PRESSED;
-        const bool input_2_ = DXTK->GamePadEvent[1].b == GamePad::ButtonStateTracker::PRESSED;
-        if (input_1_ || input_2_) return NextScene::TitleScene;
+		TitleScene::flag_fade = true;
+		return NextScene::TitleScene;
     }
     if (co_operate_it != co_operate.end()) co_operate_it++;
-
-
-
-    //bool flag_fade = Up_Fade(deltaTime);
-    //if (!flag_fade) return NextScene::Continue;
 
 
 
@@ -119,27 +158,6 @@ void ResultScene::Render()
 
 
 
-    DX9::SpriteBatch->DrawSimple(
-        black.Get(), SimpleMath::Vector3(0.0f, 0.0f, -3),
-        Rect(0.0f, 0.0f, 3840.0f, 1080.0f),
-        DX9::Colors::RGBA(255, 255, 255, 255)
-    );
-
-    DX9::SpriteBatch->DrawSimple(
-        ope.Get(),
-        SimpleMath::Vector3(0.0f, 0.0f, 0),
-        Rect(0.0f, 0.0f, 1920.0f, 990.0f),
-        DX9::Colors::RGBA(255, 255, 255, num_alpha)
-    );
-    DX9::SpriteBatch->DrawSimple(
-        ope.Get(),
-        SimpleMath::Vector3(1920.0f, 0.0f, 0),
-        Rect(0.0f, 0.0f, 1920.0f, 990.0f),
-        DX9::Colors::RGBA(255, 255, 255, num_alpha)
-    );
-
-
-
     Re_Sprite();
     Re_Speak();
 
@@ -151,7 +169,7 @@ void ResultScene::Render()
 
 void ResultScene::LA_Load() {
     black = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/black.png");
-    ope= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/result_ui.png");
+    ope= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene\\result_ui.png");
 
     se_flowers = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Result\\hanabi.mp3");
 }
@@ -173,23 +191,38 @@ bool ResultScene::Up_Fade(const float deltaTime) {
 }
 
 void ResultScene::Re_Sprite() {
-    //DX9::SpriteBatch->DrawSimple(
-    //    black.Get(), SimpleMath::Vector3(0.0f, 0.0f, -3),
-    //    Rect(0.0f, 0.0f, 3840.0f, 1080.0f),
-    //    DX9::Colors::RGBA(255, 255, 255, 255)
-    //);
-
-    //DX9::SpriteBatch->DrawSimple(
-    //    ope.Get(),
-    //    SimpleMath::Vector3(0.0f, 0.0f, -2),
-    //    Rect(0.0f, 0.0f, 1920.0f, 990.0f),
-    //    DX9::Colors::RGBA(255, 255, 255, num_alpha)
-    //);
+	DX9::SpriteBatch->DrawSimple(
+		black.Get(), SimpleMath::Vector3(0.0f, 0.0f, 3),
+		Rect(0.0f, 0.0f, 3840.0f, 1080.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255)
+	);
 }
 
 // テキスト表示を行う
 void ResultScene::Re_Speak() {
+	//男子セリフ表示
+	if (flag_talk_boy == true) {
+		//1P画面
+		RECT dest = RectWH(pos_speach_boy_1p.x + 70, pos_speach_boy_1p.y + 70, 1000, 1000);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index].c_str(), (int)comment_reply, dest, DX9::Colors::White);
+		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
+		//2P画面
+		RECT means = RectWH(pos_speach_boy_2p.x + 115, pos_speach_boy_2p.y + 70, 1000, 1000);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index].c_str(), (int)comment_reply, means, DX9::Colors::White);
+	}
+
+	//女子セリフ表示
+	if (flag_talk_girl == true) {
+		//1P画面
+		RECT place = RectWH(pos_speach_girl_1p.x + 125, pos_speach_girl_1p.y + 70, 1000, 1000);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index].c_str(), (int)comment_reply, place, DX9::Colors::White);
+		//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
+
+		//2P画面
+		RECT spot = RectWH(pos_speach_girl_2p.x + 65, pos_speach_girl_2p.y + 70, 1000, 1000);
+		DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[index].c_str(), (int)comment_reply, spot, DX9::Colors::White);
+	}
 }
 
 void ResultScene::Re_DirectTwelve() {
@@ -214,10 +247,190 @@ void ResultScene::Re_DirectTwelve() {
 }
 
 cppcoro::generator<int> ResultScene::Operate() {
-    co_yield 0;
+	co_yield 0;
 
-    while (num_alpha < 255.0f) {
-        num_alpha = std::min(num_alpha + time_delta * 51.0f, 255.0f);
-        co_yield 1;
-    }
+	// 待機
+	while (time_stop < 2.5f) {
+		time_stop += time_delta;
+		co_yield 1;
+	}
+	time_stop = 0.0f;
+
+
+	// 46~50or51~55の台詞を表示
+
+	// 男子勝ちver
+	if (index == 45) {
+		//セリフ(男子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_boy = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 8;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_boy = false;
+		index += 1;
+
+		//セリフ(女子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_girl = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 10;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_girl = false;
+		index += 1;
+
+		//セリフ(男子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_boy = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 11;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_boy = false;
+		index += 1;
+
+		//セリフ(女子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_girl = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 13;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_girl = false;
+		index += 1;
+
+		//セリフ(男子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_boy = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 11;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_boy = false;
+	}
+
+	// 女子勝ちver
+	if (index == 50) {
+		//セリフ(女子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_girl = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 10;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_girl = false;
+		index += 1;
+
+		//セリフ(男子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_boy = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 11;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_boy = false;
+		index += 1;
+
+		//セリフ(女子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_girl = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 10;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_girl = false;
+		index += 1;
+
+		//セリフ(男子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_boy = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 11;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_boy = false;
+		index += 1;
+
+		//セリフ(女子)の表示
+		while (time_stop < 3.0f) {
+			flag_talk_girl = true;
+			time_stop += time_delta;
+
+			comment_reply += TALK_SPEED * time_delta;
+			if (comment_reply > LoadLines::lines1[index].length())
+				comment_reply = LoadLines::lines1[index].length();
+
+			co_yield 10;
+		}
+		time_stop = 0.0f;
+		comment_reply = 0.0f;
+		flag_talk_girl = false;
+	}
+
+	// 待機
+	while (time_stop < 2.5f) {
+		time_stop += time_delta;
+		co_yield 1;
+	}
+	time_stop = 0.0f;
+
+
+
+	co_return;
 }

@@ -6,6 +6,8 @@
 #include "Base/dxtk.h"
 #include "SceneFactory.h"
 
+bool TitleScene::flag_fade;
+
 // Initialize member variables.
 TitleScene::TitleScene() : dx9GpuDescriptor{}
 {
@@ -29,6 +31,18 @@ void TitleScene::Initialize()
     num_flash = 0.0f;
     flag_falsh = false;
     time_change = 0.0f;
+
+    alpha_black = 255.0f;
+    time_delta = 0.0f;
+    time_stop = 0.0f;
+
+
+
+    if (flag_fade) {
+        co_operate = Operate();             //コルーチンの生成
+        co_operate_it = co_operate.begin(); //コルーチンの実行開
+
+    }
 }
 
 // Allocate all memory the Direct3D and Direct2D resources.
@@ -88,6 +102,17 @@ NextScene TitleScene::Update(const float deltaTime)
 
     // TODO: Add your game logic here.
 
+    time_delta = deltaTime;
+
+    if (flag_fade) {
+        if (co_operate_it == co_operate.end()) {
+            flag_fade = false;
+        }
+        if (co_operate_it != co_operate.end()) co_operate_it++;
+    }
+
+    if (flag_fade) return NextScene::Continue;
+
     bgm_title->Play();
     if (bgm_title->isComplete()) bgm_title->Replay();
 
@@ -127,6 +152,7 @@ void TitleScene::LA_Load() {
     comment    = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/explanation_bg.png");
     ui_start        = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene/start_ui.png"  );
     white           = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/white.png" );
+    black           = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/black.png");
 
     bgm_title    = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\title_bgm.mp3");
     se_ope = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Title\\help.mp3");
@@ -213,6 +239,11 @@ NextScene TitleScene::Up_Scene_Change(const float deltaTime) {
 }
 
 void TitleScene::Re_Draw_Title() {
+    DX9::SpriteBatch->DrawSimple(
+        black.Get(), SimpleMath::Vector3(0.0f, 0.0f, 0.0f),
+        Rect(0.0f, 0.0f, 3840.0f, 1080.0f),
+        DX9::Colors::RGBA(255, 255, 255, (int)alpha_black)
+    );
 
     DX9::SpriteBatch->DrawSimple(
         title.Get(), SimpleMath::Vector3(0.0f, 0.0f, 3.0f)
@@ -275,4 +306,22 @@ void TitleScene::Re_DirectTwelve() {
 
     DXTK->Direct3D9->WaitUpdate();
     DXTK->ExecuteCommandList();
+}
+
+cppcoro::generator<int> TitleScene::Operate() {
+    co_yield 0;
+
+    // 待機
+    while (time_stop < 2.5f) {
+        time_stop += time_delta;
+        co_yield 1;
+    }
+    time_stop = 0.0f;
+
+    while (alpha_black > 0.0f) {
+        alpha_black = std::max(alpha_black - num_alpha * time_delta, 0.0f);
+        co_yield 4;
+    }
+
+    co_return;
 }

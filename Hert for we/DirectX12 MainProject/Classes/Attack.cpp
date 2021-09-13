@@ -251,12 +251,12 @@ void Attack::Re_Speak() {
 		//男子ハート直撃時返答セリフ表示
 		if (flag_speach_hit_boy == true) {
 			RECT dest = RectWH(pos_speach_boy_1p.x + 70, pos_speach_boy_1p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[55].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
 			//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 			//2P画面
 			RECT means = RectWH(pos_speach_boy_2p.x + 115, pos_speach_boy_2p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[0].c_str(), (int)comment_reply, means, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[55].c_str(), (int)comment_reply, means, DX9::Colors::Black);
 		}
 	}
 
@@ -318,12 +318,12 @@ void Attack::Re_Speak() {
 		//女子ハート直撃時返答セリフ表示
 		if (flag_speach_hit_girl == true) {
 			RECT dest = RectWH(pos_speach_girl_1p.x + 125, pos_speach_girl_1p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[1].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[56].c_str(), (int)comment_reply, dest, DX9::Colors::Black);
 			//フォント,セリフの入った変数,1度に表示する文字数,文字を表示する場所,色
 
 			//2P画面
 			RECT means = RectWH(pos_speach_girl_2p.x + 65, pos_speach_girl_2p.y + 70, 1000, 1000);
-			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[1].c_str(), (int)comment_reply, means, DX9::Colors::Black);
+			DX9::SpriteBatch->DrawText(font.Get(), LoadLines::lines1[56].c_str(), (int)comment_reply, means, DX9::Colors::Black);
 		}
 	}
 }
@@ -516,8 +516,8 @@ cppcoro::generator<int>Attack::Action() {
 					time_stop += time_delta;
 
 					comment_reply += TALK_SPEED * time_delta;
-					if (comment_reply > LoadLines::lines1[0].length()) {
-						comment_reply = LoadLines::lines1[0].length();
+					if (comment_reply > LoadLines::lines1[55].length()) {
+						comment_reply = LoadLines::lines1[55].length();
 					}
 					co_yield  9;
 				}
@@ -541,7 +541,7 @@ cppcoro::generator<int>Attack::Action() {
 			MainScene::flag_suka = false;
 			MainScene::flag_graze = false;
 			MainScene::flag_hit = false;
-			//MainScene::num_color[1] = COLOR_GRAY;
+			MainScene::num_color[1] = COLOR_GRAY;
 			co_return;
 		}
 
@@ -597,7 +597,7 @@ cppcoro::generator<int>Attack::Action() {
 			MainScene::flag_suka = false;
 			MainScene::flag_graze = false;
 			MainScene::flag_hit = false;
-			//MainScene::num_color[1] = COLOR_GRAY;
+			MainScene::num_color[1] = COLOR_GRAY;
 			co_return;
 		}
 		co_return;
@@ -717,8 +717,8 @@ cppcoro::generator<int>Attack::Action() {
 					time_stop += time_delta;
 
 					comment_reply += TALK_SPEED * time_delta;
-					if (comment_reply > LoadLines::lines1[1].length()) {
-						comment_reply = LoadLines::lines1[1].length();
+					if (comment_reply > LoadLines::lines1[56].length()) {
+						comment_reply = LoadLines::lines1[56].length();
 						//呪文詠唱はこちら！↓↓↓
 						//comment_reply > LoadLines::lines1[1].length();
 					}
@@ -738,7 +738,7 @@ cppcoro::generator<int>Attack::Action() {
 			MainScene::flag_suka = false;
 			MainScene::flag_graze = false;
 			MainScene::flag_hit = false;
-			//MainScene::num_color[0] = COLOR_GRAY;
+			MainScene::num_color[0] = COLOR_GRAY;
 			co_return;
 		}
 
@@ -794,7 +794,7 @@ cppcoro::generator<int>Attack::Action() {
 			MainScene::flag_suka = false;
 			MainScene::flag_graze = false;
 			MainScene::flag_hit = false;
-			//MainScene::num_color[0] = COLOR_GRAY;
+			MainScene::num_color[0] = COLOR_GRAY;
 			co_return;
 		}
 		co_return;

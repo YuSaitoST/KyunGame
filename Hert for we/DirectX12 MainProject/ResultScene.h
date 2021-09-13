@@ -57,6 +57,43 @@ private:
 	float num_alpha;
 	bool flag_fade;
 
+
+	// ‰ï˜b—p
+	SimpleMath::Vector3 pos_speach_girl_1p;
+	SimpleMath::Vector3 pos_speach_boy_1p;
+
+	SimpleMath::Vector3 pos_speach_girl_2p;
+	SimpleMath::Vector3 pos_speach_boy_2p;
+
+	SimpleMath::Vector3 pos_speach_synchro_1p;
+	SimpleMath::Vector3 pos_speach_synchro_2p;
+
+	LoadLines load;
+
+	const float TALK_SPEED = 10.0f;
+
+	const float pos_speach_normal_girl_limit_x_1p = 434.0f;
+	const float pos_speach_normal_boy_limit_x_1p = 497.0f;
+	const float pos_speach_normal_girl_limit_x_2p = 2406.0f;
+	const float pos_speach_normal_boy_limit_x_2p = 2343.0f;
+
+	//63 31.5
+	const float pos_speach_synchro_x_1p = 465.0f;
+	const float pos_speach_synchro_x_2p = 2437.0f;
+
+	const float pos_speach_reply_y = 597.0f;
+
+	float comment_reply;
+
+	float time_stop;
+	float alpha_text;
+
+	int index;
+
+	bool flag_talk_boy;
+	bool flag_talk_girl;
+	bool flag_talk_synchro;
+
 	void LA_Load();
 	bool Up_Fade(const float deltaTime);
 	void Re_Sprite();
@@ -64,4 +101,5 @@ private:
 	void Re_DirectTwelve();
 
 public:
+	static int winner;  // 0:girl, 1:boy;
 };

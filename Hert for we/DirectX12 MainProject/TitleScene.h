@@ -35,6 +35,9 @@ public:
     NextScene Update(const float deltaTime) override;
     void Render() override;
 
+
+    static bool flag_fade;
+
 private:
     DX12::DESCRIPTORHEAP descriptorHeap;
     DX12::SPRITEBATCH    spriteBatch;
@@ -45,6 +48,7 @@ private:
     DX9::SPRITE comment;
     DX9::SPRITE ui_start;
     DX9::SPRITE white;
+    DX9::SPRITE black;
 
     DX9::MEDIARENDERER bgm_title;
     DX9::MEDIARENDERER se_start;
@@ -54,11 +58,20 @@ private:
     SimpleMath::Vector3 pos_comment_my;
     SimpleMath::Vector3 pos_comment_partner;
 
+    //ÉRÉãÅ[É`Éì
+    cppcoro::generator<int> Operate();
+    cppcoro::generator<int> co_operate;
+    cppcoro::detail::generator_iterator<int> co_operate_it;
+
     int page_state;
     bool flag_comment;
     float alpha_white;
-    const float num_alpha = 400.0f;
+    const float num_alpha = 200.0f;
     const float num_speed = 3000.0f;
+
+    float alpha_black;
+    float time_delta;
+    float time_stop;
 
     float num_flash;
     bool flag_falsh;

@@ -61,6 +61,7 @@ private:
 	DX9::SPRITE com_cursor;
 	DX9::SPRITE speech;
 	DX9::SPRITE select;
+	DX9::SPRITE ope;
 
 	DX9::MEDIARENDERER bgm_main;
 	DX9::MEDIARENDERER se_cancel;
@@ -97,6 +98,9 @@ private:
 	const float								POS_OUTAREA		= -200.0f;
 	const float								MOVE_POINTER	= 179.0f;
 
+	float fade_ui;
+
+
 	int num_turn;  // ƒ^[ƒ“”
 	int num_ready;  // Œİ‚¢‚Ì€”õŠ®—¹ó‘Ô
 	int num_ready_all[2];  // —¼Ò‚ª
@@ -107,7 +111,7 @@ private:
 
 	void LA_Load();
 	void Up_Scenario(float deltaTime);
-	void Up_Put(int index);  // Œã‚ÉÔ‚ÆÂ‚Ç‚¿‚ç‚©‚ğ“n‚µ‚Ä“®‚©‚µ‚½‚¢
+	void Up_Put(int index, float deltaTime);  // Œã‚ÉÔ‚ÆÂ‚Ç‚¿‚ç‚©‚ğ“n‚µ‚Ä“®‚©‚µ‚½‚¢
 	void Up_Start(float deltaTime);
 	void Up_Select();
 	void Up_Attack(float deltaTime);

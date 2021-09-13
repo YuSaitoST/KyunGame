@@ -67,6 +67,8 @@ void MainScene::Initialize()
 	num_color[0]			= 255;
 	num_color[1]			= 255;
 
+	fade_ui = 0.0f;
+
 	POS_GIRL_A = 0.0f;
 	POS_GIRL_B = 0.0f;
 	POS_BOY_A = 0.0f;
@@ -149,7 +151,7 @@ NextScene MainScene::Update(const float deltaTime)
 
 	switch (phase) {
 		case Phase::SCENARIO		:	Up_Scenario(deltaTime);				break;
-		case Phase::PUT_HEART	:	Up_Put(0);		Up_Put(1);				break;
+		case Phase::PUT_HEART	:	Up_Put(0, deltaTime);		Up_Put(1, deltaTime);				break;
 		case Phase::START				:	Up_Start(deltaTime);						break;		// ここで先攻後攻決めるべきかな
 		case Phase::SELECT			:	Up_Select();									break;
 		case Phase::ATTACK			:	Up_Attack(deltaTime);					break;
@@ -207,6 +209,7 @@ void MainScene::LA_Load() {
 	com_cursor									= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/カーソル.png");
 	speech											= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png");
 	select												= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/choices.png");
+	ope													= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/instructions.png");
 
 	boy_a[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
 	boy_a[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
@@ -246,10 +249,10 @@ void MainScene::LA_Load() {
 
 void MainScene::Up_Scenario(float deltaTime) {
 	bool flag_black = black.Up_Black(deltaTime);
-	if (flag_black) phase = Phase::PUT_HEART;
+	if (flag_black) { phase = Phase::PUT_HEART; BlackOut::alpha_black = 0.0f; }
 }
 
-void MainScene::Up_Put(int index) {
+void MainScene::Up_Put(int index, float deltaTime) {
 	Up_Move_Pointer(index);
 
 	const bool input_b_ = DXTK->GamePadEvent[index].b == GamePad::ButtonStateTracker::PRESSED;
@@ -261,6 +264,16 @@ void MainScene::Up_Put(int index) {
 			num_ready += 1;
 		}
 	}
+
+	while (num_ready != 2) {
+		if (fade_ui == 0.0f) {
+			fade_ui = std::min(fade_ui + deltaTime, 255.0f);
+		}
+		else if (fade_ui == 255.0f) {
+			fade_ui = std::max(fade_ui - deltaTime, 0.0f);
+		}
+	}
+
 	if (num_ready != 2) return;  // ゲームパッドが1台しかない場合、ここの値を1にすると1ターン分だけデバッグできる
 	
 
@@ -362,6 +375,7 @@ void MainScene::Up_Attack(float deltaTime) {
 		if (flag_hit) {
 			emotion[num_player] = EMOTION::VICTORY;
 			emotion[partner_] = EMOTION::DEFEAT;
+			ResultScene::winner = num_player;
 			phase = Phase::SUCCEED;
 			return;
 		}
@@ -597,6 +611,17 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 		);
 	}
 	if (phase == Phase::PUT_HEART) {
+		DX9::SpriteBatch->DrawSimple(
+			ope.Get(), SimpleMath::Vector3(0.0f, 0.0f, -1),
+			Rect(0.0f, 0.0f, 1184.0f, 165.0f),
+			DX9::Colors::RGBA(255, 255, 255, fade_ui)
+		);
+		DX9::SpriteBatch->DrawSimple(
+			ope.Get(), SimpleMath::Vector3(192.0f, 0.0f, -1),
+			Rect(0.0f, 0.0f, 1184.0f, 165.0f),
+			DX9::Colors::RGBA(255, 255, 255, fade_ui)
+		);
+
 		if (num_ready_all[index] == 1) return;
 		DX9::SpriteBatch->DrawSimple(
 			pointer.Get(),
