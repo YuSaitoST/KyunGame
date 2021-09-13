@@ -14,9 +14,7 @@ class LoadLines {
 public:
 	void Initialize();
 	void In_File();
-	static std::basic_string<wchar_t> lines1[6];  // ‘äŽŒ‚ð“ü‚ê‚é
+	static std::basic_string<wchar_t> lines1[40];  // ‘äŽŒ‚ð“ü‚ê‚é
 
 private:
-	std::mt19937 random_engine;
-	std::uniform_int_distribution<> random_dist;
 };

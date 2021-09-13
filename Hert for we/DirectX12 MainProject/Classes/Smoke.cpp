@@ -92,21 +92,21 @@ void Smoke::Render() {
 cppcoro::generator<int>Smoke::Change() {
 	co_yield 0;
 
+	//UIの移動、スモーク
 	while (width_ui < 1920)
 	{
-		alpha_white += num_alpha * time_delta;
-		if (alpha_white > 120)
-			alpha_white = 120;
-		width_ui += num_speed * time_delta;
+		alpha_white = std::min(alpha_white + num_alpha * time_delta, 120.0f);
+		width_ui    = std::min(width_ui + num_speed * time_delta, 1920.0f);
 		co_yield 1;
 	}
-	width_ui = 1920;
 
+	//間
 	while (time_stop < 0.9f) {
 		time_stop += time_delta;
 		co_yield 2;
 	}
 
+	//UIの移動、スモークの解除
 	while (width_pos < 1920.0f)
 	{
 		width_pos += num_speed * time_delta;

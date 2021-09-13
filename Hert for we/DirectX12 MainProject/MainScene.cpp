@@ -77,6 +77,8 @@ void MainScene::Initialize()
 	flag_graze = false;
 	flag_hit = false;
 	flag_se = false;
+
+
 	/* ↓↓↓↓↓↓↓↓↓↓↓↓ */
 	/*→*/flag_debug = false;  /*←*/   // リリーズ時falseにする
 	/* ↑↑↑↑↑↑↑↑↑↑↑↑ */
@@ -306,6 +308,7 @@ void MainScene::Up_Select() {
 		se_decision->Replay();
 	}
 
+	// このあたり、おそらくバグの根源
 	pos_pointer = POS_CENTER;
 	pos_pointer_ready[num_player] = POS_CENTER;
 	pos_heart[num_player] = pos_heart_old;
