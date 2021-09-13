@@ -19,7 +19,7 @@ public:
 	// ブラックアウト用
 	DX9::SPRITE black;
 	SimpleMath::Vector3 pos_black;
-	float alpha_black;
+	static float alpha_black;
 	float time_delta;
 	float time_stop;
 	const float num_alpha = 90.0f;

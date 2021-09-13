@@ -15,7 +15,7 @@ void LoadLines::In_File() {
 	//wchar_t flavor_text[256];
 	//MultiByteToWideChar(CP_ACP, 0, read_line, -1, flavor_text, 255);  // •ÏŠ·
 
-	for (int i = 0; i < 56; ++i) {
+	for (int i = 0; i < 57; ++i) {
 		fgetws(read_line, 255, fp);
 		lines1[i] = read_line;
 
