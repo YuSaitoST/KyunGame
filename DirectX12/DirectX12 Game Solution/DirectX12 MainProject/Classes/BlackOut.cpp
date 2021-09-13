@@ -3,6 +3,8 @@
 #include <MainScene.h>
 #include <ResultScene.h>
 
+float BlackOut::alpha_black;
+
 void BlackOut::Initialize() {
 
 	alpha_black = MainScene::phase == MainScene::Phase::SCENARIO ? 255.0f : 0.0f;
