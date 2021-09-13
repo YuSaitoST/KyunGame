@@ -42,11 +42,24 @@ private:
 	DX9::SPRITEFONT font;
 
 	DX9::SPRITE black;
+	DX9::SPRITE ope;
 
 	DX9::MEDIARENDERER bgm_result;
 	DX9::MEDIARENDERER se_flowers;
 
+	//ÉRÉãÅ[É`Éì
+	cppcoro::generator<int> Operate();
+	cppcoro::generator<int> co_operate;
+	cppcoro::detail::generator_iterator<int> co_operate_it;
+
+	int count_change;
+	float time_delta;
+	float num_alpha;
+	bool flag_fade;
+
 	void LA_Load();
+	bool Up_Fade(const float deltaTime);
+	void Re_Sprite();
 	void Re_Speak();
 	void Re_DirectTwelve();
 
