@@ -32,7 +32,7 @@ void TitleScene::Initialize()
     flag_falsh = false;
     time_change = 0.0f;
 
-    alpha_black = 255.0f;
+    alpha_black = 0.0f;
     time_delta = 0.0f;
     time_stop = 0.0f;
 

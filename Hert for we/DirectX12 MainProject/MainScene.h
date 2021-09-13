@@ -80,6 +80,11 @@ private:
 	SimpleMath::Vector2 pos_heart[2];
 	SimpleMath::Vector2 pos_heart_old;
 
+	//コルーチン
+	cppcoro::generator<int> Operate();
+	cppcoro::generator<int> co_operate;
+	cppcoro::detail::generator_iterator<int> co_operate_it;
+
 	std::mt19937 random_engine;
 	std::uniform_int_distribution<> random_dist;
 
@@ -99,6 +104,8 @@ private:
 	const float								MOVE_POINTER	= 179.0f;
 
 	float fade_ui;
+	float fade_delta;
+	int fade;
 
 
 	int num_turn;  // ターン数

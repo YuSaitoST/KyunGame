@@ -64,8 +64,8 @@ void ResultScene::Initialize()
 	time_stop = 0.0f;
 	alpha_text = 0.0f;
 
-	//index = winner ? 45 : 50;
-	index = 45;
+	index = winner ? 45 : 50;
+	//index = 45;
 
 	load.In_File();
 

@@ -68,6 +68,8 @@ void MainScene::Initialize()
 	num_color[1]			= 255;
 
 	fade_ui = 0.0f;
+	fade_delta = 3.0f;
+	fade = 1;
 
 	POS_GIRL_A = 0.0f;
 	POS_GIRL_B = 0.0f;
@@ -265,16 +267,21 @@ void MainScene::Up_Put(int index, float deltaTime) {
 		}
 	}
 
-	while (num_ready != 2) {
-		if (fade_ui == 0.0f) {
-			fade_ui = std::min(fade_ui + deltaTime, 255.0f);
+	// 遊び方のUIをごり押しアニメーション
+	if (num_ready != 2) {
+		if (fade % 2 == 1) {
+			fade_ui = std::min(fade_ui + fade_delta, 255.0f);
+			if (fade_ui == 255.0f) fade += 1;
 		}
-		else if (fade_ui == 255.0f) {
-			fade_ui = std::max(fade_ui - deltaTime, 0.0f);
+		else {
+			fade_ui = std::max(fade_ui - fade_delta, 0.0f);
+			if (fade_ui == 0.0f) fade += 1;
 		}
+
+		return;
 	}
 
-	if (num_ready != 2) return;  // ゲームパッドが1台しかない場合、ここの値を1にすると1ターン分だけデバッグできる
+//	if (num_ready != 2) return;  // ゲームパッドが1台しかない場合、ここの値を1にすると1ターン分だけデバッグできる
 	
 
 	phase	= Phase::START;
@@ -612,12 +619,12 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 	}
 	if (phase == Phase::PUT_HEART) {
 		DX9::SpriteBatch->DrawSimple(
-			ope.Get(), SimpleMath::Vector3(0.0f, 0.0f, -1),
+			ope.Get(), SimpleMath::Vector3(364.0f, 250.0f, -1),
 			Rect(0.0f, 0.0f, 1184.0f, 165.0f),
 			DX9::Colors::RGBA(255, 255, 255, fade_ui)
 		);
 		DX9::SpriteBatch->DrawSimple(
-			ope.Get(), SimpleMath::Vector3(192.0f, 0.0f, -1),
+			ope.Get(), SimpleMath::Vector3(364.0f + 1920.0f, 250.0f, -1),
 			Rect(0.0f, 0.0f, 1184.0f, 165.0f),
 			DX9::Colors::RGBA(255, 255, 255, fade_ui)
 		);
@@ -775,4 +782,10 @@ void MainScene::Re_DirectTwelve() {
 
 	DXTK->Direct3D9->WaitUpdate();
 	DXTK->ExecuteCommandList();
+}
+
+cppcoro::generator<int> MainScene::Operate() {
+	co_yield 0;
+
+	co_return;
 }

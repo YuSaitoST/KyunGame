@@ -14,7 +14,7 @@ class LoadLines {
 public:
 	void Initialize();
 	void In_File();
-	static std::basic_string<wchar_t> lines1[56];  // ‘äŽŒ‚ð“ü‚ê‚é
+	static std::basic_string<wchar_t> lines1[57];  // ‘äŽŒ‚ð“ü‚ê‚é
 
 private:
 };
