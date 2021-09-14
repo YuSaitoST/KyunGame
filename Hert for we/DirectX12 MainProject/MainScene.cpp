@@ -310,6 +310,11 @@ void MainScene::Up_Start(float deltaTime) {
 	//num_color[1] = num_color[1] == 255 ? 120 : 255;
 	bool fin_change_ = smoke.Up_Change(deltaTime);
 	if (!fin_change_) return;
+
+	int partner_ = num_player ? 0 : 1;
+	num_color[partner_] = 255;
+	num_color[num_player] = 55;
+
 	phase = Phase::SELECT;
 	se_change->Play();
 }
