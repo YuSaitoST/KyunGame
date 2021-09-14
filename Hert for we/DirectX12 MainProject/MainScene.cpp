@@ -327,6 +327,9 @@ void MainScene::Up_Start(float deltaTime) {
 	num_color[partner_] = 255;
 	num_color[num_player] = 55;
 
+	emotion[0] = EMOTION::GENERALLY;
+	emotion[1] = EMOTION::GENERALLY;
+
 	phase = Phase::SELECT;
 	se_change->Play();
 }
@@ -581,6 +584,7 @@ void MainScene::Up_Fine()
 	flag_hit				= false;
 	flag_graze			= false;
 	flag_suka			= false;
+	pos_cursor.y		= 100.0f;
 	num_turn			+= 1;
 	num_player		= num_player == 0 ? 1 : 0;  // ƒ^[ƒ“Ø‚è‘Ö‚¦
 	pos_heart_old	= pos_heart[num_player];
