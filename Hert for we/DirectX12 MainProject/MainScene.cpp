@@ -213,11 +213,11 @@ void MainScene::LA_Load() {
 	select												= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/choices.png");
 	ope													= DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/instructions.png");
 
-	boy_a[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_generally.png");
-	boy_a[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_attack.png");
-	boy_a[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_near.png");
-	boy_a[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_victory.png");
-	boy_a[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/boy_defeat.png");
+	boy_a[EMOTION::GENERALLY]	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_generally.png");
+	boy_a[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_attack.png");
+	boy_a[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_near.png");
+	boy_a[EMOTION::VICTORY]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_victory.png");
+	boy_a[EMOTION::DEFEAT]			= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/boy_defeat.png");
 	girl_a[EMOTION::GENERALLY]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_generally.png");
 	girl_a[EMOTION::PROPOSAL]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_attack.png");
 	girl_a[EMOTION::NERVOUS]		= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Character/A_player/girl_near.png");
@@ -631,7 +631,7 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 
 		if (num_ready_all[index] == 1) return;
 		DX9::SpriteBatch->DrawSimple(
-			pointer.Get(),
+			heart_red.Get(),
 			SimpleMath::Vector3(pos_x + pos_pointer_ready[index].x, pos_pointer_ready[index].y, POSI_Z::POINTER)
 		);
 	}
@@ -664,11 +664,11 @@ void MainScene::Re_Draw_Standard(float pos_x, int index) {
 		);
 		DX9::SpriteBatch->DrawString(
 			font.Get(), SimpleMath::Vector2(pos_x + 200.0f, 100.0f),
-			DX9::Colors::RGBA(0, 0, 0, 255), L"ATTACK"
+			DX9::Colors::RGBA(0, 0, 0, 255), L"å˚åÇ"
 		);
 		DX9::SpriteBatch->DrawString(
 			font.Get(), SimpleMath::Vector2(pos_x + 200.0f, 200.0f),
-			DX9::Colors::RGBA(0, 0, 0, 255), L"MOVE"
+			DX9::Colors::RGBA(0, 0, 0, 255), L"évçl"
 		);
 	}
 	if (phase == Phase::MOVE) {
