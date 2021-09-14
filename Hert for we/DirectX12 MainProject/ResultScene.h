@@ -57,6 +57,8 @@ private:
 	float num_alpha;
 	bool flag_fade;
 
+	float bgm;
+
 
 	// ‰ï˜b—p
 	SimpleMath::Vector3 pos_speach_girl_1p;

@@ -112,6 +112,8 @@ private:
 	int num_ready;  // 互いの準備完了状態
 	int num_ready_all[2];  // 両者が
 
+	bool operate;  // 操作方法はどうするか
+
 	bool flag_se;  // seがなったかのフラグ
 	bool fin_game;  // デバック用
 	int win_player;  // デバック用

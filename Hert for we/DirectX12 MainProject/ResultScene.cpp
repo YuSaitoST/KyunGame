@@ -18,7 +18,7 @@ ResultScene::ResultScene()
 // Initialize a variable and audio resources.
 void ResultScene::Initialize()
 {
-    font = DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"ふい字", 35);
+    font = DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont29.ttf", L"ふい字", 35);
     bgm_result = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\ending_bgm.mp3");
     se_flowers = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Result\\hanabi.mp3");
 
@@ -63,6 +63,9 @@ void ResultScene::Initialize()
 
 	time_stop = 0.0f;
 	alpha_text = 0.0f;
+
+
+	bgm = 0.0f;
 
 	index = winner ? 45 : 50;
 	//index = 45;
@@ -134,7 +137,8 @@ NextScene ResultScene::Update(const float deltaTime)
     // 台詞のコルーチンを、終わったら花火のse流す
     time_delta = deltaTime;
 
-    se_flowers->Play();
+	bgm = std::max(bgm -  72.0f * time_delta, -5000.0f);
+	bgm_result->SetVolume(bgm);
 
     if (co_operate_it == co_operate.end()) {
 		TitleScene::flag_fade = true;
@@ -171,7 +175,11 @@ void ResultScene::LA_Load() {
     black = DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/black.png");
     ope= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Scene\\result_ui.png");
 
+	bgm_result= DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"BGM\\ending_bgm.mp3");
     se_flowers = DX9::MediaRenderer::CreateFromFile(DXTK->Device9, L"SE\\Result\\hanabi.mp3");
+
+	bgm_result->Play();
+	bgm_result->SetVolume(500.0f);
 }
 
 bool ResultScene::Up_Fade(const float deltaTime) {
@@ -423,8 +431,10 @@ cppcoro::generator<int> ResultScene::Operate() {
 		flag_talk_girl = false;
 	}
 
+	se_flowers->Play();
+
 	// 待機
-	while (time_stop < 2.5f) {
+	while (time_stop < 10.0f) {
 		time_stop += time_delta;
 		co_yield 1;
 	}
