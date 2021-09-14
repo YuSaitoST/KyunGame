@@ -11,16 +11,16 @@ void BlackOut::Initialize() {
 	alpha_text = 0;
 
 	time_delta = 0.0f;
-	time_stop = 2.0f;
+	time_stop  = 2.0f;
 
 	count_chnage = 0;
 	time_stop = 0.0f;
 
 
 	font = DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont.ttf", L"‚Ó‚¢Žš", 35);
-	speach_my_reply = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png");
-	speach_partner_reply = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_r.png");
-	speach_synchro = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_rl.png");
+	speach_my_reply		 = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon.png"	 );
+	speach_partner_reply = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_r.png" );
+	speach_synchro		 = DX9::Sprite::CreateFromFile(DXTK->Device9, L"UI/speech_balloon_rl.png");
 
 	pos_speach_girl_1p.x = pos_speach_normal_girl_limit_x_1p;
 	pos_speach_girl_1p.y = pos_speach_reply_y;
@@ -52,7 +52,7 @@ void BlackOut::Initialize() {
 	alpha_speach_synchro = 0.0f;
 
 	comment_reply = 0.0f;
-	comment_plus = 0;
+	comment_plus  = 0;
 
 	flag_talk_boy  = false;
 	flag_talk_girl = false;
@@ -61,7 +61,7 @@ void BlackOut::Initialize() {
 
 void BlackOut::LoadAssets() {
 	black	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"Effect/black.png");
-	text = DX9::Sprite::CreateFromFile(DXTK->Device9, L"prolog_text.png");
+	text	= DX9::Sprite::CreateFromFile(DXTK->Device9, L"prolog_text.png" );
 
 }
 
