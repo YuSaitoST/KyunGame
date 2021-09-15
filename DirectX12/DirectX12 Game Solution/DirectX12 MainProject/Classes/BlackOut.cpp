@@ -7,6 +7,8 @@ float BlackOut::alpha_black;
 
 void BlackOut::Initialize() {
 
+	font_skip = DX9::SpriteFont::CreateFromFontFile(DXTK->Device9, L"Font/HuiFont29.ttf", L"ふい字", 30);
+
 	alpha_black = MainScene::phase == MainScene::Phase::SCENARIO ? 255.0f : 0.0f;
 	alpha_text = 0;
 
@@ -101,6 +103,16 @@ void BlackOut::Render() {
 	);
 
 	if (MainScene::phase != MainScene::Phase::SCENARIO) return;
+
+	DX9::SpriteBatch->DrawString(
+		font_skip.Get(), SimpleMath::Vector2(0.0f, 0.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255), L"Aボタン長押しでスキップ"
+	);
+	DX9::SpriteBatch->DrawString(
+		font_skip.Get(), SimpleMath::Vector2(1920.0f + 0.0f, 0.0f),
+		DX9::Colors::RGBA(255, 255, 255, 255), L"Aボタン長押しでスキップ"
+	);
+
 
 	//ここに会話シーンの描画を入れる
 	//男子吹き出し
@@ -306,7 +318,7 @@ cppcoro::generator<int>BlackOut::Change() {
 		flag_talk_boy = false;
 
 		//男女のリアクション
-		while (time_stop < 0.5f)
+		while (time_stop < 0.8f)
 		{
 			time_stop += time_delta;
 			if (MainScene::POS_BOY_A > -1.0f)
