@@ -24,7 +24,7 @@ public:
 	float time_delta;
 	float time_stop;
 	const float num_alpha = 170.0f;
-	const float num_speed = 2500.0f;
+	const float num_speed = 3000.0f;
 
 	DX9::SPRITE ui_turn_my;
 	DX9::SPRITE ui_turn_partner;

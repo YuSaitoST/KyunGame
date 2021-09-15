@@ -16,6 +16,8 @@ public:
 	bool Up_Black(const float deltaTime);
 	void Render();
 
+	DX9::SPRITEFONT font_skip;
+
 	// ブラックアウト用
 	DX9::SPRITE black;
 	SimpleMath::Vector3 pos_black;
@@ -43,6 +45,8 @@ public:
 
 	SimpleMath::Vector3 pos_speach_synchro_1p;
 	SimpleMath::Vector3 pos_speach_synchro_2p;
+
+
 
 
 	float alpha_speach_girl;

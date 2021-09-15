@@ -67,6 +67,8 @@ void MainScene::Initialize()
 	num_color[0]			= 255;
 	num_color[1]			= 255;
 
+	time_skip = 2.5f;
+
 	fade_ui = 0.0f;
 	fade_delta = 3.0f;
 	fade = 1;
@@ -82,6 +84,7 @@ void MainScene::Initialize()
 	flag_hit = false;
 	flag_se = false;
 
+	skip = false;
 
 	operate = DXTK->GamePadState[0].IsConnected() && DXTK->GamePadState[1].IsConnected();
 
@@ -263,6 +266,17 @@ void MainScene::LA_Load() {
 
 void MainScene::Up_Scenario(float deltaTime) {
 	bool flag_black = black.Up_Black(deltaTime);
+
+
+	if (DXTK->KeyState->Back) {
+		time_skip -= deltaTime;
+	}
+
+	if (time_skip <= 0.0f) {
+		time_skip = 0.0f;
+		flag_black = true;
+	}
+
 	if (flag_black) { phase = Phase::PUT_HEART; BlackOut::alpha_black = 0.0f; }
 }
 
@@ -272,7 +286,7 @@ void MainScene::Up_Put(int index, float deltaTime) {
 	const bool input_b_ = DXTK->GamePadEvent[index].b == GamePad::ButtonStateTracker::PRESSED;
 
 	if (num_ready_all[index] == 0) {
-		if (DXTK->KeyEvent->pressed.B || input_b_) {
+		if (DXTK->KeyEvent->pressed.Enter || input_b_) {
 			pos_heart[index] = pos_pointer_ready[index];
 			num_ready_all[index] = 1;  // ƒvƒŒƒCƒ„[‚Ì‘€ìŠ®—¹‚ð•ñ
 			num_ready += 1;
@@ -339,10 +353,10 @@ void MainScene::Up_Select() {
 	const bool cross_down_		= DXTK->GamePadEvent[num_player].dpadDown	== GamePad::ButtonStateTracker::PRESSED;
 	const bool input_b_				= DXTK->GamePadEvent[num_player].b					== GamePad::ButtonStateTracker::PRESSED;
 
-	if (DXTK->KeyEvent->pressed.Up || cross_up_)			pos_cursor.y = pos_cursor.y < 100.0f ? 200.0f : 100.0f;
-	if (DXTK->KeyEvent->pressed.Down || cross_down_)	pos_cursor.y = pos_cursor.y > 200.0f ? 100.0f : 200.0f;
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.W || cross_up_)			pos_cursor.y = pos_cursor.y < 100.0f ? 200.0f : 100.0f;
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.S || cross_down_)	pos_cursor.y = pos_cursor.y > 200.0f ? 100.0f : 200.0f;
 
-	if (DXTK->KeyEvent->pressed.B || input_b_) {
+	if (DXTK->KeyEvent->pressed.Enter || input_b_) {
 		if (pos_cursor.y == 100.0f) phase = Phase::ATTACK;
 		if (pos_cursor.y == 200.0f) phase = Phase::MOVE;
 		se_decision->Replay();
@@ -418,13 +432,13 @@ void MainScene::Up_Attack(float deltaTime) {
 	const bool input_a_		= DXTK->GamePadEvent[num_player].a == GamePad::ButtonStateTracker::PRESSED;
 	const bool input_b_		= DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
 
-	if (DXTK->KeyEvent->pressed.A || input_a_) {
+	if (DXTK->KeyEvent->pressed.Back || input_a_) {
 		phase	= Phase::SELECT;
 		se_cancel->Replay();
 //		emotion[num_player] = EMOTION::GENERALLY;
 		return;
 	}
-	if (DXTK->KeyEvent->pressed.B || input_b_) {
+	if (DXTK->KeyEvent->pressed.Enter || input_b_) {
 		pos_attack = pos_pointer_ready[num_player];
 		flag_attack += 1;
 		se_attack->Replay();
@@ -448,7 +462,7 @@ void MainScene::Up_Move(float deltaTime) {
 	const bool cross_left_		= DXTK->GamePadEvent[num_player].dpadLeft		== GamePad::ButtonStateTracker::PRESSED;
 	const bool cross_right_		= DXTK->GamePadEvent[num_player].dpadRight	== GamePad::ButtonStateTracker::PRESSED;
 
-	if (DXTK->KeyEvent->pressed.Up || cross_up_) {
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.W || cross_up_) {
 		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) pos_pointer_ready[num_player] = pos_cross_hR[0];
 		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) {
 			pos_pointer_ready[num_player] = pos_cross_hR[0];
@@ -459,7 +473,7 @@ void MainScene::Up_Move(float deltaTime) {
 			se_move->Replay();
 		}
 	}
-	if (DXTK->KeyEvent->pressed.Down || cross_down_) {
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.S || cross_down_) {
 		if (pos_pointer_ready[num_player] == pos_cross_hR[0]) {
 			pos_pointer_ready[num_player] = pos_cross_hR[4];
 			se_move->Replay();
@@ -470,7 +484,7 @@ void MainScene::Up_Move(float deltaTime) {
 		}
 		else if (pos_pointer_ready[num_player] == pos_cross_hR[2]) pos_pointer_ready[num_player] = pos_cross_hR[2];
 	}
-	if (DXTK->KeyEvent->pressed.Left || cross_left_) {
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.A || cross_left_) {
 		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) {
 			pos_pointer_ready[num_player] = pos_cross_hR[4];
 			se_move->Replay();
@@ -481,7 +495,7 @@ void MainScene::Up_Move(float deltaTime) {
 		}
 		else if (pos_pointer_ready[num_player] == pos_cross_hR[3]) pos_pointer_ready[num_player] = pos_cross_hR[3];
 	}
-	if (DXTK->KeyEvent->pressed.Right || cross_right_) {
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.D || cross_right_) {
 		if (pos_pointer_ready[num_player] == pos_cross_hR[1]) pos_pointer_ready[num_player] = pos_cross_hR[1];
 		else if (pos_pointer_ready[num_player] == pos_cross_hR[4]) {
 			pos_pointer_ready[num_player] = pos_cross_hR[1];
@@ -524,13 +538,13 @@ void MainScene::Up_Mo_Check(float deltaTime) {
 	const bool input_b_ = DXTK->GamePadEvent[num_player].b == GamePad::ButtonStateTracker::PRESSED;
 
 
-	if (DXTK->KeyEvent->pressed.A || input_a_) {
+	if (DXTK->KeyEvent->pressed.Back || input_a_) {
 		phase = Phase::SELECT;
 		se_cancel->Replay();
 		return;
 	}
 
-	if (DXTK->KeyEvent->pressed.B || input_b_) {
+	if (DXTK->KeyEvent->pressed.Enter || input_b_) {
 		phase = Phase::FINE;
 	}
 
@@ -545,19 +559,19 @@ void MainScene::Up_Move_Pointer(int index) {
 	const bool cross_left_			= DXTK->GamePadEvent[index].dpadLeft		== GamePad::ButtonStateTracker::PRESSED;
 	const bool cross_right_			= DXTK->GamePadEvent[index].dpadRight	== GamePad::ButtonStateTracker::PRESSED;
 
-	if (DXTK->KeyEvent->pressed.Up || cross_up_) {
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.W || cross_up_) {
 		pos_pointer_ready[index].y -= MOVE_POINTER;
 		se_cursor->Replay();
 	}
-	if (DXTK->KeyEvent->pressed.Down || cross_down_) {
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.S || cross_down_) {
 		pos_pointer_ready[index].y += MOVE_POINTER;
 		se_cursor->Replay();
 	}
-	if (DXTK->KeyEvent->pressed.Left || cross_left_) {
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.A || cross_left_) {
 		pos_pointer_ready[index].x -= MOVE_POINTER;
 		se_cursor->Replay();
 	}
-	if (DXTK->KeyEvent->pressed.Right || cross_right_) {
+	if (DXTK->KeyEvent->pressed.Up || DXTK->KeyEvent->pressed.D || cross_right_) {
 		pos_pointer_ready[index].x += MOVE_POINTER;
 		se_cursor->Replay();
 	}

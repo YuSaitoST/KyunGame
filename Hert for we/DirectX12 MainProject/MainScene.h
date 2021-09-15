@@ -103,10 +103,12 @@ private:
 	const float								POS_OUTAREA		= -200.0f;
 	const float								MOVE_POINTER	= 179.0f;
 
+	float time_skip;
 	float fade_ui;
 	float fade_delta;
 	int fade;
 
+	bool skip;
 
 	int num_turn;  // ƒ^[ƒ“”
 	int num_ready;  // Œİ‚¢‚Ì€”õŠ®—¹ó‘Ô
