@@ -551,7 +551,7 @@ cppcoro::generator<int>Attack::Action() {
 			se_cv_graze->Replay();
 
 			//男子のリアクション
-			while (time_stop < 1.0f)
+			while (time_stop < 0.8f)
 			{
 				time_stop += time_delta;
 				if (MainScene::POS_BOY_A > -1.0f)
@@ -748,7 +748,7 @@ cppcoro::generator<int>Attack::Action() {
 			se_cv_graze->Replay();
 
 			//女子のリアクション
-			while (time_stop < 0.5f)
+			while (time_stop < 0.8f)
 			{
 				time_stop += time_delta;
 				if (MainScene::POS_GIRL_A > -1.0f)

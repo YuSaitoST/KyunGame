@@ -318,7 +318,7 @@ cppcoro::generator<int>BlackOut::Change() {
 		flag_talk_boy = false;
 
 		//男女のリアクション
-		while (time_stop < 0.5f)
+		while (time_stop < 0.8f)
 		{
 			time_stop += time_delta;
 			if (MainScene::POS_BOY_A > -1.0f)
